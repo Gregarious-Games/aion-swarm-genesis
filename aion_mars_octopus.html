@@ -1,0 +1,3640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION MARS - Octopus Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', monospace;
+            background: linear-gradient(180deg, #050508 0%, #0a0812 50%, #080510 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 6px;
+            gap: 6px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            background: rgba(15, 10, 20, 0.95);
+            border-radius: 5px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .header h1 {
+            font-size: 0.9rem;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.5rem;
+        }
+
+        .header-stats .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2px 5px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+        }
+
+        .header-stats .val { font-size: 0.65rem; font-weight: bold; }
+        .header-stats .val.high { color: #4ade80; }
+        .header-stats .val.mid { color: #fbbf24; }
+        .header-stats .val.low { color: #ef4444; }
+        .header-stats .label { color: #555; font-size: 0.32rem; text-transform: uppercase; }
+
+        .pulse-indicator {
+            display: none;
+            background: rgba(34, 211, 238, 0.3);
+            border: 1px solid #22d3ee;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.5rem;
+            color: #22d3ee;
+            animation: pulse-glow 0.5s ease-out;
+        }
+
+        .pulse-indicator.active { display: block; }
+        .pulse-indicator.local { background: rgba(249, 115, 22, 0.3); border-color: #f97316; color: #f97316; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.8); }
+            100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0); }
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 210px 1fr 220px;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: rgba(15, 10, 20, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 5px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            font-size: 0.45rem;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .map-container {
+            position: relative;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        canvas { width: 100%; height: 100%; display: block; }
+
+        .control-item {
+            margin-bottom: 4px;
+        }
+
+        .control-item label {
+            display: block;
+            font-size: 0.38rem;
+            color: #666;
+            margin-bottom: 1px;
+        }
+
+        .control-item select, .control-item input[type="number"] {
+            width: 100%;
+            padding: 2px 4px;
+            background: #0a0510;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 2px;
+            font-size: 0.48rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #8b5cf6;
+            height: 2px;
+        }
+
+        .btn {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #8b5cf6;
+            padding: 3px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.42rem;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .btn:hover { background: rgba(139, 92, 246, 0.2); }
+        .btn.active { background: #4ade80; color: #050510; border-color: #4ade80; }
+        .btn.danger { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
+        .btn.pulse { background: rgba(34, 211, 238, 0.1); border-color: #22d3ee; color: #22d3ee; }
+        .btn.export { background: rgba(34, 211, 238, 0.1); border-color: #22d3ee; color: #22d3ee; }
+        .btn.octopus { background: rgba(249, 115, 22, 0.1); border-color: #f97316; color: #f97316; }
+        .btn.siphonophore { background: rgba(168, 85, 247, 0.1); border-color: #a855f7; color: #a855f7; }
+        .btn-row { display: flex; gap: 2px; }
+        .btn-row .btn { flex: 1; }
+
+        .metric-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            padding: 4px;
+            margin-bottom: 4px;
+        }
+
+        .metric-section h4 {
+            font-size: 0.38rem;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .metric-section h4.fault { color: #ef4444; }
+        .metric-section h4.cascade { color: #f97316; }
+        .metric-section h4.component { color: #22d3ee; }
+        .metric-section h4.pulse { color: #a78bfa; }
+        .metric-section h4.arm { color: #f97316; }
+        .metric-section h4.skin { color: #ec4899; }
+        .metric-section h4.zooid { color: #a855f7; }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.36rem;
+            padding: 1px 0;
+        }
+
+        .metric-row .label { color: #555; }
+        .metric-row .val { color: #8b5cf6; font-family: monospace; }
+        .metric-row .val.good { color: #4ade80; }
+        .metric-row .val.warn { color: #fbbf24; }
+        .metric-row .val.bad { color: #ef4444; }
+
+        .giant-component-display {
+            text-align: center;
+            padding: 4px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 3px;
+            margin: 3px 0;
+        }
+
+        .giant-component-display .value {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #22d3ee;
+            font-family: monospace;
+        }
+
+        .giant-component-display .label {
+            font-size: 0.32rem;
+            color: #888;
+        }
+
+        .component-bar {
+            height: 8px;
+            background: #0a0510;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 3px 0;
+            display: flex;
+        }
+
+        .component-bar .segment {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .arm-bar {
+            height: 12px;
+            background: #0a0510;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 3px 0;
+            display: flex;
+            gap: 1px;
+        }
+
+        .arm-bar .segment {
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.28rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .fault-list {
+            font-size: 0.35rem;
+            max-height: 50px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: 2px;
+            padding: 3px;
+        }
+
+        .fault-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .fault-item .id { color: #ef4444; }
+        .fault-item .cycle { color: #555; }
+
+        .cascade-meter {
+            height: 6px;
+            background: #0a0510;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 3px 0;
+        }
+
+        .cascade-meter .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f97316, #ef4444);
+            transition: width 0.3s;
+        }
+
+        .chart-container {
+            height: 55px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+            margin: 3px 0;
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.85);
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-size: 0.36rem;
+            pointer-events: none;
+        }
+
+        .component-indicator {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            padding: 4px 8px;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .component-indicator .val {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #22d3ee;
+        }
+
+        .component-indicator .label {
+            font-size: 0.28rem;
+            color: #888;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            border: 2px solid rgba(34, 211, 238, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ring-expand 1s ease-out forwards;
+        }
+
+        .pulse-ring.local {
+            border-color: rgba(249, 115, 22, 0.6);
+        }
+
+        @keyframes ring-expand {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .dust-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center,
+                rgba(180, 120, 60, 0) 0%,
+                rgba(180, 120, 60, var(--dust-opacity, 0)) 100%);
+            pointer-events: none;
+        }
+
+        .bloom-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center,
+                rgba(236, 72, 153, 0.15) 0%,
+                rgba(236, 72, 153, 0.08) 30%,
+                rgba(236, 72, 153, 0) 60%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+            animation: bloom-pulse 2s ease-in-out infinite;
+        }
+
+        .bloom-overlay.active {
+            opacity: 1;
+        }
+
+        @keyframes bloom-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .bloom-indicator {
+            position: absolute;
+            top: 35px;
+            right: 4px;
+            background: rgba(236, 72, 153, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.4rem;
+            font-weight: bold;
+            display: none;
+            animation: bloom-blink 1s ease-in-out infinite;
+        }
+
+        .bloom-indicator.active {
+            display: block;
+        }
+
+        @keyframes bloom-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.85);
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.28rem;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            max-width: 280px;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 2px; }
+        .legend-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+        .log {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.33rem;
+            font-family: monospace;
+            padding: 3px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+            max-height: 60px;
+        }
+
+        .log-entry { margin-bottom: 1px; }
+        .log-entry.fault { color: #ef4444; }
+        .log-entry.pulse { color: #22d3ee; }
+        .log-entry.cascade { color: #f97316; }
+        .log-entry.component { color: #a78bfa; }
+        .log-entry.arm { color: #f97316; }
+        .log-entry.skin { color: #ec4899; }
+        .log-entry.zooid { color: #a855f7; }
+        .log-entry.wave { color: #06b6d4; }
+        .log-entry.heal { color: #4ade80; }
+
+        .toggle-row {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 3px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            color: #666;
+            padding: 2px 3px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 0.35rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .zooid-legend {
+            display: flex;
+            gap: 4px;
+            font-size: 0.32rem;
+            margin-top: 3px;
+        }
+
+        .zooid-legend span {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .wave-indicator {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.32rem;
+            color: #06b6d4;
+        }
+
+        .skin-wave {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: skin-wave-expand 0.8s ease-out forwards;
+        }
+
+        @keyframes skin-wave-expand {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .metachronal-trail {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: trail-fade 0.5s ease-out forwards;
+        }
+
+        @keyframes trail-fade {
+            0% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        /* Trit System Styles */
+        .trit-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .metric-section h4.trit { color: #3b82f6; }
+
+        .trit-distribution {
+            display: flex;
+            gap: 3px;
+            margin: 4px 0;
+        }
+
+        .trit-box {
+            flex: 1;
+            text-align: center;
+            padding: 4px 2px;
+            border-radius: 3px;
+            font-size: 0.4rem;
+        }
+
+        .trit-box.pos {
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid #4ade80;
+            color: #4ade80;
+        }
+
+        .trit-box.zero {
+            background: rgba(156, 163, 175, 0.2);
+            border: 1px solid #9ca3af;
+            color: #9ca3af;
+        }
+
+        .trit-box.neg {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .trit-box .count {
+            font-size: 0.55rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .consensus-indicator {
+            position: absolute;
+            top: 65px;
+            right: 4px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.4rem;
+            text-align: center;
+            display: none;
+        }
+
+        .consensus-indicator.active { display: block; }
+        .consensus-indicator .val { font-size: 0.6rem; font-weight: bold; }
+        .consensus-indicator .val.pos { color: #4ade80; }
+        .consensus-indicator .val.zero { color: #9ca3af; }
+        .consensus-indicator .val.neg { color: #ef4444; }
+
+        .btn.trit { background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; color: #3b82f6; }
+        .btn.trit-pos { background: rgba(74, 222, 128, 0.1); border-color: #4ade80; color: #4ade80; }
+        .btn.trit-zero { background: rgba(156, 163, 175, 0.1); border-color: #9ca3af; color: #9ca3af; }
+        .btn.trit-neg { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
+
+        .log-entry.trit { color: #3b82f6; }
+
+        .trit-wave-indicator {
+            position: absolute;
+            bottom: 25px;
+            right: 4px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.32rem;
+            color: #3b82f6;
+            display: none;
+        }
+
+        .trit-wave-indicator.active { display: block; }
+
+        .entropy-bar {
+            height: 6px;
+            background: #0a0510;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 3px 0;
+        }
+
+        .entropy-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🐙 AION MARS - Octopus Edition</h1>
+        <div class="pulse-indicator" id="pulse-indicator">📡 RECALIBRATION PULSE</div>
+        <div class="header-stats">
+            <div class="stat"><span class="val high" id="psi-val">1.00</span><span class="label">Ψ Coherence</span></div>
+            <div class="stat"><span class="val" id="giant-val">100%</span><span class="label">Giant Comp</span></div>
+            <div class="stat"><span class="val" id="arms-val">6</span><span class="label">Arms</span></div>
+            <div class="stat"><span class="val" id="cascade-val">0.00</span><span class="label">Cascade</span></div>
+            <div class="stat"><span class="val bad" id="fault-val">0</span><span class="label">Faults</span></div>
+            <div class="stat"><span class="val" id="cycle-val">0000</span><span class="label">Cycle</span></div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- Left Panel: Controls -->
+        <div class="panel" style="overflow-y: auto;">
+            <div class="panel-header">⚙ Experiment Config</div>
+
+            <div class="control-item">
+                <label>Swarm Size</label>
+                <select id="swarm-size" onchange="initExperiment()">
+                    <option value="36">36 Drones</option>
+                    <option value="49" selected>49 Drones</option>
+                    <option value="64">64 Drones</option>
+                    <option value="81">81 Drones</option>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label>Arm Count</label>
+                <select id="arm-count" onchange="reassignArms()">
+                    <option value="4">4 Arms</option>
+                    <option value="6" selected>6 Arms</option>
+                    <option value="8">8 Arms</option>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label>β Mode</label>
+                <select id="beta-mode">
+                    <option value="octopus" selected>Octopus (Arm-Local)</option>
+                    <option value="predictive">Predictive Cascade</option>
+                    <option value="local">Local Only</option>
+                    <option value="global">Global</option>
+                    <option value="fixed">Fixed</option>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label>Simulation Speed</label>
+                <input type="range" id="speed" min="20" max="200" value="80">
+                <span style="font-size: 0.35rem; color: #666;" id="speed-display">80ms</span>
+            </div>
+
+            <div class="control-item">
+                <label>Fault Rate (per 100 cycles)</label>
+                <input type="range" id="fault-rate" min="0" max="10" value="2">
+                <span style="font-size: 0.35rem; color: #666;" id="fault-rate-display">2%</span>
+            </div>
+
+            <div class="control-item">
+                <label>Global Pulse Interval</label>
+                <input type="number" id="pulse-interval" value="60" min="10" max="200">
+            </div>
+
+            <div class="control-item">
+                <label>Local Pulse Interval</label>
+                <input type="number" id="local-pulse-interval" value="20" min="5" max="100">
+            </div>
+
+            <div class="panel-header" style="margin-top: 4px;">🧬 Bio Features</div>
+
+            <div class="toggle-row">
+                <button class="toggle-btn active" id="toggle-arms" onclick="toggleFeature('arms')">🦑 Arms</button>
+                <button class="toggle-btn active" id="toggle-skin" onclick="toggleFeature('skin')">🎨 Skin</button>
+            </div>
+
+            <div class="toggle-row">
+                <button class="toggle-btn active" id="toggle-zooid" onclick="toggleFeature('zooid')">🔬 Zooids</button>
+                <button class="toggle-btn" id="toggle-vector" onclick="toggleFeature('vector')">📐 Vector</button>
+            </div>
+
+            <div class="toggle-row">
+                <button class="toggle-btn active" id="toggle-wave" onclick="toggleFeature('wave')">🌊 Waves</button>
+                <button class="toggle-btn active" id="toggle-trit" onclick="toggleFeature('trit')">🔺 Trit</button>
+            </div>
+
+            <div class="toggle-row">
+                <button class="toggle-btn" id="toggle-storm" onclick="toggleStorm()">⛈️ Storm</button>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn" id="start-btn" onclick="toggleSim()">▶</button>
+                <button class="btn" onclick="stepSim()">→</button>
+                <button class="btn" onclick="initExperiment()">↺</button>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn danger" onclick="injectFault()">💥 Fault</button>
+                <button class="btn pulse" onclick="manualPulse()">📡 Global</button>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn octopus" onclick="triggerBloom()">🌸 Bloom</button>
+                <button class="btn siphonophore" onclick="triggerGiantAxon()">⚡ Axon</button>
+            </div>
+
+            <div class="panel-header" style="margin-top: 4px;">🔺 Trit Voting</div>
+
+            <div class="btn-row">
+                <button class="btn trit-pos" onclick="injectTritVote(1)">+1</button>
+                <button class="btn trit-zero" onclick="injectTritVote(0)">0</button>
+                <button class="btn trit-neg" onclick="injectTritVote(-1)">-1</button>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn trit" onclick="sendTritWave()">📡 Trit Wave</button>
+            </div>
+
+            <div class="metric-section trit-section">
+                <h4 class="trit">🔺 Trit Distribution</h4>
+                <div class="trit-distribution">
+                    <div class="trit-box pos"><span class="count" id="trit-pos-count">0</span>+1</div>
+                    <div class="trit-box zero"><span class="count" id="trit-zero-count">0</span>0</div>
+                    <div class="trit-box neg"><span class="count" id="trit-neg-count">0</span>-1</div>
+                </div>
+                <div class="metric-row"><span class="label">Consensus</span><span class="val" id="trit-consensus">--</span></div>
+                <div class="metric-row"><span class="label">Entropy</span><span class="val" id="trit-entropy">0.00</span></div>
+                <div class="metric-row"><span class="label">Margin</span><span class="val" id="trit-margin">0%</span></div>
+            </div>
+
+            <div class="metric-section">
+                <h4 class="arm">🦑 Arm Network</h4>
+                <div class="arm-bar" id="arm-bar"></div>
+                <div class="metric-row"><span class="label">Active Ganglia</span><span class="val" id="ganglia-count">6</span></div>
+                <div class="metric-row"><span class="label">Intra-Arm Ψ</span><span class="val good" id="intra-arm-psi">1.00</span></div>
+                <div class="metric-row"><span class="label">Exploring Arms</span><span class="val" id="exploring-arms">0</span></div>
+            </div>
+
+            <div class="metric-section">
+                <h4 class="skin">🎨 Skin Signaling</h4>
+                <div class="metric-row"><span class="label">Optical Channel</span><span class="val" id="optical-strength">100%</span></div>
+                <div class="metric-row"><span class="label">Red Waves</span><span class="val warn" id="red-waves">0</span></div>
+                <div class="metric-row"><span class="label">Blue Rings</span><span class="val good" id="blue-rings">0</span></div>
+            </div>
+        </div>
+
+        <!-- Center: Map -->
+        <div class="panel" style="padding: 0;">
+            <div class="map-container" id="map-container">
+                <div class="dust-overlay" id="dust-overlay"></div>
+                <div class="bloom-overlay" id="bloom-overlay"></div>
+                <div class="bloom-indicator" id="bloom-indicator">🌸 BLOOM MODE</div>
+                <div class="overlay" id="map-overlay">CYCLE 0</div>
+                <div class="component-indicator">
+                    <div class="val" id="giant-big">49</div>
+                    <div class="label">GIANT COMPONENT</div>
+                </div>
+                <div class="wave-indicator" id="wave-indicator" style="display: none;">
+                    🌊 METACHRONAL WAVE
+                </div>
+                <div class="consensus-indicator" id="consensus-indicator">
+                    <div class="val" id="consensus-big">0</div>
+                    <div class="label">TRIT CONSENSUS</div>
+                </div>
+                <div class="trit-wave-indicator" id="trit-wave-indicator">
+                    🔺 TRIT WAVE
+                </div>
+                <canvas id="map-canvas"></canvas>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-dot" style="background: #8b5cf6;"></div> Base</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #f97316;"></div> Ganglion</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #4ade80;"></div> Normal</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div> Faulty</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #06b6d4;"></div> Nectophore</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #eab308;"></div> Gastrozooid</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #ec4899;"></div> Bract</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #22d3ee; border: 1px dashed #22d3ee;"></div> Eudoxid</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #666; opacity: 0.5;"></div> Detached</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Metrics -->
+        <div class="panel" style="overflow-y: auto;">
+            <div class="panel-header">📊 Colony Analysis</div>
+
+            <div class="giant-component-display">
+                <div class="value" id="giant-display">49 / 49</div>
+                <div class="label">Nodes in Largest Connected Subgraph</div>
+            </div>
+
+            <div class="component-bar" id="component-bar"></div>
+
+            <div class="metric-row"><span class="label">Components</span><span class="val" id="num-components">1</span></div>
+            <div class="metric-row"><span class="label">Giant %</span><span class="val good" id="giant-pct">100%</span></div>
+            <div class="metric-row"><span class="label">Isolated</span><span class="val bad" id="isolated-count">0</span></div>
+
+            <div class="panel-header" style="margin-top: 6px;">🔬 Zooid Distribution</div>
+            <div class="metric-section">
+                <h4 class="zooid">Specialization</h4>
+                <div class="metric-row"><span class="label">🚀 Nectophores</span><span class="val" id="nectophore-count">0</span></div>
+                <div class="metric-row"><span class="label">👁️ Gastrozooids</span><span class="val" id="gastrozooid-count">0</span></div>
+                <div class="metric-row"><span class="label">🛡️ Bracts</span><span class="val" id="bract-count">0</span></div>
+                <div class="metric-row"><span class="label">⚪ Unspecialized</span><span class="val" id="unspec-count">0</span></div>
+            </div>
+
+            <div class="panel-header" style="margin-top: 6px;">📐 Vector State</div>
+            <div class="metric-section">
+                <div class="metric-row"><span class="label">Mean θ (orient)</span><span class="val" id="mean-theta">0.00</span></div>
+                <div class="metric-row"><span class="label">Mean φ (sensor)</span><span class="val" id="mean-phi">0.00</span></div>
+                <div class="metric-row"><span class="label">Covariance</span><span class="val" id="covariance">0.00</span></div>
+            </div>
+
+            <div class="panel-header" style="margin-top: 6px;">📉 Timeline</div>
+            <div class="chart-container">
+                <canvas id="chart-canvas"></canvas>
+            </div>
+
+            <div class="metric-section">
+                <h4 class="component">📈 Resilience</h4>
+                <div class="metric-row"><span class="label">Fault Tolerance</span><span class="val" id="fault-tolerance">100%</span></div>
+                <div class="metric-row"><span class="label">Recovery Rate</span><span class="val" id="recovery-rate">--</span></div>
+                <div class="metric-row"><span class="label">Cascade Resist</span><span class="val" id="cascade-resistance">100%</span></div>
+                <div class="metric-row"><span class="label">Self-Heals</span><span class="val good" id="heal-count">0</span></div>
+            </div>
+
+            <div class="metric-section">
+                <h4 class="arm">🦑 Autotomy & Regen</h4>
+                <div class="metric-row"><span class="label">Autotomies</span><span class="val warn" id="autotomy-count">0</span></div>
+                <div class="metric-row"><span class="label">Regenerated</span><span class="val good" id="regen-count">0</span></div>
+                <div class="metric-row"><span class="label">Regen Queue</span><span class="val" id="regen-queue">0</span></div>
+                <div class="metric-row"><span class="label">Detached</span><span class="val bad" id="detached-count">0</span></div>
+            </div>
+
+            <div class="metric-section">
+                <h4 class="zooid">🔬 Eudoxids & Panic</h4>
+                <div class="metric-row"><span class="label">Active Eudoxids</span><span class="val" id="eudoxid-count">0</span></div>
+                <div class="metric-row"><span class="label">Tiles Revealed</span><span class="val good" id="eudoxid-tiles">0</span></div>
+                <div class="metric-row"><span class="label">Panic Events</span><span class="val bad" id="panic-count">0</span></div>
+                <div class="metric-row"><span class="label">Myogenic Waves</span><span class="val" id="myogenic-count">0</span></div>
+            </div>
+
+            <div class="metric-section trit-section">
+                <h4 class="trit">🔺 Trit Bandwidth</h4>
+                <div class="metric-row"><span class="label">Before (64-bit)</span><span class="val" id="trit-bits-before">0 b</span></div>
+                <div class="metric-row"><span class="label">After (5-bit)</span><span class="val good" id="trit-bits-after">0 b</span></div>
+                <div class="metric-row"><span class="label">Compression</span><span class="val good" id="trit-compression">92%</span></div>
+                <div class="metric-row"><span class="label">Transitions</span><span class="val" id="trit-transitions">0</span></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn export" onclick="exportCSV()">📄 CSV</button>
+                <button class="btn export" onclick="exportJSON()">📋 JSON</button>
+            </div>
+
+            <div class="panel-header" style="margin-top: 6px;">📝 Event Log</div>
+            <div class="log" id="log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    CONSTANTS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    const BETA_BASE = 0.85;
+    const BETA_MIN = 0.55;
+    const ALPHA = 0.0005;
+    const SIGMA = 0.008;
+
+    // Signal
+    const SIGNAL_RANGE = 3.2;
+    const SIGNAL_LOST_THRESHOLD = 0.15;
+    const OPTICAL_RANGE = 1.8;  // Shorter range for skin-based optical signaling
+
+    // Cascade
+    const CASCADE_WEIGHT = 0.1;
+    const CASCADE_THRESHOLD = 0.75;
+
+    // Pulse
+    const PULSE_ATTRACTOR = 0.5507;
+
+    // Arm/Octopus
+    const ARM_LOCAL_BETA_BOOST = 0.08;  // Higher β retention within arm
+    const EXPLORE_SIGNAL_BOOST = 0.3;   // Lower threshold when exploring
+
+    // Skin/Camouflage
+    const SKIN_INFLUENCE = 0.05;  // How much neighbor skin state affects β
+    const RED_WAVE_THRESHOLD = 0.7;  // β below this triggers red wave
+    const BLUE_RING_COHERENCE = 0.9;  // Ψ above this shows blue rings
+
+    // Zooid Specialization
+    const NECTOPHORE_SPEED_MULT = 1.5;
+    const GASTROZOOID_EXPLORE_MULT = 2.0;
+    const BRACT_FAULT_RESIST = 0.5;  // 50% chance to resist fault
+
+    // Metachronal
+    const WAVE_SPEED = 0.15;
+    const WAVE_DURATION = 30;
+
+    // Self-healing
+    const HEAL_PROBABILITY = 0.002;  // Per cycle, per faulty drone
+    const HEAL_NEIGHBOR_THRESHOLD = 3;  // Need 3+ healthy neighbors
+
+    // Polarization Channel (ignores dust)
+    const POLARIZATION_RANGE = 2.5;  // Slightly longer than optical
+    const POLARIZATION_STRENGTH = 0.08;  // Arm-to-arm coordination boost
+
+    // Autotomy & Regeneration
+    const AUTOTOMY_STRESS_THRESHOLD = 0.4;  // Arm coherence below this triggers autotomy
+    const AUTOTOMY_FAULT_RATIO = 0.5;  // >50% faulty drones in arm triggers autotomy
+    const REGEN_RATE = 0.005;  // Chance per cycle to bud new drone
+    const MAX_REGEN_QUEUE = 3;  // Max drones queued for regeneration
+
+    // Giant Axon Panic
+    const PANIC_FAULT_THRESHOLD = 0.3;  // >30% faults triggers panic
+    const PANIC_STORM_THRESHOLD = 0.85;  // Storm intensity triggers panic
+    const PANIC_COOLDOWN = 50;  // Cycles between panic broadcasts
+
+    // Myogenic Skin Waves
+    const MYOGENIC_PROPAGATION = 0.15;  // Chance to spread wave to neighbor
+    const MYOGENIC_DECAY = 0.92;  // Wave intensity decay per hop
+
+    // Eudoxid Release
+    const EUDOXID_SATURATION_THRESHOLD = 0.9;  // Arm coherence to release eudoxid
+    const EUDOXID_SIZE = 3;  // Drones per eudoxid sub-swarm
+    const EUDOXID_RANGE = 4;  // How far eudoxids explore
+    const EUDOXID_LIFESPAN = 80;  // Cycles before eudoxid returns
+
+    // Terrain
+    const TERRAIN = { UNKNOWN: 0, SAFE: 1, OBSTACLE: 2 };
+
+    // Trit System (Hybrid Ternary Layer)
+    const TRIT = { NEG: -1, ZERO: 0, POS: 1 };
+    const TRIT_THRESHOLD_POS = 0.2;   // s > this → +1
+    const TRIT_THRESHOLD_NEG = -0.2;  // s < this → -1
+    const VOTE_INERTIA = 0.7;         // How sticky votes are
+    const TRIT_NEIGHBOR_INFLUENCE = 0.3;  // How much neighbors affect vote
+    const CONSENSUS_THRESHOLD_DEFAULT = 0.66;  // 66% for consensus
+    const TRIT_WAVE_SPEED = 0.2;
+    const TRIT_WAVE_WIDTH = 0.4;
+
+    // Arm colors (for visualization)
+    const ARM_COLORS = [
+        '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#8b5cf6', '#ec4899', '#f43f5e'
+    ];
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    STATE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    let terrain = [];
+    let terrainSize = 40;
+    let drones = [];
+    let base = null;
+    let cycle = 0;
+    let isRunning = false;
+    let timer = null;
+
+    // Feature toggles
+    let features = {
+        arms: true,
+        skin: true,
+        zooid: true,
+        vector: false,
+        wave: true,
+        trit: true  // Hybrid ternary voting layer
+    };
+
+    // Seeded RNG
+    let rngSeed = 42;
+    function seededRandom() {
+        rngSeed = (rngSeed * 9301 + 49297) % 233280;
+        return rngSeed / 233280;
+    }
+
+    function safeMod(n, m) { return ((n % m) + m) % m; }
+
+    // Weather
+    let weather = { stormIntensity: 0, stormPhase: 'clear', stormDuration: 0, nextStormCycle: 200, manualStorm: false };
+
+    // Faults
+    let faults = [];
+    let healCount = 0;
+
+    // Arms (Octopus)
+    let arms = [];  // [{id, drones: [], ganglionId, lastLocalPulse, exploring}]
+
+    // Pulse tracking
+    let pulseStats = { count: 0, lastCycle: null, nextCycle: 60, psiGains: [], localPulses: 0 };
+
+    // Metachronal wave
+    let activeWave = null;  // {origin, cycle, direction}
+
+    // Bloom mode
+    let bloomActive = false;
+    let bloomCycles = 0;
+
+    // Autotomy & Regeneration
+    let autotomyEvents = [];  // [{armId, cycle, dronesLost}]
+    let regenQueue = [];  // [{armId, cycleQueued}]
+    let totalAutotomies = 0;
+    let totalRegens = 0;
+
+    // Giant Axon Panic
+    let lastPanicCycle = -100;
+    let panicCount = 0;
+
+    // Myogenic Waves
+    let myogenicWaves = [];  // [{droneId, intensity, color, cycle}]
+
+    // Eudoxids
+    let eudoxids = [];  // [{id, drones: [], origin, target, birthCycle, armId}]
+    let eudoxidIdCounter = 0;
+
+    // Trit System State
+    let tritWaveActive = false;
+    let tritWaveOrigin = null;
+    let tritWaveRadius = 0;
+    let tritWaveValue = TRIT.ZERO;
+    let tritTransitions = { posToZero: 0, zeroToNeg: 0, negToPos: 0, total: 0 };
+    let voteHistory = [];
+    let consensusHistory = [];
+
+    // Data collection
+    let experimentData = [];
+    let coherenceHistory = [];
+    let giantHistory = [];
+    let armCoherenceHistory = [];
+    const MAX_HISTORY = 150;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    UNION-FIND
+    // ═══════════════════════════════════════════════════════════════════════
+
+    class UnionFind {
+        constructor(n) {
+            this.parent = Array.from({length: n}, (_, i) => i);
+            this.rank = new Array(n).fill(0);
+            this.size = new Array(n).fill(1);
+        }
+
+        find(x) {
+            if (this.parent[x] !== x) {
+                this.parent[x] = this.find(this.parent[x]);
+            }
+            return this.parent[x];
+        }
+
+        union(x, y) {
+            const px = this.find(x);
+            const py = this.find(y);
+            if (px === py) return;
+
+            if (this.rank[px] < this.rank[py]) {
+                this.parent[px] = py;
+                this.size[py] += this.size[px];
+            } else if (this.rank[px] > this.rank[py]) {
+                this.parent[py] = px;
+                this.size[px] += this.size[py];
+            } else {
+                this.parent[py] = px;
+                this.size[px] += this.size[py];
+                this.rank[px]++;
+            }
+        }
+
+        getComponents() {
+            const components = new Map();
+            for (let i = 0; i < this.parent.length; i++) {
+                const root = this.find(i);
+                if (!components.has(root)) components.set(root, []);
+                components.get(root).push(i);
+            }
+            return Array.from(components.values()).sort((a, b) => b.length - a.length);
+        }
+    }
+
+    function computeConnectedComponents() {
+        const n = drones.length;
+        const uf = new UnionFind(n);
+
+        for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+                const signal = calculateSignalStrength(drones[i], drones[j]);
+                if (signal > SIGNAL_LOST_THRESHOLD) {
+                    uf.union(i, j);
+                }
+            }
+        }
+
+        const components = uf.getComponents();
+        const giant = components[0] || [];
+        const isolated = components.filter(c => c.length === 1).length;
+
+        const giantSet = new Set(giant);
+        drones.forEach((d, i) => {
+            d.inGiantComponent = giantSet.has(i);
+        });
+
+        return {
+            numComponents: components.length,
+            giantSize: giant.length,
+            isolated,
+            components
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    TRIT SYSTEM (Hybrid Ternary Layer)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Convert continuous field state to trit
+    function stateToTrit(s) {
+        if (s > TRIT_THRESHOLD_POS) return TRIT.POS;
+        if (s < TRIT_THRESHOLD_NEG) return TRIT.NEG;
+        return TRIT.ZERO;
+    }
+
+    // Compress state to trit + magnitude (5 bits vs 64 bits)
+    function compressTritState(s) {
+        const trit = stateToTrit(s);
+        const magnitude = Math.min(7, Math.floor(Math.abs(s) * 5));  // 3 bits
+        return { trit, magnitude };
+    }
+
+    // Compute vote for a drone based on state and neighbors
+    function computeTritVote(drone) {
+        if (!features.trit) return TRIT.ZERO;
+
+        // Base vote from continuous state
+        let vote = stateToTrit(drone.s);
+
+        // Neighbor influence
+        const neighbors = drones.filter(d =>
+            d.id !== drone.id && !d.isFaulty &&
+            drone.signalStrengths && drone.signalStrengths[d.id] > SIGNAL_LOST_THRESHOLD
+        );
+
+        if (neighbors.length > 0) {
+            let neighborSum = 0;
+            let weightSum = 0;
+
+            neighbors.forEach(n => {
+                const w = drone.signalStrengths[n.id] || 0;
+                neighborSum += (n.vote || 0) * w;
+                weightSum += w;
+            });
+
+            if (weightSum > 0) {
+                const neighborAvg = neighborSum / weightSum;
+                const blended = VOTE_INERTIA * vote + TRIT_NEIGHBOR_INFLUENCE * neighborAvg;
+
+                // Re-quantize
+                if (blended > 0.3) vote = TRIT.POS;
+                else if (blended < -0.3) vote = TRIT.NEG;
+                else vote = TRIT.ZERO;
+            }
+        }
+
+        // Trit wave override
+        if (drone.tritWaveInfluence !== undefined && drone.tritWaveInfluence !== 0) {
+            vote = drone.tritWaveInfluence;
+            drone.tritWaveInfluence = 0;
+        }
+
+        return vote;
+    }
+
+    // Compute swarm consensus
+    function computeTritConsensus() {
+        if (!features.trit) return { pos: 0, zero: drones.length, neg: 0, result: 'disabled', winner: TRIT.ZERO, margin: 0, entropy: 0 };
+
+        const votes = drones.filter(d => !d.isFaulty && !d.isDetached).map(d => d.vote || TRIT.ZERO);
+        const pos = votes.filter(v => v === TRIT.POS).length;
+        const zero = votes.filter(v => v === TRIT.ZERO).length;
+        const neg = votes.filter(v => v === TRIT.NEG).length;
+        const total = votes.length || 1;
+
+        const threshold = CONSENSUS_THRESHOLD_DEFAULT;
+
+        let result = 'split';
+        let winner = TRIT.ZERO;
+        let margin = 0;
+
+        if (pos / total >= threshold) {
+            result = 'consensus';
+            winner = TRIT.POS;
+            margin = pos / total;
+        } else if (neg / total >= threshold) {
+            result = 'consensus';
+            winner = TRIT.NEG;
+            margin = neg / total;
+        } else if (zero / total >= threshold) {
+            result = 'consensus';
+            winner = TRIT.ZERO;
+            margin = zero / total;
+        } else {
+            const maxDiff = Math.max(pos, zero, neg) - Math.min(pos, zero, neg);
+            if (maxDiff < total * 0.1) {
+                result = 'deadlock';
+            }
+            margin = Math.max(pos, zero, neg) / total;
+        }
+
+        // Entropy
+        const probs = [pos/total, zero/total, neg/total].filter(x => x > 0);
+        const entropy = probs.length > 0 ? -probs.reduce((s, p) => s + p * Math.log2(p), 0) / Math.log2(3) : 0;
+
+        return { pos, zero, neg, result, winner, margin, entropy, total };
+    }
+
+    // Send trit wave from base
+    function sendTritWave(forceValue = null) {
+        if (!features.trit) return;
+
+        const consensus = computeTritConsensus();
+        tritWaveValue = forceValue !== null ? forceValue : consensus.winner;
+
+        tritWaveActive = true;
+        tritWaveOrigin = { x: base.x, y: base.y };
+        tritWaveRadius = 0;
+
+        log(`🔺 Trit wave: ${tritWaveValue > 0 ? '+1' : tritWaveValue < 0 ? '-1' : '0'}`, 'trit');
+    }
+
+    // Update trit wave propagation
+    function updateTritWave() {
+        if (!tritWaveActive || !features.trit) return;
+
+        tritWaveRadius += TRIT_WAVE_SPEED;
+
+        const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+
+            const dist = Math.sqrt(Math.pow(d.x - tritWaveOrigin.x, 2) + Math.pow(d.y - tritWaveOrigin.y, 2));
+
+            if (dist >= tritWaveRadius - TRIT_WAVE_WIDTH && dist <= tritWaveRadius + TRIT_WAVE_WIDTH) {
+                d.tritWaveInfluence = tritWaveValue;
+                d.inTritWaveFront = true;
+            } else {
+                d.inTritWaveFront = false;
+            }
+        });
+
+        if (tritWaveRadius > size * 1.5) {
+            tritWaveActive = false;
+            log(`🔺 Trit wave complete`, 'trit');
+        }
+    }
+
+    // Ternary fault status (+1 healthy, 0 uncertain, -1 faulty)
+    function computeTernaryFaultStatus(drone) {
+        if (drone.isFaulty) return TRIT.NEG;
+
+        const signalHealth = drone.avgSignal || 0;
+        const stateStable = Math.abs((drone.s || 0) - (drone.prevS || 0)) < 0.1;
+
+        // Check neighbor agreement
+        const neighbors = drones.filter(d =>
+            d.id !== drone.id && !d.isFaulty &&
+            drone.signalStrengths && drone.signalStrengths[d.id] > SIGNAL_LOST_THRESHOLD
+        );
+
+        let agreement = 0;
+        if (neighbors.length > 0) {
+            const avgNeighborState = neighbors.reduce((s, n) => s + (n.s || 0), 0) / neighbors.length;
+            agreement = 1 - Math.min(1, Math.abs((drone.s || 0) - avgNeighborState));
+        }
+
+        const healthScore = signalHealth * 0.4 + (stateStable ? 0.3 : 0) + agreement * 0.3;
+
+        if (healthScore > 0.7) return TRIT.POS;
+        if (healthScore < 0.3) return TRIT.NEG;
+        return TRIT.ZERO;
+    }
+
+    // Track trit transitions
+    function trackTritTransition(prevVote, newVote) {
+        if (prevVote === newVote) return;
+
+        tritTransitions.total++;
+        if (prevVote === TRIT.POS && newVote === TRIT.ZERO) tritTransitions.posToZero++;
+        else if (prevVote === TRIT.ZERO && newVote === TRIT.NEG) tritTransitions.zeroToNeg++;
+        else if (prevVote === TRIT.NEG && newVote === TRIT.POS) tritTransitions.negToPos++;
+    }
+
+    // Inject votes into subset of drones
+    function injectTritVote(value) {
+        if (!features.trit) return;
+
+        const count = Math.floor(drones.length * 0.3);
+        const candidates = drones.filter(d => !d.isFaulty && !d.isDetached);
+        const shuffled = [...candidates].sort(() => seededRandom() - 0.5);
+
+        shuffled.slice(0, count).forEach(d => {
+            d.s = value * 0.5;
+            d.vote = value;
+        });
+
+        log(`🗳️ Injected vote ${value > 0 ? '+1' : value < 0 ? '-1' : '0'} into ${count} drones`, 'vote');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    ARM NETWORK (Feature 1)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function initializeArms() {
+        const armCount = parseInt(document.getElementById('arm-count').value);
+        arms = [];
+
+        // K-means-like clustering based on angle from base
+        const dronesByAngle = drones.map((d, i) => {
+            const angle = Math.atan2(d.y - base.y, d.x - base.x);
+            return { index: i, angle: (angle + Math.PI) / (2 * Math.PI) };  // Normalize to 0-1
+        });
+
+        // Assign to arms based on angle sectors
+        for (let a = 0; a < armCount; a++) {
+            arms.push({
+                id: a,
+                drones: [],
+                ganglionId: null,
+                lastLocalPulse: 0,
+                exploring: false,
+                localState: { theta: 0, phi: 0 }  // 2D vector for arm
+            });
+        }
+
+        dronesByAngle.forEach(({ index, angle }) => {
+            const armIndex = Math.floor(angle * armCount) % armCount;
+            arms[armIndex].drones.push(index);
+            drones[index].armId = armIndex;
+        });
+
+        // Elect ganglia (highest connectivity within arm)
+        arms.forEach(arm => {
+            if (arm.drones.length === 0) return;
+
+            let bestGanglion = arm.drones[0];
+            let bestConnectivity = 0;
+
+            arm.drones.forEach(di => {
+                const d = drones[di];
+                const connectivity = arm.drones.filter(dj =>
+                    dj !== di && d.signalStrengths && d.signalStrengths[dj] > SIGNAL_LOST_THRESHOLD
+                ).length;
+
+                if (connectivity > bestConnectivity) {
+                    bestConnectivity = connectivity;
+                    bestGanglion = di;
+                }
+            });
+
+            arm.ganglionId = bestGanglion;
+            drones[bestGanglion].isGanglion = true;
+        });
+    }
+
+    function reassignArms() {
+        drones.forEach(d => {
+            d.isGanglion = false;
+            d.armId = 0;
+        });
+        initializeArms();
+    }
+
+    function updateArmDynamics() {
+        if (!features.arms) return;
+
+        const localPulseInterval = parseInt(document.getElementById('local-pulse-interval').value);
+
+        arms.forEach(arm => {
+            if (arm.drones.length === 0) return;
+
+            // Calculate intra-arm coherence
+            const armDrones = arm.drones.map(i => drones[i]).filter(d => !d.isFaulty);
+            if (armDrones.length === 0) return;
+
+            const mean = armDrones.reduce((s, d) => s + d.s, 0) / armDrones.length;
+            const variance = armDrones.reduce((s, d) => s + Math.pow(d.s - mean, 2), 0) / armDrones.length;
+            arm.coherence = 1 / (1 + variance);
+
+            // Local pulse from ganglion if coherence drops
+            if (arm.coherence < 0.7 && cycle - arm.lastLocalPulse > localPulseInterval) {
+                sendLocalPulse(arm);
+            }
+
+            // Check if arm should explore (low activity, good coherence)
+            arm.exploring = arm.coherence > 0.85 && seededRandom() < 0.1;
+        });
+    }
+
+    function sendLocalPulse(arm) {
+        const ganglion = drones[arm.ganglionId];
+        if (!ganglion || ganglion.isFaulty) return;
+
+        const strength = 0.2;
+
+        arm.drones.forEach(di => {
+            const d = drones[di];
+            if (d.isFaulty) return;
+
+            const nudge = (PULSE_ATTRACTOR - Math.abs(d.s)) * strength * 0.3;
+            d.s += nudge;
+            d.pulseBoost = strength * 0.05;
+        });
+
+        arm.lastLocalPulse = cycle;
+        pulseStats.localPulses++;
+
+        showLocalPulseRing(ganglion);
+        log(`🦑 Arm ${arm.id} local pulse from G${arm.ganglionId}`, 'arm');
+    }
+
+    function showLocalPulseRing(drone) {
+        const container = document.getElementById('map-container');
+        const canvas = document.getElementById('map-canvas');
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+        const scaleX = canvas.width / sqrtSize;
+        const scaleY = canvas.height / sqrtSize;
+
+        const ring = document.createElement('div');
+        ring.className = 'pulse-ring local';
+        ring.style.left = (drone.x * scaleX - 15) + 'px';
+        ring.style.top = (drone.y * scaleY - 15) + 'px';
+        ring.style.width = '30px';
+        ring.style.height = '30px';
+        container.appendChild(ring);
+
+        setTimeout(() => ring.remove(), 800);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    SKIN SIGNALING (Feature 2)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateSkinStates() {
+        if (!features.skin) return;
+
+        const opticalStrength = 1 - weather.stormIntensity * 0.7;  // Reduced in dust
+
+        drones.forEach(d => {
+            if (d.isFaulty) {
+                d.skinState = 'dead';
+                return;
+            }
+
+            // Determine skin state based on local stress
+            if (d.beta < RED_WAVE_THRESHOLD) {
+                d.skinState = 'red_wave';
+                d.skinIntensity = (RED_WAVE_THRESHOLD - d.beta) / (RED_WAVE_THRESHOLD - BETA_MIN);
+            } else if (d.beta > BETA_BASE - 0.05) {
+                d.skinState = 'blue_ring';
+                d.skinIntensity = 0.5 + (d.beta - (BETA_BASE - 0.05)) * 5;
+            } else {
+                d.skinState = 'neutral';
+                d.skinIntensity = 0.3;
+            }
+
+            // Optical channel influence on neighbors
+            if (opticalStrength > 0.3) {
+                drones.forEach(other => {
+                    if (other.id === d.id || other.isFaulty) return;
+
+                    const dist = Math.sqrt(Math.pow(d.x - other.x, 2) + Math.pow(d.y - other.y, 2));
+                    if (dist > OPTICAL_RANGE) return;
+
+                    const influence = (1 - dist / OPTICAL_RANGE) * opticalStrength * SKIN_INFLUENCE;
+
+                    // Red wave: preemptively lower β
+                    if (d.skinState === 'red_wave') {
+                        other.skinInfluence = (other.skinInfluence || 0) - influence * d.skinIntensity;
+                    }
+                    // Blue ring: boost confidence
+                    else if (d.skinState === 'blue_ring') {
+                        other.skinInfluence = (other.skinInfluence || 0) + influence * 0.5;
+                    }
+                });
+            }
+        });
+    }
+
+    function propagateSkinWave(source, color) {
+        if (!features.skin) return;
+
+        const container = document.getElementById('map-container');
+        const canvas = document.getElementById('map-canvas');
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+        const scaleX = canvas.width / sqrtSize;
+        const scaleY = canvas.height / sqrtSize;
+
+        const wave = document.createElement('div');
+        wave.className = 'skin-wave';
+        wave.style.left = (source.x * scaleX - 8) + 'px';
+        wave.style.top = (source.y * scaleY - 8) + 'px';
+        wave.style.width = '16px';
+        wave.style.height = '16px';
+        wave.style.border = `2px solid ${color}`;
+        container.appendChild(wave);
+
+        setTimeout(() => wave.remove(), 800);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    POLARIZATION CHANNEL (New Feature 1)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updatePolarizationChannel() {
+        if (!features.arms) return;
+
+        // Polarized iridescence - ignores dust, works arm-to-arm
+        arms.forEach((arm, armIdx) => {
+            if (arm.drones.length === 0) return;
+
+            const ganglion = drones[arm.ganglionId];
+            if (!ganglion || ganglion.isFaulty) return;
+
+            // Find adjacent arms (neighboring by angle)
+            const adjacentArms = [(armIdx - 1 + arms.length) % arms.length, (armIdx + 1) % arms.length];
+
+            adjacentArms.forEach(adjIdx => {
+                const adjArm = arms[adjIdx];
+                if (!adjArm || adjArm.drones.length === 0) return;
+
+                const adjGanglion = drones[adjArm.ganglionId];
+                if (!adjGanglion || adjGanglion.isFaulty) return;
+
+                // Check polarization range (ignores storm!)
+                const dist = Math.sqrt(
+                    Math.pow(ganglion.x - adjGanglion.x, 2) +
+                    Math.pow(ganglion.y - adjGanglion.y, 2)
+                );
+
+                if (dist < POLARIZATION_RANGE) {
+                    // Share arm coherence via polarized channel
+                    const coherenceDiff = (arm.coherence || 0.5) - (adjArm.coherence || 0.5);
+
+                    // Boost the weaker arm's drones
+                    if (coherenceDiff > 0.1) {
+                        adjArm.drones.forEach(di => {
+                            const d = drones[di];
+                            if (!d.isFaulty) {
+                                d.polarizationBoost = (d.polarizationBoost || 0) + POLARIZATION_STRENGTH * coherenceDiff;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    ARM AUTOTOMY & REGENERATION (New Feature 2)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function checkAutotomy() {
+        if (!features.arms) return;
+
+        arms.forEach((arm, armIdx) => {
+            if (arm.drones.length === 0 || arm.isDetached) return;
+
+            const armDrones = arm.drones.map(di => drones[di]);
+            const faultyCount = armDrones.filter(d => d.isFaulty).length;
+            const faultRatio = faultyCount / arm.drones.length;
+
+            // Check autotomy conditions
+            const shouldAutotomize =
+                (arm.coherence !== undefined && arm.coherence < AUTOTOMY_STRESS_THRESHOLD) ||
+                (faultRatio > AUTOTOMY_FAULT_RATIO);
+
+            if (shouldAutotomize && faultyCount > 0) {
+                performAutotomy(arm, armIdx, faultyCount);
+            }
+        });
+    }
+
+    function performAutotomy(arm, armIdx, faultyCount) {
+        // Sacrifice faulty drones to prevent cascade spread
+        const sacrificed = [];
+
+        arm.drones.forEach(di => {
+            const d = drones[di];
+            if (d.isFaulty) {
+                d.isDetached = true;
+                d.detachedCycle = cycle;
+                sacrificed.push(di);
+            }
+        });
+
+        // Remove sacrificed from arm
+        arm.drones = arm.drones.filter(di => !drones[di].isDetached);
+
+        // Re-elect ganglion if needed
+        if (sacrificed.includes(arm.ganglionId)) {
+            electNewGanglion(arm);
+        }
+
+        autotomyEvents.push({ armId: armIdx, cycle, dronesLost: sacrificed.length });
+        totalAutotomies++;
+
+        // Queue regeneration
+        if (regenQueue.length < MAX_REGEN_QUEUE) {
+            regenQueue.push({ armId: armIdx, cycleQueued: cycle, count: Math.min(sacrificed.length, 2) });
+        }
+
+        log(`🦑 AUTOTOMY: Arm ${armIdx} shed ${sacrificed.length} faulty drones`, 'arm');
+
+        // Visual effect
+        sacrificed.forEach(di => {
+            const d = drones[di];
+            propagateSkinWave(d, '#ff6b6b');
+        });
+    }
+
+    function electNewGanglion(arm) {
+        if (arm.drones.length === 0) {
+            arm.ganglionId = null;
+            return;
+        }
+
+        let bestGanglion = arm.drones[0];
+        let bestConnectivity = 0;
+
+        arm.drones.forEach(di => {
+            const d = drones[di];
+            if (d.isFaulty || d.isDetached) return;
+
+            const connectivity = arm.drones.filter(dj =>
+                dj !== di && drones[dj] && !drones[dj].isFaulty &&
+                d.signalStrengths && d.signalStrengths[dj] > SIGNAL_LOST_THRESHOLD
+            ).length;
+
+            if (connectivity > bestConnectivity) {
+                bestConnectivity = connectivity;
+                bestGanglion = di;
+            }
+        });
+
+        arm.ganglionId = bestGanglion;
+        if (drones[bestGanglion]) {
+            drones[bestGanglion].isGanglion = true;
+        }
+    }
+
+    function processRegeneration() {
+        if (regenQueue.length === 0) return;
+
+        regenQueue.forEach((regen, idx) => {
+            if (seededRandom() < REGEN_RATE && regen.count > 0) {
+                // Bud new drone near arm's centroid
+                const arm = arms[regen.armId];
+                if (!arm || arm.drones.length === 0) return;
+
+                const armDrones = arm.drones.map(di => drones[di]).filter(d => d && !d.isDetached);
+                if (armDrones.length === 0) return;
+
+                const centroid = {
+                    x: armDrones.reduce((s, d) => s + d.x, 0) / armDrones.length,
+                    y: armDrones.reduce((s, d) => s + d.y, 0) / armDrones.length
+                };
+
+                // Create new drone
+                const newId = drones.length;
+                const newDrone = new Drone(
+                    newId,
+                    centroid.x + (seededRandom() - 0.5) * 0.5,
+                    centroid.y + (seededRandom() - 0.5) * 0.5
+                );
+                newDrone.armId = regen.armId;
+                newDrone.isRegenerated = true;
+                newDrone.beta = BETA_BASE - 0.1;  // Slightly weaker initially
+
+                drones.push(newDrone);
+                arm.drones.push(newId);
+
+                regen.count--;
+                totalRegens++;
+
+                log(`🌱 REGEN: New drone ${newId} budded in Arm ${regen.armId}`, 'heal');
+            }
+        });
+
+        // Clean up completed regenerations
+        regenQueue = regenQueue.filter(r => r.count > 0);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    GIANT AXON PANIC BROADCAST (New Feature 3)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function checkPanicConditions() {
+        if (cycle - lastPanicCycle < PANIC_COOLDOWN) return;
+
+        const faultRatio = faults.length / drones.length;
+        const stormPeak = weather.stormIntensity >= PANIC_STORM_THRESHOLD;
+
+        if (faultRatio >= PANIC_FAULT_THRESHOLD || stormPeak) {
+            triggerPanicBroadcast(faultRatio >= PANIC_FAULT_THRESHOLD ? 'faults' : 'storm');
+        }
+    }
+
+    function triggerPanicBroadcast(reason) {
+        lastPanicCycle = cycle;
+        panicCount++;
+
+        log(`⚡ PANIC BROADCAST: ${reason} threshold exceeded!`, 'fault');
+
+        // Instant colony-wide β drop
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+            d.beta = Math.max(BETA_MIN, d.beta - 0.2);
+            d.panicState = true;
+            d.axonFlash = true;
+        });
+
+        // Trigger synchronized metachronal wave
+        if (features.wave) {
+            const angle = seededRandom() * Math.PI * 2;
+            initiateMetachronalWave(base, { x: Math.cos(angle), y: Math.sin(angle) });
+        }
+
+        // Visual flash
+        const canvas = document.getElementById('map-canvas');
+        canvas.style.filter = 'brightness(2.5) saturate(0.5)';
+        setTimeout(() => {
+            canvas.style.filter = '';
+            drones.forEach(d => {
+                d.axonFlash = false;
+                d.panicState = false;
+            });
+        }, 300);
+
+        // Show indicator
+        const indicator = document.getElementById('pulse-indicator');
+        indicator.textContent = '⚡ PANIC BROADCAST';
+        indicator.style.background = 'rgba(239, 68, 68, 0.5)';
+        indicator.style.borderColor = '#ef4444';
+        indicator.style.color = '#ef4444';
+        indicator.classList.add('active');
+        setTimeout(() => {
+            indicator.classList.remove('active');
+            indicator.style.background = '';
+            indicator.style.borderColor = '';
+            indicator.style.color = '';
+        }, 2000);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    MYOGENIC SKIN WAVES (New Feature 4)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateMyogenicWaves() {
+        if (!features.skin) return;
+
+        // Process existing waves
+        const newWaves = [];
+
+        myogenicWaves.forEach(wave => {
+            if (wave.intensity < 0.1) return;  // Wave died out
+
+            const source = drones[wave.droneId];
+            if (!source || source.isFaulty) return;
+
+            // Propagate to neighbors
+            drones.forEach(neighbor => {
+                if (neighbor.id === source.id || neighbor.isFaulty) return;
+
+                const dist = Math.sqrt(
+                    Math.pow(source.x - neighbor.x, 2) +
+                    Math.pow(source.y - neighbor.y, 2)
+                );
+
+                if (dist < OPTICAL_RANGE && seededRandom() < MYOGENIC_PROPAGATION * wave.intensity) {
+                    // Check if neighbor already has this wave
+                    const hasWave = myogenicWaves.some(w => w.droneId === neighbor.id && w.color === wave.color);
+                    const hasNewWave = newWaves.some(w => w.droneId === neighbor.id && w.color === wave.color);
+
+                    if (!hasWave && !hasNewWave) {
+                        newWaves.push({
+                            droneId: neighbor.id,
+                            intensity: wave.intensity * MYOGENIC_DECAY,
+                            color: wave.color,
+                            cycle: cycle
+                        });
+
+                        // Apply wave effect
+                        if (wave.color === 'red') {
+                            neighbor.skinState = 'red_wave';
+                            neighbor.skinIntensity = wave.intensity * MYOGENIC_DECAY;
+                            neighbor.beta = Math.max(BETA_MIN, neighbor.beta - 0.02 * wave.intensity);
+                        } else if (wave.color === 'blue') {
+                            neighbor.skinState = 'blue_ring';
+                            neighbor.skinIntensity = wave.intensity * MYOGENIC_DECAY;
+                            neighbor.pulseBoost += 0.02 * wave.intensity;
+                        }
+                    }
+                }
+            });
+
+            // Decay existing wave
+            wave.intensity *= MYOGENIC_DECAY;
+        });
+
+        // Add new waves
+        myogenicWaves.push(...newWaves);
+
+        // Clean up dead waves
+        myogenicWaves = myogenicWaves.filter(w => w.intensity >= 0.1 && cycle - w.cycle < 20);
+    }
+
+    function initiateMyogenicWave(drone, color) {
+        if (!features.skin) return;
+
+        myogenicWaves.push({
+            droneId: drone.id,
+            intensity: 1.0,
+            color: color,
+            cycle: cycle
+        });
+
+        propagateSkinWave(drone, color === 'red' ? '#ef4444' : '#22d3ee');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    HYBRID VECTOR + SKIN (New Feature 5)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateVectorSkinCoupling() {
+        if (!features.vector || !features.skin) return;
+
+        const vectorCoherence = computeVectorCoherence();
+
+        drones.forEach(d => {
+            if (d.isFaulty) return;
+
+            // Calculate local vector misalignment
+            const neighbors = drones.filter(n =>
+                n.id !== d.id && !n.isFaulty &&
+                d.signalStrengths && d.signalStrengths[n.id] > SIGNAL_LOST_THRESHOLD
+            );
+
+            if (neighbors.length === 0) return;
+
+            // Local covariance
+            const meanTheta = neighbors.reduce((s, n) => s + n.theta, d.theta) / (neighbors.length + 1);
+            const meanPhi = neighbors.reduce((s, n) => s + n.phi, d.phi) / (neighbors.length + 1);
+
+            let localCov = 0;
+            [d, ...neighbors].forEach(n => {
+                localCov += Math.abs((n.theta - meanTheta) * (n.phi - meanPhi));
+            });
+            localCov /= (neighbors.length + 1);
+
+            // High local covariance → red wave (misalignment stress)
+            if (localCov > 0.15 && d.skinState !== 'red_wave') {
+                d.skinState = 'red_wave';
+                d.skinIntensity = Math.min(1, localCov * 3);
+
+                // Initiate myogenic wave on high misalignment
+                if (localCov > 0.25 && seededRandom() < 0.1) {
+                    initiateMyogenicWave(d, 'red');
+                }
+            }
+            // Low covariance + high coherence → blue ring
+            else if (localCov < 0.05 && vectorCoherence.covariance < 0.1) {
+                d.skinState = 'blue_ring';
+                d.skinIntensity = 0.6;
+
+                // Occasional blue wave for coherence celebration
+                if (seededRandom() < 0.02) {
+                    initiateMyogenicWave(d, 'blue');
+                }
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    EUDOXID RELEASE (New Feature 6)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function checkEudoxidRelease() {
+        if (!features.arms || !features.zooid) return;
+
+        arms.forEach((arm, armIdx) => {
+            if (arm.drones.length < EUDOXID_SIZE + 2) return;  // Need enough drones
+            if (arm.coherence === undefined || arm.coherence < EUDOXID_SATURATION_THRESHOLD) return;
+
+            // Check if arm already has active eudoxid
+            if (eudoxids.some(e => e.armId === armIdx)) return;
+
+            // Chance to release eudoxid
+            if (seededRandom() < 0.02) {
+                releaseEudoxid(arm, armIdx);
+            }
+        });
+    }
+
+    function releaseEudoxid(arm, armIdx) {
+        // Select drones for eudoxid (prefer gastrozooids)
+        const candidates = arm.drones
+            .map(di => drones[di])
+            .filter(d => d && !d.isFaulty && !d.isDetached && !d.inEudoxid)
+            .sort((a, b) => {
+                if (a.zooidType === 'gastrozooid') return -1;
+                if (b.zooidType === 'gastrozooid') return 1;
+                return seededRandom() - 0.5;
+            });
+
+        if (candidates.length < EUDOXID_SIZE) return;
+
+        const eudoxidDrones = candidates.slice(0, EUDOXID_SIZE);
+        const eudoxidIds = eudoxidDrones.map(d => d.id);
+
+        // Calculate exploration target
+        const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+        const angle = seededRandom() * Math.PI * 2;
+        const target = {
+            x: Math.max(1, Math.min(size - 1, base.x + Math.cos(angle) * EUDOXID_RANGE)),
+            y: Math.max(1, Math.min(size - 1, base.y + Math.sin(angle) * EUDOXID_RANGE))
+        };
+
+        // Mark drones as in eudoxid
+        eudoxidDrones.forEach(d => {
+            d.inEudoxid = true;
+            d.eudoxidTarget = target;
+            d.originalArmId = armIdx;
+        });
+
+        const eudoxid = {
+            id: eudoxidIdCounter++,
+            drones: eudoxidIds,
+            origin: { x: eudoxidDrones[0].x, y: eudoxidDrones[0].y },
+            target,
+            birthCycle: cycle,
+            armId: armIdx,
+            returning: false,
+            terrainRevealed: 0
+        };
+
+        eudoxids.push(eudoxid);
+
+        log(`🔬 EUDOXID ${eudoxid.id}: Released from Arm ${armIdx} with ${EUDOXID_SIZE} drones`, 'zooid');
+    }
+
+    function updateEudoxids() {
+        eudoxids.forEach(eudoxid => {
+            const age = cycle - eudoxid.birthCycle;
+            const eudoxidDrones = eudoxid.drones.map(id => drones[id]).filter(d => d && !d.isFaulty);
+
+            if (eudoxidDrones.length === 0) {
+                eudoxid.dead = true;
+                return;
+            }
+
+            // Determine target
+            let target;
+            if (age > EUDOXID_LIFESPAN / 2 || eudoxid.returning) {
+                // Return to base
+                eudoxid.returning = true;
+                target = { x: base.x, y: base.y };
+            } else {
+                target = eudoxid.target;
+            }
+
+            // Move eudoxid drones toward target
+            eudoxidDrones.forEach(d => {
+                d.eudoxidTarget = target;
+
+                // Enhanced exploration (gastrozooid behavior)
+                const exploreRadius = 3;
+                for (let dy = -exploreRadius; dy <= exploreRadius; dy++) {
+                    for (let dx = -exploreRadius; dx <= exploreRadius; dx++) {
+                        const tx = safeMod(Math.floor(d.x * 2) + dx, terrainSize);
+                        const ty = safeMod(Math.floor(d.y * 2) + dy, terrainSize);
+                        if (terrain[ty] && terrain[ty][tx] && !terrain[ty][tx].explored) {
+                            terrain[ty][tx].explored = true;
+                            eudoxid.terrainRevealed++;
+                        }
+                    }
+                }
+            });
+
+            // Check if returned
+            if (eudoxid.returning) {
+                const centroid = {
+                    x: eudoxidDrones.reduce((s, d) => s + d.x, 0) / eudoxidDrones.length,
+                    y: eudoxidDrones.reduce((s, d) => s + d.y, 0) / eudoxidDrones.length
+                };
+
+                const distToBase = Math.sqrt(
+                    Math.pow(centroid.x - base.x, 2) +
+                    Math.pow(centroid.y - base.y, 2)
+                );
+
+                if (distToBase < 1.5) {
+                    // Reintegrate into arm
+                    reintegrateEudoxid(eudoxid);
+                }
+            }
+        });
+
+        // Clean up dead/reintegrated eudoxids
+        eudoxids = eudoxids.filter(e => !e.dead && !e.reintegrated);
+    }
+
+    function reintegrateEudoxid(eudoxid) {
+        const arm = arms[eudoxid.armId];
+
+        eudoxid.drones.forEach(id => {
+            const d = drones[id];
+            if (d) {
+                d.inEudoxid = false;
+                d.eudoxidTarget = null;
+
+                // Add back to arm if not already there
+                if (arm && !arm.drones.includes(id)) {
+                    arm.drones.push(id);
+                }
+            }
+        });
+
+        eudoxid.reintegrated = true;
+
+        log(`🔬 EUDOXID ${eudoxid.id}: Returned, revealed ${eudoxid.terrainRevealed} tiles`, 'zooid');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    ZOOID SPECIALIZATION (Feature 3)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateZooidSpecialization() {
+        if (!features.zooid) {
+            drones.forEach(d => d.zooidType = 'normal');
+            return;
+        }
+
+        // Role election based on position and state
+        drones.forEach(d => {
+            if (d.isFaulty) {
+                d.zooidType = 'dead';
+                return;
+            }
+
+            // Keep existing specialization unless conditions change
+            if (d.zooidType && d.zooidType !== 'normal' && seededRandom() > 0.02) return;
+
+            const distToBase = Math.sqrt(Math.pow(d.x - base.x, 2) + Math.pow(d.y - base.y, 2));
+            const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+            const normalizedDist = distToBase / (size / 2);
+
+            // Nectophores: lead movement (furthest from base with high connectivity)
+            if (normalizedDist > 0.8 && d.avgSignal > 0.6 && seededRandom() < 0.15) {
+                d.zooidType = 'nectophore';
+            }
+            // Gastrozooids: explore/sense (medium distance, in exploring arms)
+            else if (normalizedDist > 0.4 && normalizedDist < 0.8 &&
+                     arms[d.armId]?.exploring && seededRandom() < 0.2) {
+                d.zooidType = 'gastrozooid';
+            }
+            // Bracts: defense (close to base or near faults)
+            else if ((normalizedDist < 0.4 || d.nearFault) && seededRandom() < 0.1) {
+                d.zooidType = 'bract';
+            }
+            else {
+                d.zooidType = 'normal';
+            }
+        });
+    }
+
+    function applyZooidBehavior(drone) {
+        if (!features.zooid) return { speedMult: 1, exploreMult: 1, faultResist: 0 };
+
+        switch (drone.zooidType) {
+            case 'nectophore':
+                return { speedMult: NECTOPHORE_SPEED_MULT, exploreMult: 1, faultResist: 0 };
+            case 'gastrozooid':
+                return { speedMult: 0.8, exploreMult: GASTROZOOID_EXPLORE_MULT, faultResist: 0 };
+            case 'bract':
+                return { speedMult: 0.6, exploreMult: 0.5, faultResist: BRACT_FAULT_RESIST };
+            default:
+                return { speedMult: 1, exploreMult: 1, faultResist: 0 };
+        }
+    }
+
+    function triggerGiantAxon() {
+        // Fast pathway: colony-wide instant response
+        log('⚡ GIANT AXON: Colony-wide stress response!', 'zooid');
+
+        drones.forEach(d => {
+            if (d.isFaulty) return;
+            d.beta = Math.max(BETA_MIN, d.beta - 0.15);
+            d.axonFlash = true;
+        });
+
+        // Visual flash
+        const canvas = document.getElementById('map-canvas');
+        canvas.style.filter = 'brightness(2)';
+        setTimeout(() => canvas.style.filter = '', 100);
+
+        setTimeout(() => {
+            drones.forEach(d => d.axonFlash = false);
+        }, 500);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    VECTOR STATES (Feature 4)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function initVectorState(drone) {
+        drone.theta = (seededRandom() - 0.5) * 0.2;  // Orientation
+        drone.phi = (seededRandom() - 0.5) * 0.2;    // Sensor bias
+    }
+
+    function evolveVectorState(drone, neighbors) {
+        if (!features.vector || neighbors.length === 0) return;
+
+        // Weighted average of neighbor vectors
+        let weightedTheta = 0, weightedPhi = 0, weightTotal = 0;
+
+        neighbors.forEach(n => {
+            const w = drone.signalStrengths[n.id] || 0;
+            weightedTheta += n.theta * w;
+            weightedPhi += n.phi * w;
+            weightTotal += w;
+        });
+
+        if (weightTotal > 0) {
+            const neighborAvgTheta = weightedTheta / weightTotal;
+            const neighborAvgPhi = weightedPhi / weightTotal;
+
+            const beta = drone.beta;
+            drone.theta = beta * drone.theta + (1 - beta) * neighborAvgTheta + (seededRandom() - 0.5) * SIGMA;
+            drone.phi = beta * drone.phi + (1 - beta) * neighborAvgPhi + (seededRandom() - 0.5) * SIGMA;
+
+            // Storm affects phi (sensor dimension)
+            drone.phi += weather.stormIntensity * (seededRandom() - 0.5) * 0.02;
+        }
+
+        // Clamp
+        drone.theta = Math.max(-1.5, Math.min(1.5, drone.theta));
+        drone.phi = Math.max(-1.5, Math.min(1.5, drone.phi));
+    }
+
+    function computeVectorCoherence() {
+        if (!features.vector || drones.length === 0) return { meanTheta: 0, meanPhi: 0, covariance: 0 };
+
+        const activeDrones = drones.filter(d => !d.isFaulty);
+        if (activeDrones.length === 0) return { meanTheta: 0, meanPhi: 0, covariance: 0 };
+
+        const meanTheta = activeDrones.reduce((s, d) => s + d.theta, 0) / activeDrones.length;
+        const meanPhi = activeDrones.reduce((s, d) => s + d.phi, 0) / activeDrones.length;
+
+        // Covariance
+        let cov = 0;
+        activeDrones.forEach(d => {
+            cov += (d.theta - meanTheta) * (d.phi - meanPhi);
+        });
+        cov /= activeDrones.length;
+
+        return { meanTheta, meanPhi, covariance: Math.abs(cov) };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    METACHRONAL WAVES (Feature 5)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function initiateMetachronalWave(origin, direction) {
+        if (!features.wave) return;
+
+        activeWave = {
+            origin: { x: origin.x, y: origin.y },
+            startCycle: cycle,
+            direction: direction || { x: 1, y: 0 },
+            reachedDrones: new Set()
+        };
+
+        document.getElementById('wave-indicator').style.display = 'block';
+        log('🌊 Metachronal wave initiated', 'wave');
+    }
+
+    function updateMetachronalWave() {
+        if (!activeWave || !features.wave) return;
+
+        const elapsed = cycle - activeWave.startCycle;
+        if (elapsed > WAVE_DURATION) {
+            activeWave = null;
+            document.getElementById('wave-indicator').style.display = 'none';
+            return;
+        }
+
+        const waveRadius = elapsed * WAVE_SPEED * 2;
+
+        drones.forEach(d => {
+            if (d.isFaulty || activeWave.reachedDrones.has(d.id)) return;
+
+            // Calculate if wave has reached this drone
+            const dx = d.x - activeWave.origin.x;
+            const dy = d.y - activeWave.origin.y;
+            const distFromOrigin = Math.sqrt(dx * dx + dy * dy);
+
+            // Wave front check (within band)
+            if (distFromOrigin >= waveRadius - 0.5 && distFromOrigin <= waveRadius + 0.5) {
+                activeWave.reachedDrones.add(d.id);
+
+                // Apply wave boost
+                d.waveBoost = WAVE_SPEED * 3;
+                d.waveDirection = { ...activeWave.direction };
+
+                // Visual trail
+                showWaveTrail(d);
+            }
+        });
+    }
+
+    function showWaveTrail(drone) {
+        const container = document.getElementById('map-container');
+        const canvas = document.getElementById('map-canvas');
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+        const scaleX = canvas.width / sqrtSize;
+        const scaleY = canvas.height / sqrtSize;
+
+        const trail = document.createElement('div');
+        trail.className = 'metachronal-trail';
+        trail.style.left = (drone.x * scaleX) + 'px';
+        trail.style.top = (drone.y * scaleY) + 'px';
+        trail.style.background = '#06b6d4';
+        container.appendChild(trail);
+
+        setTimeout(() => trail.remove(), 500);
+    }
+
+    function triggerBloom() {
+        bloomActive = true;
+        bloomCycles = 100;
+        log('🌸 BLOOM MODE: Clustering for survival', 'wave');
+
+        // Show visual indicators
+        document.getElementById('bloom-overlay').classList.add('active');
+        document.getElementById('bloom-indicator').classList.add('active');
+
+        // All drones target base
+        drones.forEach(d => {
+            if (!d.isFaulty) {
+                d.bloomTarget = { x: base.x, y: base.y };
+            }
+        });
+    }
+
+    function endBloom() {
+        bloomActive = false;
+        drones.forEach(d => d.bloomTarget = null);
+        document.getElementById('bloom-overlay').classList.remove('active');
+        document.getElementById('bloom-indicator').classList.remove('active');
+        log('🌸 Bloom mode ended', 'wave');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    SELF-HEALING (Feature 6)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function checkSelfHealing() {
+        drones.forEach(d => {
+            if (!d.isFaulty) return;
+
+            // Count healthy neighbors
+            const healthyNeighbors = drones.filter(other =>
+                other.id !== d.id &&
+                !other.isFaulty &&
+                d.signalStrengths &&
+                d.signalStrengths[other.id] > SIGNAL_LOST_THRESHOLD
+            ).length;
+
+            // Self-heal if enough healthy neighbors and luck
+            if (healthyNeighbors >= HEAL_NEIGHBOR_THRESHOLD && seededRandom() < HEAL_PROBABILITY) {
+                d.isFaulty = false;
+                d.beta = BETA_BASE - 0.1;  // Partial recovery
+                d.s = 0;  // Reset state
+                healCount++;
+
+                log(`💚 Drone ${d.id} self-healed via neighbor support`, 'heal');
+
+                // Remove from faults list
+                const faultIndex = faults.findIndex(f => f.droneId === d.id);
+                if (faultIndex >= 0) faults.splice(faultIndex, 1);
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    BETA COMPUTATION
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function computeBeta(drone) {
+        const mode = document.getElementById('beta-mode').value;
+
+        if (mode === 'fixed') return BETA_BASE;
+        if (drone.isFaulty) return 0;
+
+        let beta = BETA_BASE - weather.stormIntensity * 0.2 - (1 - drone.avgSignal) * 0.15;
+
+        // Personality variation
+        beta += (drone.personality || 0);
+
+        // Skin influence
+        if (features.skin && drone.skinInfluence) {
+            beta += drone.skinInfluence;
+            drone.skinInfluence = 0;  // Reset
+        }
+
+        // Polarization channel boost (ignores dust storms!)
+        if (drone.polarizationBoost) {
+            beta += drone.polarizationBoost;
+            drone.polarizationBoost = 0;  // Reset
+        }
+
+        if (mode === 'octopus' && features.arms) {
+            // Octopus mode: higher β within arm, coordinated by ganglion
+            const arm = arms[drone.armId];
+            if (arm) {
+                // Boost for same-arm communication
+                beta += ARM_LOCAL_BETA_BOOST;
+
+                // Exploring arms lower signal threshold
+                if (arm.exploring) {
+                    drone.exploreMode = true;
+                }
+            }
+        }
+        else if (mode === 'predictive') {
+            const neighbors = drones.filter(d =>
+                d.id !== drone.id &&
+                drone.signalStrengths[d.id] > SIGNAL_LOST_THRESHOLD
+            );
+
+            if (neighbors.length > 0) {
+                const neighborStress = neighbors.reduce((sum, n) => {
+                    return sum + (BETA_BASE - n.beta);
+                }, 0) / neighbors.length;
+
+                beta -= neighborStress * CASCADE_WEIGHT;
+                drone.isCascading = neighborStress > 0.05;
+            }
+        }
+
+        return Math.max(BETA_MIN, Math.min(BETA_BASE + 0.05, beta));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    SIGNAL MODEL
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function calculateSignalStrength(d1, d2) {
+        const dist = Math.sqrt(Math.pow(d1.x - d2.x, 2) + Math.pow(d1.y - d2.y, 2));
+        let signal = Math.exp(-dist / SIGNAL_RANGE);
+
+        // Exploring mode: lower threshold
+        if (d1.exploreMode || d2.exploreMode) {
+            signal += EXPLORE_SIGNAL_BOOST;
+        }
+
+        // Terrain attenuation
+        const steps = 5;
+        for (let i = 1; i < steps; i++) {
+            const t = i / steps;
+            const x = d1.x + (d2.x - d1.x) * t;
+            const y = d1.y + (d2.y - d1.y) * t;
+            const tx = safeMod(Math.floor(x * 2), terrainSize);
+            const ty = safeMod(Math.floor(y * 2), terrainSize);
+            if (terrain[ty] && terrain[ty][tx] && terrain[ty][tx].type === TERRAIN.OBSTACLE) {
+                signal *= 0.6;
+            }
+        }
+
+        signal *= (1 - weather.stormIntensity * 0.5);
+
+        return Math.max(0, Math.min(1, signal));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    ORDER PARAMETER
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function computeOrderParameter() {
+        if (drones.length === 0) return { mean: 0, variance: 0, coherence: 1 };
+        const activeDrones = drones.filter(d => !d.isFaulty);
+        if (activeDrones.length === 0) return { mean: 0, variance: 0, coherence: 0 };
+
+        const mean = activeDrones.reduce((s, d) => s + d.s, 0) / activeDrones.length;
+        const variance = activeDrones.reduce((s, d) => s + Math.pow(d.s - mean, 2), 0) / activeDrones.length;
+        return { mean, variance, coherence: 1 / (1 + variance) };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    DRONE CLASS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    class Drone {
+        constructor(id, x, y) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            this.targetX = x;
+            this.targetY = y;
+
+            this.s = (seededRandom() - 0.5) * 0.2;
+            this.beta = BETA_BASE;
+            this.pulseBoost = 0;
+
+            // Personality variation (Feature 6)
+            this.personality = (seededRandom() - 0.5) * 0.06;  // +/- 3% β base
+
+            this.signalStrengths = {};
+            this.avgSignal = 1.0;
+
+            this.isFaulty = false;
+            this.faultCycle = null;
+            this.isCascading = false;
+            this.inGiantComponent = true;
+
+            // Arm/Octopus
+            this.armId = 0;
+            this.isGanglion = false;
+            this.exploreMode = false;
+
+            // Skin
+            this.skinState = 'neutral';
+            this.skinIntensity = 0.3;
+            this.skinInfluence = 0;
+
+            // Zooid
+            this.zooidType = 'normal';
+            this.nearFault = false;
+
+            // Vector state
+            initVectorState(this);
+
+            // Wave
+            this.waveBoost = 0;
+            this.waveDirection = null;
+
+            // Bloom
+            this.bloomTarget = null;
+
+            // Trit system
+            this.vote = TRIT.ZERO;
+            this.prevVote = TRIT.ZERO;
+            this.prevS = this.s;
+            this.tritFaultStatus = TRIT.POS;
+            this.tritWaveInfluence = 0;
+            this.inTritWaveFront = false;
+            this.compressed = compressTritState(this.s);
+        }
+
+        update() {
+            // Track previous state for trit transitions
+            this.prevS = this.s;
+            this.prevVote = this.vote;
+
+            this.updateSignals();
+            this.checkNearFault();
+
+            this.beta = computeBeta(this);
+
+            const effectiveBeta = Math.min(BETA_BASE + 0.05, this.beta + this.pulseBoost);
+            this.pulseBoost *= 0.9;
+
+            this.evolve(effectiveBeta);
+            this.move();
+
+            // Update trit layer
+            if (features.trit) {
+                const newVote = computeTritVote(this);
+                trackTritTransition(this.prevVote, newVote);
+                this.vote = newVote;
+                this.tritFaultStatus = computeTernaryFaultStatus(this);
+                this.compressed = compressTritState(this.s);
+            }
+
+            this.exploreMode = false;
+        }
+
+        updateSignals() {
+            this.signalStrengths = {};
+            let total = 0, count = 0;
+
+            drones.forEach(other => {
+                if (other.id === this.id) return;
+                const signal = calculateSignalStrength(this, other);
+                this.signalStrengths[other.id] = signal;
+                if (signal > SIGNAL_LOST_THRESHOLD) {
+                    total += signal;
+                    count++;
+                }
+            });
+
+            this.avgSignal = count > 0 ? total / count : 0;
+        }
+
+        checkNearFault() {
+            this.nearFault = drones.some(other =>
+                other.isFaulty &&
+                this.signalStrengths[other.id] > SIGNAL_LOST_THRESHOLD
+            );
+        }
+
+        evolve(beta) {
+            const neighbors = drones.filter(d =>
+                d.id !== this.id &&
+                !d.isFaulty &&
+                this.signalStrengths[d.id] > SIGNAL_LOST_THRESHOLD
+            );
+
+            if (neighbors.length === 0) return;
+
+            // Same-arm neighbors get extra weight in octopus mode
+            let weightedSum = 0, weightTotal = 0;
+            neighbors.forEach(n => {
+                let w = this.signalStrengths[n.id];
+                if (features.arms && n.armId === this.armId) {
+                    w *= 1.3;  // Intra-arm boost
+                }
+                weightedSum += n.s * w;
+                weightTotal += w;
+            });
+
+            const neighborAvg = weightTotal > 0 ? weightedSum / weightTotal : 0;
+            const retention = beta * this.s + (1 - beta) * neighborAvg;
+            const damped = (1 - ALPHA) * retention;
+            const noise = (seededRandom() - 0.5) * SIGMA * 2;
+
+            this.s = Math.max(-1.5, Math.min(1.5, damped + noise));
+
+            // Vector state evolution
+            evolveVectorState(this, neighbors);
+        }
+
+        move() {
+            const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+            const zooidBehavior = applyZooidBehavior(this);
+            let speed = 0.08 * (1 - weather.stormIntensity * 0.4) * zooidBehavior.speedMult;
+
+            // Wave boost
+            if (this.waveBoost > 0) {
+                speed += this.waveBoost;
+                this.waveBoost *= 0.85;
+
+                if (this.waveDirection) {
+                    this.targetX += this.waveDirection.x * 0.5;
+                    this.targetY += this.waveDirection.y * 0.5;
+                }
+            }
+
+            // Detached drones drift away
+            if (this.isDetached) {
+                const driftAngle = seededRandom() * Math.PI * 2;
+                this.x += Math.cos(driftAngle) * 0.02;
+                this.y += Math.sin(driftAngle) * 0.02;
+                return;  // No further movement logic
+            }
+
+            // Eudoxid mode: move toward exploration target
+            if (this.inEudoxid && this.eudoxidTarget) {
+                this.targetX = this.eudoxidTarget.x + (seededRandom() - 0.5) * 0.5;
+                this.targetY = this.eudoxidTarget.y + (seededRandom() - 0.5) * 0.5;
+                speed *= 1.2;  // Eudoxids move faster
+            }
+            // Bloom mode: cluster toward base
+            else if (bloomActive && this.bloomTarget) {
+                this.targetX = this.bloomTarget.x + (seededRandom() - 0.5) * 2;
+                this.targetY = this.bloomTarget.y + (seededRandom() - 0.5) * 2;
+            }
+            else if (seededRandom() < 0.1 * zooidBehavior.exploreMult) {
+                this.targetX = this.x + (seededRandom() - 0.5) * 2;
+                this.targetY = this.y + (seededRandom() - 0.5) * 2;
+            }
+
+            // Clamp targets
+            this.targetX = Math.max(0.5, Math.min(size - 0.5, this.targetX));
+            this.targetY = Math.max(0.5, Math.min(size - 0.5, this.targetY));
+
+            const dx = this.targetX - this.x;
+            const dy = this.targetY - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > 0.1) {
+                this.x += (dx / dist) * speed;
+                this.y += (dy / dist) * speed;
+            }
+
+            // Mark terrain (gastrozooids are better)
+            const exploreRadius = this.zooidType === 'gastrozooid' ? 2 : 1;
+            for (let dy = -exploreRadius; dy <= exploreRadius; dy++) {
+                for (let dx = -exploreRadius; dx <= exploreRadius; dx++) {
+                    const tx = safeMod(Math.floor(this.x * 2) + dx, terrainSize);
+                    const ty = safeMod(Math.floor(this.y * 2) + dy, terrainSize);
+                    if (terrain[ty] && terrain[ty][tx]) terrain[ty][tx].explored = true;
+                }
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    MOBILE BASE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    class MobileBase {
+        constructor(x, y) { this.x = x; this.y = y; }
+        update(centroid) {
+            const dx = centroid.x - this.x;
+            const dy = centroid.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 2) {
+                this.x += (dx / dist) * 0.03;
+                this.y += (dy / dist) * 0.03;
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    WEATHER
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateWeather() {
+        if (weather.manualStorm) {
+            weather.stormIntensity = Math.min(0.9, weather.stormIntensity + 0.05);
+            document.getElementById('dust-overlay').style.setProperty('--dust-opacity', weather.stormIntensity * 0.4);
+            return;
+        }
+
+        const stormChance = 0.003;
+
+        switch (weather.stormPhase) {
+            case 'clear':
+                if (seededRandom() < stormChance || cycle >= weather.nextStormCycle) {
+                    weather.stormPhase = 'approaching';
+                    weather.stormDuration = 40 + seededRandom() * 80;
+                }
+                break;
+            case 'approaching':
+                weather.stormIntensity = Math.min(0.7, weather.stormIntensity + 0.02);
+                if (weather.stormIntensity >= 0.5) weather.stormPhase = 'active';
+                break;
+            case 'active':
+                weather.stormDuration--;
+                weather.stormIntensity = Math.min(1, Math.max(0.3,
+                    weather.stormIntensity + (seededRandom() - 0.5) * 0.05));
+                if (weather.stormDuration <= 0) weather.stormPhase = 'clearing';
+                break;
+            case 'clearing':
+                weather.stormIntensity = Math.max(0, weather.stormIntensity - 0.025);
+                if (weather.stormIntensity <= 0) {
+                    weather.stormPhase = 'clear';
+                    weather.nextStormCycle = cycle + 100 + seededRandom() * 150;
+                }
+                break;
+        }
+
+        document.getElementById('dust-overlay').style.setProperty('--dust-opacity', weather.stormIntensity * 0.3);
+    }
+
+    function toggleStorm() {
+        weather.manualStorm = !weather.manualStorm;
+        document.getElementById('toggle-storm').classList.toggle('active', weather.manualStorm);
+
+        if (!weather.manualStorm) {
+            weather.stormPhase = 'clearing';
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    TERRAIN
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function generateTerrain() {
+        terrain = [];
+        for (let y = 0; y < terrainSize; y++) {
+            terrain[y] = [];
+            for (let x = 0; x < terrainSize; x++) {
+                terrain[y][x] = { type: TERRAIN.UNKNOWN, explored: false };
+            }
+        }
+
+        for (let i = 0; i < 12; i++) {
+            const cx = Math.floor(seededRandom() * terrainSize);
+            const cy = Math.floor(seededRandom() * terrainSize);
+            const r = 1 + Math.floor(seededRandom() * 2);
+            for (let dy = -r; dy <= r; dy++) {
+                for (let dx = -r; dx <= r; dx++) {
+                    if (dx*dx + dy*dy <= r*r) {
+                        const tx = safeMod(cx + dx, terrainSize);
+                        const ty = safeMod(cy + dy, terrainSize);
+                        terrain[ty][tx].type = TERRAIN.OBSTACLE;
+                    }
+                }
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    FAULTS & PULSES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function injectFault(droneId = null) {
+        const candidates = drones.filter(d => !d.isFaulty);
+        if (candidates.length === 0) return;
+
+        const target = droneId !== null
+            ? drones.find(d => d.id === droneId)
+            : candidates[Math.floor(seededRandom() * candidates.length)];
+
+        if (!target || target.isFaulty) return;
+
+        // Bracts have fault resistance
+        const zooidBehavior = applyZooidBehavior(target);
+        if (seededRandom() < zooidBehavior.faultResist) {
+            log(`🛡️ Bract ${target.id} resisted fault!`, 'zooid');
+            return;
+        }
+
+        target.isFaulty = true;
+        target.beta = 0;
+        target.faultCycle = cycle;
+
+        faults.push({ droneId: target.id, cycle });
+
+        // Trigger red wave from nearby drones
+        if (features.skin) {
+            drones.filter(d => !d.isFaulty && target.signalStrengths && target.signalStrengths[d.id] > 0.3)
+                  .forEach(d => propagateSkinWave(d, '#ef4444'));
+        }
+
+        log(`💥 FAULT: Drone ${target.id} (${target.zooidType})`, 'fault');
+    }
+
+    function checkRandomFaults() {
+        const faultRate = parseInt(document.getElementById('fault-rate').value) / 100;
+        if (seededRandom() < faultRate / 100) {
+            injectFault();
+        }
+    }
+
+    function sendRecalibrationPulse() {
+        const strength = 0.3;
+        const prePsi = computeOrderParameter().coherence;
+
+        drones.forEach(d => {
+            if (d.isFaulty) return;
+
+            const nudge = (PULSE_ATTRACTOR - Math.abs(d.s)) * strength * 0.5;
+            d.s += nudge;
+            d.pulseBoost = strength * 0.1;
+
+            // Blue ring flash
+            if (features.skin) {
+                d.skinState = 'blue_ring';
+                d.skinIntensity = 1;
+            }
+        });
+
+        showPulseRing();
+        showPulseIndicator();
+
+        const postPsi = computeOrderParameter().coherence;
+        const gain = postPsi - prePsi;
+        pulseStats.psiGains.push(gain);
+        pulseStats.count++;
+        pulseStats.lastCycle = cycle;
+        pulseStats.nextCycle = cycle + parseInt(document.getElementById('pulse-interval').value);
+
+        // Trigger metachronal wave from base
+        if (features.wave && seededRandom() < 0.3) {
+            const angle = seededRandom() * Math.PI * 2;
+            initiateMetachronalWave(base, { x: Math.cos(angle), y: Math.sin(angle) });
+        }
+
+        log(`📡 Global pulse: Ψ ${prePsi.toFixed(3)} → ${postPsi.toFixed(3)}`, 'pulse');
+    }
+
+    function showPulseRing() {
+        const container = document.getElementById('map-container');
+        const canvas = document.getElementById('map-canvas');
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+        const scaleX = canvas.width / sqrtSize;
+        const scaleY = canvas.height / sqrtSize;
+
+        const ring = document.createElement('div');
+        ring.className = 'pulse-ring';
+        ring.style.left = (base.x * scaleX - 20) + 'px';
+        ring.style.top = (base.y * scaleY - 20) + 'px';
+        ring.style.width = '40px';
+        ring.style.height = '40px';
+        container.appendChild(ring);
+
+        setTimeout(() => ring.remove(), 1000);
+    }
+
+    function showPulseIndicator() {
+        const indicator = document.getElementById('pulse-indicator');
+        indicator.classList.remove('local');
+        indicator.textContent = '📡 RECALIBRATION PULSE';
+        indicator.classList.add('active');
+        setTimeout(() => indicator.classList.remove('active'), 1500);
+    }
+
+    function manualPulse() {
+        sendRecalibrationPulse();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    DATA COLLECTION
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function collectDataPoint() {
+        const order = computeOrderParameter();
+        const components = computeConnectedComponents();
+        const cascading = drones.filter(d => d.isCascading).length;
+        const betas = drones.map(d => d.beta);
+        const vectorCoherence = computeVectorCoherence();
+
+        // Arm coherences
+        const armCoherences = arms.map(a => a.coherence || 0);
+        const avgArmCoherence = armCoherences.length > 0
+            ? armCoherences.reduce((a, b) => a + b, 0) / armCoherences.length
+            : 0;
+
+        const dataPoint = {
+            cycle,
+            coherence: order.coherence,
+            meanField: order.mean,
+            variance: order.variance,
+            giantSize: components.giantSize,
+            giantPct: components.giantSize / drones.length,
+            numComponents: components.numComponents,
+            isolated: components.isolated,
+            faultCount: faults.length,
+            cascadingCount: cascading,
+            avgBeta: betas.reduce((a, b) => a + b, 0) / betas.length,
+            stormIntensity: weather.stormIntensity,
+            avgArmCoherence,
+            vectorCovariance: vectorCoherence.covariance,
+            healCount,
+            zooidDistribution: {
+                nectophore: drones.filter(d => d.zooidType === 'nectophore').length,
+                gastrozooid: drones.filter(d => d.zooidType === 'gastrozooid').length,
+                bract: drones.filter(d => d.zooidType === 'bract').length
+            }
+        };
+
+        experimentData.push(dataPoint);
+
+        coherenceHistory.push(order.coherence);
+        giantHistory.push(components.giantSize / drones.length);
+        armCoherenceHistory.push(avgArmCoherence);
+
+        if (coherenceHistory.length > MAX_HISTORY) {
+            coherenceHistory.shift();
+            giantHistory.shift();
+            armCoherenceHistory.shift();
+        }
+
+        return { order, components, cascading, vectorCoherence };
+    }
+
+    function exportCSV() {
+        if (experimentData.length === 0) return alert('No data');
+        const headers = ['cycle', 'coherence', 'meanField', 'variance', 'giantSize', 'giantPct',
+                        'numComponents', 'isolated', 'faultCount', 'cascadingCount', 'avgBeta',
+                        'stormIntensity', 'avgArmCoherence', 'vectorCovariance', 'healCount'];
+        const csv = [headers.join(','), ...experimentData.map(r =>
+            headers.map(h => typeof r[h] === 'number' ? r[h].toFixed(6) : r[h]).join(',')
+        )].join('\n');
+        downloadFile(csv, 'aion_octopus_' + Date.now() + '.csv', 'text/csv');
+    }
+
+    function exportJSON() {
+        if (experimentData.length === 0) return alert('No data');
+        const obj = {
+            metadata: {
+                swarmSize: parseInt(document.getElementById('swarm-size').value),
+                armCount: parseInt(document.getElementById('arm-count').value),
+                betaMode: document.getElementById('beta-mode').value,
+                features: { ...features },
+                totalCycles: cycle,
+                totalFaults: faults.length,
+                totalHeals: healCount,
+                totalPulses: pulseStats.count,
+                totalLocalPulses: pulseStats.localPulses
+            },
+            faults,
+            data: experimentData
+        };
+        downloadFile(JSON.stringify(obj, null, 2), 'aion_octopus_' + Date.now() + '.json', 'application/json');
+    }
+
+    function downloadFile(content, filename, type) {
+        const blob = new Blob([content], { type });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function initExperiment() {
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+
+        rngSeed = 42 + Date.now() % 1000;
+
+        drones = [];
+        faults = [];
+        experimentData = [];
+        coherenceHistory = [];
+        giantHistory = [];
+        armCoherenceHistory = [];
+        cycle = 0;
+        healCount = 0;
+        bloomActive = false;
+        activeWave = null;
+        weather = { stormIntensity: 0, stormPhase: 'clear', stormDuration: 0, nextStormCycle: 150, manualStorm: false };
+        pulseStats = { count: 0, lastCycle: null, nextCycle: parseInt(document.getElementById('pulse-interval').value), psiGains: [], localPulses: 0 };
+
+        // Reset new cephalopod features
+        autotomyEvents = [];
+        regenQueue = [];
+        totalAutotomies = 0;
+        totalRegens = 0;
+        lastPanicCycle = -100;
+        panicCount = 0;
+        myogenicWaves = [];
+        eudoxids = [];
+        eudoxidIdCounter = 0;
+
+        // Reset trit system
+        tritWaveActive = false;
+        tritWaveOrigin = null;
+        tritWaveRadius = 0;
+        tritWaveValue = TRIT.ZERO;
+        tritTransitions = { posToZero: 0, zeroToNeg: 0, negToPos: 0, total: 0 };
+        voteHistory = [];
+        consensusHistory = [];
+
+        generateTerrain();
+
+        base = new MobileBase(sqrtSize / 2, sqrtSize / 2);
+
+        for (let i = 0; i < size; i++) {
+            const angle = (i / size) * Math.PI * 2;
+            const radius = 0.5 + seededRandom() * 1.5;
+            drones.push(new Drone(i, base.x + Math.cos(angle) * radius, base.y + Math.sin(angle) * radius));
+        }
+
+        initializeArms();
+
+        log('🐙 Experiment initialized: ' + size + ' drones, ' + arms.length + ' arms', 'component');
+        updateDisplay();
+        render();
+    }
+
+    function runCycle() {
+        cycle++;
+
+        updateWeather();
+        checkRandomFaults();
+        checkSelfHealing();
+
+        // Bloom countdown
+        if (bloomActive) {
+            bloomCycles--;
+            if (bloomCycles <= 0) {
+                endBloom();
+            }
+        }
+
+        // Automatic global pulse
+        if (cycle >= pulseStats.nextCycle) {
+            sendRecalibrationPulse();
+        }
+
+        // Update features
+        updateArmDynamics();
+        updateSkinStates();
+        updateZooidSpecialization();
+        updateMetachronalWave();
+
+        // New cephalopod features
+        updatePolarizationChannel();
+        checkAutotomy();
+        processRegeneration();
+        checkPanicConditions();
+        updateMyogenicWaves();
+        updateVectorSkinCoupling();
+
+        // Trit system
+        updateTritWave();
+        checkEudoxidRelease();
+        updateEudoxids();
+
+        // Update drones
+        drones.forEach(d => d.update());
+
+        // Update base
+        const activeDrones = drones.filter(d => d.inGiantComponent);
+        if (activeDrones.length > 0) {
+            const centroid = {
+                x: activeDrones.reduce((s, d) => s + d.x, 0) / activeDrones.length,
+                y: activeDrones.reduce((s, d) => s + d.y, 0) / activeDrones.length
+            };
+            base.update(centroid);
+        }
+
+        collectDataPoint();
+        updateDisplay();
+        render();
+        renderChart();
+    }
+
+    function toggleFeature(name) {
+        features[name] = !features[name];
+        document.getElementById('toggle-' + name).classList.toggle('active', features[name]);
+
+        if (name === 'arms') {
+            if (features.arms) initializeArms();
+            else drones.forEach(d => { d.isGanglion = false; d.armId = 0; });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    RENDERING
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function render() {
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        const size = parseInt(document.getElementById('swarm-size').value);
+        const sqrtSize = Math.sqrt(size);
+        const scaleX = canvas.width / sqrtSize;
+        const scaleY = canvas.height / sqrtSize;
+        const cellW = canvas.width / terrainSize;
+        const cellH = canvas.height / terrainSize;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Terrain
+        for (let y = 0; y < terrainSize; y++) {
+            for (let x = 0; x < terrainSize; x++) {
+                const cell = terrain[y][x];
+                let color = '#050508';
+                if (cell.explored) {
+                    color = cell.type === TERRAIN.OBSTACLE ? '#78350f' : '#0a0a10';
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
+            }
+        }
+
+        // Arm regions (subtle background)
+        if (features.arms) {
+            arms.forEach((arm, i) => {
+                if (arm.drones.length === 0) return;
+
+                ctx.fillStyle = ARM_COLORS[i] + '08';
+                ctx.beginPath();
+
+                const armDrones = arm.drones.map(di => drones[di]);
+                if (armDrones.length >= 3) {
+                    // Convex hull approximation - just draw circles around drones
+                    armDrones.forEach(d => {
+                        ctx.moveTo(d.x * scaleX + 15, d.y * scaleY);
+                        ctx.arc(d.x * scaleX, d.y * scaleY, 15, 0, Math.PI * 2);
+                    });
+                }
+                ctx.fill();
+            });
+        }
+
+        // Signal links
+        drones.forEach(d => {
+            Object.entries(d.signalStrengths).forEach(([id, strength]) => {
+                if (parseInt(id) < d.id || strength < SIGNAL_LOST_THRESHOLD) return;
+                const other = drones.find(dr => dr.id === parseInt(id));
+                if (!other) return;
+
+                const sameArm = features.arms && d.armId === other.armId;
+                const inGiant = d.inGiantComponent && other.inGiantComponent;
+
+                if (sameArm) {
+                    ctx.strokeStyle = ARM_COLORS[d.armId] + '40';
+                } else if (inGiant) {
+                    ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)';
+                } else {
+                    ctx.strokeStyle = 'rgba(100, 100, 100, 0.1)';
+                }
+
+                ctx.lineWidth = strength * 1.5;
+                ctx.beginPath();
+                ctx.moveTo(d.x * scaleX, d.y * scaleY);
+                ctx.lineTo(other.x * scaleX, other.y * scaleY);
+                ctx.stroke();
+            });
+        });
+
+        // Base (pneumatophore)
+        ctx.fillStyle = '#8b5cf6';
+        ctx.beginPath();
+        ctx.arc(base.x * scaleX, base.y * scaleY, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#a78bfa';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Drones
+        drones.forEach(d => {
+            const x = d.x * scaleX;
+            const y = d.y * scaleY;
+
+            let color, radius = 3;
+
+            if (d.isDetached) {
+                // Detached/autotomized drones - faded and drifting
+                color = 'rgba(100, 100, 100, 0.4)';
+                radius = 2;
+            } else if (d.isFaulty) {
+                color = '#ef4444';
+                radius = 4;
+            } else if (d.inEudoxid) {
+                // Eudoxid drones - bright cyan with ring
+                color = '#22d3ee';
+                radius = 3.5;
+            } else if (d.isGanglion && features.arms) {
+                color = '#f97316';
+                radius = 5;
+            } else if (d.isRegenerated) {
+                // Recently regenerated - pulsing green
+                color = '#86efac';
+                radius = 3;
+            } else if (features.zooid) {
+                switch (d.zooidType) {
+                    case 'nectophore': color = '#06b6d4'; break;
+                    case 'gastrozooid': color = '#eab308'; break;
+                    case 'bract': color = '#ec4899'; break;
+                    default: color = d.inGiantComponent ? '#4ade80' : '#666';
+                }
+            } else {
+                color = d.inGiantComponent ? '#4ade80' : '#666';
+            }
+
+            // Skin state visualization
+            if (features.skin && !d.isFaulty) {
+                let skinColor = null;
+                if (d.skinState === 'red_wave') {
+                    skinColor = `rgba(239, 68, 68, ${d.skinIntensity * 0.5})`;
+                } else if (d.skinState === 'blue_ring') {
+                    skinColor = `rgba(34, 211, 238, ${d.skinIntensity * 0.5})`;
+                }
+
+                if (skinColor) {
+                    ctx.fillStyle = skinColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius + 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Axon flash
+            if (d.axonFlash) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.beginPath();
+                ctx.arc(x, y, radius + 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Glow
+            const glow = ctx.createRadialGradient(x, y, 0, x, y, radius + 3);
+            glow.addColorStop(0, color + '80');
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(x, y, radius + 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Core
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Vector arrow (smaller, less cluttery)
+            if (features.vector && !d.isFaulty) {
+                const arrowLen = 4;  // Reduced from 8
+                const angle = Math.atan2(d.phi, d.theta);
+                const mag = Math.min(1.5, Math.sqrt(d.theta * d.theta + d.phi * d.phi));
+
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+                ctx.lineWidth = 0.8;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                const endX = x + Math.cos(angle) * arrowLen * (0.5 + mag);
+                const endY = y + Math.sin(angle) * arrowLen * (0.5 + mag);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                // Tiny arrowhead
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.5)';
+                ctx.beginPath();
+                ctx.arc(endX, endY, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Ganglion marker
+            if (d.isGanglion && features.arms) {
+                ctx.strokeStyle = '#f97316';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius + 3, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Fault marker
+            if (d.isFaulty) {
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(x - 5, y - 5);
+                ctx.lineTo(x + 5, y + 5);
+                ctx.moveTo(x + 5, y - 5);
+                ctx.lineTo(x - 5, y + 5);
+                ctx.stroke();
+            }
+
+            // Eudoxid marker (exploration ring)
+            if (d.inEudoxid) {
+                ctx.strokeStyle = '#22d3ee';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.arc(x, y, radius + 5, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Detached marker (fading X)
+            if (d.isDetached) {
+                ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x - 3, y - 3);
+                ctx.lineTo(x + 3, y + 3);
+                ctx.moveTo(x + 3, y - 3);
+                ctx.lineTo(x - 3, y + 3);
+                ctx.stroke();
+            }
+        });
+
+        // Draw eudoxid exploration lines
+        eudoxids.forEach(eudoxid => {
+            if (eudoxid.dead || eudoxid.reintegrated) return;
+
+            const eudoxidDrones = eudoxid.drones.map(id => drones[id]).filter(d => d);
+            if (eudoxidDrones.length === 0) return;
+
+            const centroid = {
+                x: eudoxidDrones.reduce((s, d) => s + d.x, 0) / eudoxidDrones.length * scaleX,
+                y: eudoxidDrones.reduce((s, d) => s + d.y, 0) / eudoxidDrones.length * scaleY
+            };
+
+            // Line to target
+            const targetX = (eudoxid.returning ? base.x : eudoxid.target.x) * scaleX;
+            const targetY = (eudoxid.returning ? base.y : eudoxid.target.y) * scaleY;
+
+            ctx.strokeStyle = eudoxid.returning ? 'rgba(74, 222, 128, 0.4)' : 'rgba(34, 211, 238, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(centroid.x, centroid.y);
+            ctx.lineTo(targetX, targetY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Target marker
+            ctx.fillStyle = eudoxid.returning ? '#4ade80' : '#22d3ee';
+            ctx.beginPath();
+            ctx.arc(targetX, targetY, 3, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Draw trit wave ring
+        if (tritWaveActive && features.trit && tritWaveOrigin) {
+            const waveX = tritWaveOrigin.x * scaleX;
+            const waveY = tritWaveOrigin.y * scaleY;
+            const waveRadius = tritWaveRadius * scaleX;
+
+            // Wave color based on value
+            let waveColor;
+            if (tritWaveValue > 0) waveColor = 'rgba(74, 222, 128, 0.6)';
+            else if (tritWaveValue < 0) waveColor = 'rgba(239, 68, 68, 0.6)';
+            else waveColor = 'rgba(156, 163, 175, 0.6)';
+
+            ctx.strokeStyle = waveColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(waveX, waveY, waveRadius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner ring (fading)
+            const innerRadius = Math.max(0, waveRadius - TRIT_WAVE_WIDTH * scaleX);
+            ctx.strokeStyle = waveColor.replace('0.6', '0.3');
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(waveX, waveY, innerRadius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Highlight drones with trit votes (subtle color tint)
+        if (features.trit) {
+            drones.forEach(d => {
+                if (d.isFaulty || d.isDetached) return;
+                const x = d.x * scaleX;
+                const y = d.y * scaleY;
+
+                // Trit vote ring
+                let tritColor = null;
+                if (d.vote === 1) tritColor = 'rgba(74, 222, 128, 0.25)';
+                else if (d.vote === -1) tritColor = 'rgba(239, 68, 68, 0.25)';
+
+                if (tritColor) {
+                    ctx.fillStyle = tritColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Trit wave front highlight
+                if (d.inTritWaveFront) {
+                    ctx.strokeStyle = 'rgba(59, 130, 246, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+        }
+
+        document.getElementById('map-overlay').textContent =
+            `CYCLE ${cycle} | ${document.getElementById('beta-mode').value.toUpperCase()}` +
+            (bloomActive ? ' | BLOOM' : '') +
+            (weather.stormIntensity > 0.3 ? ' | STORM' : '') +
+            (features.trit ? ' | TRIT' : '');
+    }
+
+    function renderChart() {
+        const canvas = document.getElementById('chart-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (coherenceHistory.length < 2) return;
+
+        const w = canvas.width, h = canvas.height, p = 2;
+
+        // Coherence line (pink)
+        ctx.strokeStyle = '#ec4899';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        coherenceHistory.forEach((val, i) => {
+            const x = p + (i / (MAX_HISTORY - 1)) * (w - 2 * p);
+            const y = h - p - val * (h - 2 * p);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Giant component line (cyan)
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        giantHistory.forEach((val, i) => {
+            const x = p + (i / (MAX_HISTORY - 1)) * (w - 2 * p);
+            const y = h - p - val * (h - 2 * p);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Arm coherence (orange)
+        if (features.arms && armCoherenceHistory.length > 1) {
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            armCoherenceHistory.forEach((val, i) => {
+                const x = p + (i / (MAX_HISTORY - 1)) * (w - 2 * p);
+                const y = h - p - val * (h - 2 * p);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    DISPLAY
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function updateDisplay() {
+        const order = computeOrderParameter();
+        const components = computeConnectedComponents();
+        const cascading = drones.filter(d => d.isCascading).length;
+        const vectorCoherence = computeVectorCoherence();
+
+        // Header
+        document.getElementById('cycle-val').textContent = cycle.toString().padStart(4, '0');
+
+        const psiVal = document.getElementById('psi-val');
+        psiVal.textContent = order.coherence.toFixed(2);
+        psiVal.className = 'val ' + (order.coherence > 0.8 ? 'high' : order.coherence > 0.5 ? 'mid' : 'low');
+
+        const giantPct = components.giantSize / drones.length * 100;
+        document.getElementById('giant-val').textContent = giantPct.toFixed(0) + '%';
+        document.getElementById('arms-val').textContent = arms.filter(a => a.drones.length > 0).length;
+        document.getElementById('fault-val').textContent = faults.length;
+
+        const cascadePressure = cascading / drones.length;
+        document.getElementById('cascade-val').textContent = cascadePressure.toFixed(2);
+
+        // Giant component
+        document.getElementById('giant-display').textContent = `${components.giantSize} / ${drones.length}`;
+        document.getElementById('giant-big').textContent = components.giantSize;
+        document.getElementById('num-components').textContent = components.numComponents;
+        document.getElementById('giant-pct').textContent = giantPct.toFixed(0) + '%';
+        document.getElementById('isolated-count').textContent = components.isolated;
+
+        // Component bar
+        updateComponentBar(components);
+
+        // Arm stats
+        updateArmBar();
+        document.getElementById('ganglia-count').textContent = arms.filter(a => a.ganglionId !== null && !drones[a.ganglionId]?.isFaulty).length;
+        const avgArmPsi = arms.filter(a => a.coherence !== undefined).reduce((s, a) => s + a.coherence, 0) / Math.max(1, arms.length);
+        document.getElementById('intra-arm-psi').textContent = avgArmPsi.toFixed(2);
+        document.getElementById('exploring-arms').textContent = arms.filter(a => a.exploring).length;
+
+        // Skin stats
+        const opticalStrength = Math.max(0, (1 - weather.stormIntensity * 0.7) * 100);
+        document.getElementById('optical-strength').textContent = opticalStrength.toFixed(0) + '%';
+        document.getElementById('red-waves').textContent = drones.filter(d => d.skinState === 'red_wave').length;
+        document.getElementById('blue-rings').textContent = drones.filter(d => d.skinState === 'blue_ring').length;
+
+        // Zooid counts
+        document.getElementById('nectophore-count').textContent = drones.filter(d => d.zooidType === 'nectophore').length;
+        document.getElementById('gastrozooid-count').textContent = drones.filter(d => d.zooidType === 'gastrozooid').length;
+        document.getElementById('bract-count').textContent = drones.filter(d => d.zooidType === 'bract').length;
+        document.getElementById('unspec-count').textContent = drones.filter(d => d.zooidType === 'normal').length;
+
+        // Vector state
+        document.getElementById('mean-theta').textContent = vectorCoherence.meanTheta.toFixed(3);
+        document.getElementById('mean-phi').textContent = vectorCoherence.meanPhi.toFixed(3);
+        document.getElementById('covariance').textContent = vectorCoherence.covariance.toFixed(4);
+
+        // Resilience
+        const faultTolerance = (drones.length - faults.length) / drones.length * 100;
+        document.getElementById('fault-tolerance').textContent = faultTolerance.toFixed(0) + '%';
+        document.getElementById('cascade-resistance').textContent = ((1 - cascadePressure) * 100).toFixed(0) + '%';
+        document.getElementById('heal-count').textContent = healCount;
+
+        // Autotomy & Regen
+        document.getElementById('autotomy-count').textContent = totalAutotomies;
+        document.getElementById('regen-count').textContent = totalRegens;
+        document.getElementById('regen-queue').textContent = regenQueue.reduce((s, r) => s + r.count, 0);
+        document.getElementById('detached-count').textContent = drones.filter(d => d.isDetached).length;
+
+        // Eudoxids & Panic
+        document.getElementById('eudoxid-count').textContent = eudoxids.length;
+        const totalTilesRevealed = eudoxids.reduce((s, e) => s + e.terrainRevealed, 0);
+        document.getElementById('eudoxid-tiles').textContent = totalTilesRevealed;
+        document.getElementById('panic-count').textContent = panicCount;
+        document.getElementById('myogenic-count').textContent = myogenicWaves.length;
+
+        // Trit System
+        if (features.trit) {
+            const consensus = computeTritConsensus();
+
+            // Distribution counts
+            document.getElementById('trit-pos-count').textContent = consensus.pos;
+            document.getElementById('trit-zero-count').textContent = consensus.zero;
+            document.getElementById('trit-neg-count').textContent = consensus.neg;
+
+            // Consensus result
+            const consensusEl = document.getElementById('trit-consensus');
+            if (consensus.result === 'consensus') {
+                consensusEl.textContent = consensus.winner > 0 ? '+1' : consensus.winner < 0 ? '-1' : '0';
+                consensusEl.className = 'val ' + (consensus.winner > 0 ? 'good' : consensus.winner < 0 ? 'bad' : '');
+            } else if (consensus.result === 'deadlock') {
+                consensusEl.textContent = 'DEADLOCK';
+                consensusEl.className = 'val warn';
+            } else {
+                consensusEl.textContent = 'pending';
+                consensusEl.className = 'val';
+            }
+
+            // Entropy and margin
+            document.getElementById('trit-entropy').textContent = consensus.entropy.toFixed(2);
+            document.getElementById('trit-margin').textContent = (consensus.margin * 100).toFixed(0) + '%';
+
+            // Bandwidth compression
+            const activeDrones = drones.filter(d => !d.isFaulty && !d.isDetached).length;
+            const bitsBefore = activeDrones * 64;
+            const bitsAfter = activeDrones * 5;
+            document.getElementById('trit-bits-before').textContent = bitsBefore + ' b';
+            document.getElementById('trit-bits-after').textContent = bitsAfter + ' b';
+            document.getElementById('trit-compression').textContent = Math.round((1 - bitsAfter / bitsBefore) * 100) + '%';
+            document.getElementById('trit-transitions').textContent = tritTransitions.total;
+
+            // Consensus indicator on map
+            const consensusIndicator = document.getElementById('consensus-indicator');
+            const consensusBig = document.getElementById('consensus-big');
+            if (consensus.result === 'consensus') {
+                consensusIndicator.classList.add('active');
+                consensusBig.textContent = consensus.winner > 0 ? '+1' : consensus.winner < 0 ? '-1' : '0';
+                consensusBig.className = 'val ' + (consensus.winner > 0 ? 'pos' : consensus.winner < 0 ? 'neg' : 'zero');
+            } else {
+                consensusIndicator.classList.remove('active');
+            }
+
+            // Trit wave indicator
+            const tritWaveIndicator = document.getElementById('trit-wave-indicator');
+            if (tritWaveActive) {
+                tritWaveIndicator.classList.add('active');
+            } else {
+                tritWaveIndicator.classList.remove('active');
+            }
+        }
+
+        // Sliders
+        document.getElementById('speed-display').textContent = document.getElementById('speed').value + 'ms';
+        document.getElementById('fault-rate-display').textContent = document.getElementById('fault-rate').value + '%';
+    }
+
+    function updateComponentBar(components) {
+        const bar = document.getElementById('component-bar');
+        const colors = ['#22d3ee', '#8b5cf6', '#f97316', '#ef4444', '#666'];
+
+        bar.innerHTML = components.components.slice(0, 5).map((comp, i) => {
+            const pct = comp.length / drones.length * 100;
+            return `<div class="segment" style="width: ${pct}%; background: ${colors[i]};"></div>`;
+        }).join('');
+    }
+
+    function updateArmBar() {
+        const bar = document.getElementById('arm-bar');
+        const total = drones.length;
+
+        bar.innerHTML = arms.map((arm, i) => {
+            const pct = (arm.drones.length / total) * 100;
+            const healthy = arm.drones.filter(di => drones[di] && !drones[di].isFaulty).length;
+            const opacity = healthy > 0 ? 1 : 0.4;
+            return `<div class="segment" style="width: ${pct}%; background: ${ARM_COLORS[i]}; opacity: ${opacity};">${healthy}</div>`;
+        }).join('');
+    }
+
+    function log(msg, type = 'info') {
+        const logEl = document.getElementById('log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry ' + type;
+        entry.textContent = `[${cycle}] ${msg}`;
+        logEl.prepend(entry);
+        while (logEl.children.length > 20) logEl.lastChild.remove();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    CONTROLS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function toggleSim() {
+        isRunning = !isRunning;
+        const btn = document.getElementById('start-btn');
+        btn.textContent = isRunning ? '⏸' : '▶';
+        btn.classList.toggle('active', isRunning);
+        if (isRunning) runLoop();
+        else clearTimeout(timer);
+    }
+
+    function stepSim() { runCycle(); }
+
+    function runLoop() {
+        if (!isRunning) return;
+        runCycle();
+        timer = setTimeout(runLoop, parseInt(document.getElementById('speed').value));
+    }
+
+    window.onload = initExperiment;
+    window.onresize = () => { render(); renderChart(); };
+</script>
+
+</body>
+</html>
