@@ -619,6 +619,251 @@
             background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             transition: width 0.3s;
         }
+
+        /* Adaptive Noise Styles */
+        .noise-section {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .metric-section h4.noise { color: #fbbf24; }
+
+        .noise-bar {
+            height: 8px;
+            background: #0a0510;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 3px 0;
+            position: relative;
+        }
+
+        .noise-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #fbbf24, #ef4444);
+            transition: width 0.3s;
+        }
+
+        .noise-bar .marker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: white;
+        }
+
+        .noise-indicator {
+            position: absolute;
+            top: 95px;
+            right: 4px;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.4rem;
+            text-align: center;
+            display: none;
+        }
+
+        .noise-indicator.active { display: block; }
+        .noise-indicator .val { font-size: 0.55rem; font-weight: bold; color: #fbbf24; }
+
+        /* Live Analysis Dashboard */
+        .dashboard-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(139, 92, 246, 0.9);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.5rem;
+            font-weight: bold;
+        }
+
+        .dashboard-toggle:hover { background: rgba(139, 92, 246, 1); }
+
+        .dashboard-panel {
+            position: fixed;
+            bottom: 50px;
+            right: 10px;
+            width: 420px;
+            max-height: 70vh;
+            background: rgba(10, 5, 15, 0.97);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 999;
+            display: none;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .dashboard-panel.active { display: block; }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .dashboard-header h3 {
+            font-size: 0.6rem;
+            color: #a78bfa;
+            margin: 0;
+        }
+
+        .dashboard-header .cycle {
+            font-size: 0.5rem;
+            color: #666;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            padding: 6px;
+        }
+
+        .dashboard-card h4 {
+            font-size: 0.4rem;
+            color: #888;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+        }
+
+        .dashboard-card .value {
+            font-size: 0.7rem;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .dashboard-card .trend {
+            font-size: 0.4rem;
+            margin-left: 4px;
+        }
+
+        .trend.up { color: #4ade80; }
+        .trend.down { color: #ef4444; }
+        .trend.stable { color: #666; }
+
+        .mini-chart {
+            height: 40px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+            margin-top: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mini-chart canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .correlation-matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            font-size: 0.32rem;
+            margin-top: 6px;
+        }
+
+        .corr-cell {
+            padding: 3px;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .corr-cell.header {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            font-weight: bold;
+        }
+
+        .corr-cell.pos { background: rgba(74, 222, 128, 0.3); color: #4ade80; }
+        .corr-cell.neg { background: rgba(239, 68, 68, 0.3); color: #ef4444; }
+        .corr-cell.neutral { background: rgba(100, 100, 100, 0.2); color: #888; }
+
+        .event-log {
+            max-height: 80px;
+            overflow-y: auto;
+            font-size: 0.35rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 3px;
+            padding: 4px;
+            margin-top: 6px;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .event-item .type { font-weight: bold; }
+        .event-item .type.critical { color: #ef4444; }
+        .event-item .type.warning { color: #fbbf24; }
+        .event-item .type.info { color: #22d3ee; }
+        .event-item .type.success { color: #4ade80; }
+
+        .phase-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 5px;
+            margin-top: 6px;
+        }
+
+        .phase-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: phase-pulse 1.5s ease-in-out infinite;
+        }
+
+        .phase-dot.stable { background: #4ade80; }
+        .phase-dot.transition { background: #fbbf24; }
+        .phase-dot.critical { background: #ef4444; }
+
+        @keyframes phase-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        .phase-label {
+            font-size: 0.45rem;
+            font-weight: bold;
+        }
+
+        .phase-label.stable { color: #4ade80; }
+        .phase-label.transition { color: #fbbf24; }
+        .phase-label.critical { color: #ef4444; }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.38rem;
+            padding: 2px 0;
+        }
+
+        .stats-row .label { color: #666; }
+        .stats-row .val { color: #a78bfa; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -713,6 +958,7 @@
 
             <div class="toggle-row">
                 <button class="toggle-btn" id="toggle-storm" onclick="toggleStorm()">⛈️ Storm</button>
+                <button class="toggle-btn active" id="toggle-noise" onclick="toggleFeature('noise')">📶 Noise</button>
             </div>
 
             <div class="btn-row">
@@ -791,6 +1037,10 @@
                 </div>
                 <div class="trit-wave-indicator" id="trit-wave-indicator">
                     🔺 TRIT WAVE
+                </div>
+                <div class="noise-indicator" id="noise-indicator">
+                    <div class="val" id="noise-avg">0.008</div>
+                    <div class="label">AVG NOISE σ</div>
                 </div>
                 <canvas id="map-canvas"></canvas>
                 <div class="legend">
@@ -875,6 +1125,18 @@
                 <div class="metric-row"><span class="label">Transitions</span><span class="val" id="trit-transitions">0</span></div>
             </div>
 
+            <div class="metric-section noise-section">
+                <h4 class="noise">📶 Adaptive Noise</h4>
+                <div class="noise-bar" id="noise-bar">
+                    <div class="fill" id="noise-fill" style="width: 10%;"></div>
+                    <div class="marker" id="noise-marker" style="left: 10%;"></div>
+                </div>
+                <div class="metric-row"><span class="label">σ Min</span><span class="val good" id="noise-min">0.008</span></div>
+                <div class="metric-row"><span class="label">σ Avg</span><span class="val" id="noise-avg-val">0.008</span></div>
+                <div class="metric-row"><span class="label">σ Max</span><span class="val warn" id="noise-max">0.008</span></div>
+                <div class="metric-row"><span class="label">Variance</span><span class="val" id="noise-variance">0.000</span></div>
+            </div>
+
             <div class="btn-row">
                 <button class="btn export" onclick="exportCSV()">📄 CSV</button>
                 <button class="btn export" onclick="exportJSON()">📋 JSON</button>
@@ -883,6 +1145,104 @@
             <div class="panel-header" style="margin-top: 6px;">📝 Event Log</div>
             <div class="log" id="log"></div>
         </div>
+    </div>
+</div>
+
+<!-- Live Analysis Dashboard -->
+<button class="dashboard-toggle" onclick="toggleDashboard()">📊 ANALYSIS</button>
+
+<div class="dashboard-panel" id="dashboard-panel">
+    <div class="dashboard-header">
+        <h3>📊 Live Analysis Dashboard</h3>
+        <span class="cycle" id="dash-cycle">Cycle 0</span>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h4>Ψ Coherence</h4>
+            <span class="value" id="dash-coherence" style="color: #ec4899;">0.00</span>
+            <span class="trend stable" id="dash-coherence-trend">→</span>
+            <div class="mini-chart"><canvas id="chart-coherence"></canvas></div>
+        </div>
+        <div class="dashboard-card">
+            <h4>Giant Component</h4>
+            <span class="value" id="dash-giant" style="color: #22d3ee;">100%</span>
+            <span class="trend stable" id="dash-giant-trend">→</span>
+            <div class="mini-chart"><canvas id="chart-giant"></canvas></div>
+        </div>
+        <div class="dashboard-card">
+            <h4>Avg Noise σ</h4>
+            <span class="value" id="dash-noise" style="color: #fbbf24;">0.008</span>
+            <span class="trend stable" id="dash-noise-trend">→</span>
+            <div class="mini-chart"><canvas id="chart-noise"></canvas></div>
+        </div>
+        <div class="dashboard-card">
+            <h4>Fault Rate</h4>
+            <span class="value" id="dash-faults" style="color: #ef4444;">0%</span>
+            <span class="trend stable" id="dash-fault-trend">→</span>
+            <div class="mini-chart"><canvas id="chart-faults"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Phase State Indicator -->
+    <div class="phase-indicator">
+        <div class="phase-dot stable" id="phase-dot"></div>
+        <span class="phase-label stable" id="phase-label">STABLE</span>
+        <span style="flex: 1;"></span>
+        <span style="font-size: 0.35rem; color: #666;" id="phase-duration">0 cycles</span>
+    </div>
+
+    <!-- Correlation Matrix -->
+    <div style="margin-top: 8px;">
+        <div style="font-size: 0.4rem; color: #888; margin-bottom: 4px;">CORRELATION MATRIX</div>
+        <div class="correlation-matrix" id="corr-matrix">
+            <div class="corr-cell header"></div>
+            <div class="corr-cell header">Ψ</div>
+            <div class="corr-cell header">σ</div>
+            <div class="corr-cell header">F</div>
+            <div class="corr-cell header">Ψ</div>
+            <div class="corr-cell neutral" id="corr-psi-psi">1.00</div>
+            <div class="corr-cell neutral" id="corr-psi-noise">--</div>
+            <div class="corr-cell neutral" id="corr-psi-fault">--</div>
+            <div class="corr-cell header">σ</div>
+            <div class="corr-cell neutral" id="corr-noise-psi">--</div>
+            <div class="corr-cell neutral" id="corr-noise-noise">1.00</div>
+            <div class="corr-cell neutral" id="corr-noise-fault">--</div>
+            <div class="corr-cell header">F</div>
+            <div class="corr-cell neutral" id="corr-fault-psi">--</div>
+            <div class="corr-cell neutral" id="corr-fault-noise">--</div>
+            <div class="corr-cell neutral" id="corr-fault-fault">1.00</div>
+        </div>
+    </div>
+
+    <!-- Statistics Summary -->
+    <div style="margin-top: 8px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px;">
+        <div style="font-size: 0.4rem; color: #888; margin-bottom: 4px;">SESSION STATISTICS</div>
+        <div class="stats-row"><span class="label">Total Cycles</span><span class="val" id="stat-cycles">0</span></div>
+        <div class="stats-row"><span class="label">Avg Coherence</span><span class="val" id="stat-avg-psi">0.00</span></div>
+        <div class="stats-row"><span class="label">Min Coherence</span><span class="val" id="stat-min-psi">0.00</span></div>
+        <div class="stats-row"><span class="label">Total Faults</span><span class="val" id="stat-faults">0</span></div>
+        <div class="stats-row"><span class="label">Total Heals</span><span class="val" id="stat-heals">0</span></div>
+        <div class="stats-row"><span class="label">Phase Changes</span><span class="val" id="stat-phases">0</span></div>
+        <div class="stats-row"><span class="label">Cascade Events</span><span class="val" id="stat-cascades">0</span></div>
+    </div>
+
+    <!-- Event Detection Log -->
+    <div style="margin-top: 8px;">
+        <div style="font-size: 0.4rem; color: #888; margin-bottom: 4px;">DETECTED EVENTS</div>
+        <div class="event-log" id="event-log">
+            <div class="event-item">
+                <span class="type info">[0]</span>
+                <span>Dashboard initialized</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export -->
+    <div style="margin-top: 8px; display: flex; gap: 4px;">
+        <button class="btn export" onclick="exportAnalysis()" style="flex: 1;">📊 Export Analysis</button>
+        <button class="btn" onclick="resetAnalysis()" style="flex: 1;">↺ Reset</button>
     </div>
 </div>
 
@@ -958,6 +1318,15 @@
     // Terrain
     const TERRAIN = { UNKNOWN: 0, SAFE: 1, OBSTACLE: 2 };
 
+    // Adaptive Noise Scaling
+    const SIGMA_BASE = 0.008;           // Base noise level
+    const SIGMA_OBSTACLE_MULT = 2.5;    // Noise multiplier near obstacles
+    const SIGMA_UNEXPLORED_MULT = 1.8;  // Noise multiplier in unexplored areas
+    const SIGMA_STORM_MULT = 3.0;       // Maximum storm noise multiplier
+    const SIGMA_DENSITY_REDUCTION = 0.3; // Noise reduction from neighbor density
+    const SIGMA_ARM_COHERENCE_MULT = 0.5; // Low arm coherence increases noise
+    const NOISE_SMOOTHING = 0.7;        // Temporal smoothing for noise changes
+
     // Trit System (Hybrid Ternary Layer)
     const TRIT = { NEG: -1, ZERO: 0, POS: 1 };
     const TRIT_THRESHOLD_POS = 0.2;   // s > this → +1
@@ -992,7 +1361,8 @@
         zooid: true,
         vector: false,
         wave: true,
-        trit: true  // Hybrid ternary voting layer
+        trit: true,  // Hybrid ternary voting layer
+        noise: true  // Adaptive noise visualization
     };
 
     // Seeded RNG
@@ -1049,6 +1419,352 @@
     let tritTransitions = { posToZero: 0, zeroToNeg: 0, negToPos: 0, total: 0 };
     let voteHistory = [];
     let consensusHistory = [];
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    LIVE ANALYSIS DASHBOARD
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Dashboard state
+    let dashboardVisible = false;
+    const ANALYSIS_BUFFER_SIZE = 100;  // Rolling window size
+
+    // Rolling data buffers for analysis
+    let analysisBuffers = {
+        coherence: [],
+        giant: [],
+        noise: [],
+        faults: [],
+        cascading: []
+    };
+
+    // Session statistics
+    let sessionStats = {
+        totalCycles: 0,
+        coherenceSum: 0,
+        minCoherence: 1.0,
+        maxCoherence: 0,
+        totalFaults: 0,
+        totalHeals: 0,
+        phaseChanges: 0,
+        cascadeEvents: 0
+    };
+
+    // Phase tracking
+    let currentPhase = 'stable';  // stable, transition, critical
+    let phaseStartCycle = 0;
+    let previousPhase = 'stable';
+
+    // Event detection thresholds
+    const EVENT_THRESHOLDS = {
+        coherenceDrop: 0.15,      // Sudden coherence drop
+        coherenceSpike: 0.1,      // Sudden coherence increase
+        noiseSpike: 0.02,         // Noise spike detection
+        cascadeStart: 3,          // Drones cascading to trigger alert
+        faultBurst: 2,            // Multiple faults in short time
+        phaseTransition: 0.6      // Coherence threshold for phase change
+    };
+
+    // Detected events log
+    let detectedEvents = [];
+
+    function toggleDashboard() {
+        dashboardVisible = !dashboardVisible;
+        document.getElementById('dashboard-panel').classList.toggle('active', dashboardVisible);
+    }
+
+    // Add data point to rolling buffers
+    function updateAnalysisBuffers(coherence, giantPct, avgNoise, faultRate, cascading) {
+        analysisBuffers.coherence.push(coherence);
+        analysisBuffers.giant.push(giantPct);
+        analysisBuffers.noise.push(avgNoise);
+        analysisBuffers.faults.push(faultRate);
+        analysisBuffers.cascading.push(cascading);
+
+        // Keep buffer size limited
+        Object.keys(analysisBuffers).forEach(key => {
+            if (analysisBuffers[key].length > ANALYSIS_BUFFER_SIZE) {
+                analysisBuffers[key].shift();
+            }
+        });
+
+        // Update session stats
+        sessionStats.totalCycles++;
+        sessionStats.coherenceSum += coherence;
+        sessionStats.minCoherence = Math.min(sessionStats.minCoherence, coherence);
+        sessionStats.maxCoherence = Math.max(sessionStats.maxCoherence, coherence);
+    }
+
+    // Compute correlation between two arrays
+    function computeCorrelation(arr1, arr2) {
+        if (arr1.length < 10 || arr2.length < 10) return 0;
+
+        const n = Math.min(arr1.length, arr2.length);
+        const mean1 = arr1.slice(-n).reduce((a, b) => a + b, 0) / n;
+        const mean2 = arr2.slice(-n).reduce((a, b) => a + b, 0) / n;
+
+        let num = 0, den1 = 0, den2 = 0;
+        for (let i = 0; i < n; i++) {
+            const d1 = arr1[arr1.length - n + i] - mean1;
+            const d2 = arr2[arr2.length - n + i] - mean2;
+            num += d1 * d2;
+            den1 += d1 * d1;
+            den2 += d2 * d2;
+        }
+
+        const den = Math.sqrt(den1 * den2);
+        return den > 0 ? num / den : 0;
+    }
+
+    // Compute trend (up, down, stable)
+    function computeTrend(arr, windowSize = 10) {
+        if (arr.length < windowSize) return 'stable';
+
+        const recent = arr.slice(-windowSize);
+        const older = arr.slice(-windowSize * 2, -windowSize);
+
+        if (older.length < windowSize) return 'stable';
+
+        const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+        const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
+
+        const diff = recentAvg - olderAvg;
+        const threshold = olderAvg * 0.05;  // 5% change threshold
+
+        if (diff > threshold) return 'up';
+        if (diff < -threshold) return 'down';
+        return 'stable';
+    }
+
+    // Detect phase state
+    function detectPhase(coherence, faultRate, cascading) {
+        let phase = 'stable';
+
+        if (coherence < 0.4 || faultRate > 0.3 || cascading > 5) {
+            phase = 'critical';
+        } else if (coherence < 0.7 || faultRate > 0.1 || cascading > 2) {
+            phase = 'transition';
+        }
+
+        if (phase !== currentPhase) {
+            previousPhase = currentPhase;
+            currentPhase = phase;
+            phaseStartCycle = cycle;
+            sessionStats.phaseChanges++;
+
+            addDetectedEvent(
+                phase === 'critical' ? 'critical' : phase === 'transition' ? 'warning' : 'success',
+                `Phase: ${previousPhase} → ${phase}`
+            );
+        }
+
+        return phase;
+    }
+
+    // Event detection
+    function detectEvents(coherence, avgNoise, faultRate, cascading) {
+        const bufLen = analysisBuffers.coherence.length;
+        if (bufLen < 2) return;
+
+        const prevCoherence = analysisBuffers.coherence[bufLen - 2] || coherence;
+        const prevNoise = analysisBuffers.noise[bufLen - 2] || avgNoise;
+
+        // Coherence drop
+        if (prevCoherence - coherence > EVENT_THRESHOLDS.coherenceDrop) {
+            addDetectedEvent('critical', `Coherence drop: ${prevCoherence.toFixed(2)} → ${coherence.toFixed(2)}`);
+        }
+
+        // Coherence recovery
+        if (coherence - prevCoherence > EVENT_THRESHOLDS.coherenceSpike) {
+            addDetectedEvent('success', `Coherence spike: ${prevCoherence.toFixed(2)} → ${coherence.toFixed(2)}`);
+        }
+
+        // Noise spike
+        if (avgNoise - prevNoise > EVENT_THRESHOLDS.noiseSpike) {
+            addDetectedEvent('warning', `Noise spike: σ ${avgNoise.toFixed(4)}`);
+        }
+
+        // Cascade start
+        if (cascading >= EVENT_THRESHOLDS.cascadeStart && analysisBuffers.cascading[bufLen - 2] < EVENT_THRESHOLDS.cascadeStart) {
+            addDetectedEvent('critical', `Cascade started: ${cascading} drones`);
+            sessionStats.cascadeEvents++;
+        }
+    }
+
+    // Add event to log
+    function addDetectedEvent(type, message) {
+        detectedEvents.unshift({ cycle, type, message, time: Date.now() });
+        if (detectedEvents.length > 50) detectedEvents.pop();
+
+        // Update UI
+        const logEl = document.getElementById('event-log');
+        if (logEl) {
+            const item = document.createElement('div');
+            item.className = 'event-item';
+            item.innerHTML = `<span class="type ${type}">[${cycle}]</span><span>${message}</span>`;
+            logEl.prepend(item);
+            while (logEl.children.length > 15) logEl.lastChild.remove();
+        }
+    }
+
+    // Draw mini chart
+    function drawMiniChart(canvasId, data, color, minVal = 0, maxVal = 1) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || data.length < 2) return;
+
+        const ctx = canvas.getContext('2d');
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        const p = 2;
+
+        // Draw line
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+
+        data.forEach((val, i) => {
+            const x = p + (i / (data.length - 1)) * (w - 2 * p);
+            const normalized = (val - minVal) / (maxVal - minVal);
+            const y = h - p - Math.max(0, Math.min(1, normalized)) * (h - 2 * p);
+
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Fill area under
+        ctx.lineTo(w - p, h - p);
+        ctx.lineTo(p, h - p);
+        ctx.closePath();
+        ctx.fillStyle = color.replace('1)', '0.15)').replace('rgb', 'rgba');
+        ctx.fill();
+    }
+
+    // Update dashboard display
+    function updateDashboard() {
+        if (!dashboardVisible) return;
+
+        const order = computeOrderParameter();
+        const components = computeConnectedComponents();
+        const noiseStats = getNoiseStats();
+        const cascading = drones.filter(d => d.isCascading).length;
+        const faultRate = faults.length / drones.length;
+        const giantPct = components.giantSize / drones.length;
+
+        // Update buffers
+        updateAnalysisBuffers(order.coherence, giantPct, noiseStats.avg, faultRate, cascading);
+
+        // Detect phase and events
+        detectPhase(order.coherence, faultRate, cascading);
+        detectEvents(order.coherence, noiseStats.avg, faultRate, cascading);
+
+        // Update cycle
+        document.getElementById('dash-cycle').textContent = `Cycle ${cycle}`;
+
+        // Update main metrics
+        document.getElementById('dash-coherence').textContent = order.coherence.toFixed(3);
+        document.getElementById('dash-giant').textContent = (giantPct * 100).toFixed(1) + '%';
+        document.getElementById('dash-noise').textContent = noiseStats.avg.toFixed(4);
+        document.getElementById('dash-faults').textContent = (faultRate * 100).toFixed(1) + '%';
+
+        // Update trends
+        const trends = {
+            coherence: computeTrend(analysisBuffers.coherence),
+            giant: computeTrend(analysisBuffers.giant),
+            noise: computeTrend(analysisBuffers.noise),
+            faults: computeTrend(analysisBuffers.faults)
+        };
+
+        const trendSymbols = { up: '↑', down: '↓', stable: '→' };
+        document.getElementById('dash-coherence-trend').textContent = trendSymbols[trends.coherence];
+        document.getElementById('dash-coherence-trend').className = 'trend ' + trends.coherence;
+        document.getElementById('dash-giant-trend').textContent = trendSymbols[trends.giant];
+        document.getElementById('dash-giant-trend').className = 'trend ' + trends.giant;
+        document.getElementById('dash-noise-trend').textContent = trendSymbols[trends.noise];
+        document.getElementById('dash-noise-trend').className = 'trend ' + (trends.noise === 'up' ? 'down' : trends.noise === 'down' ? 'up' : 'stable');
+        document.getElementById('dash-fault-trend').textContent = trendSymbols[trends.faults];
+        document.getElementById('dash-fault-trend').className = 'trend ' + (trends.faults === 'up' ? 'down' : trends.faults === 'down' ? 'up' : 'stable');
+
+        // Update mini charts
+        drawMiniChart('chart-coherence', analysisBuffers.coherence, 'rgba(236, 72, 153, 1)', 0, 1);
+        drawMiniChart('chart-giant', analysisBuffers.giant, 'rgba(34, 211, 238, 1)', 0, 1);
+        drawMiniChart('chart-noise', analysisBuffers.noise, 'rgba(251, 191, 36, 1)', 0, 0.05);
+        drawMiniChart('chart-faults', analysisBuffers.faults, 'rgba(239, 68, 68, 1)', 0, 0.5);
+
+        // Update phase indicator
+        const phaseDot = document.getElementById('phase-dot');
+        const phaseLabel = document.getElementById('phase-label');
+        phaseDot.className = 'phase-dot ' + currentPhase;
+        phaseLabel.className = 'phase-label ' + currentPhase;
+        phaseLabel.textContent = currentPhase.toUpperCase();
+        document.getElementById('phase-duration').textContent = `${cycle - phaseStartCycle} cycles`;
+
+        // Update correlation matrix
+        if (analysisBuffers.coherence.length >= 20) {
+            const corrPsiNoise = computeCorrelation(analysisBuffers.coherence, analysisBuffers.noise);
+            const corrPsiFault = computeCorrelation(analysisBuffers.coherence, analysisBuffers.faults);
+            const corrNoiseFault = computeCorrelation(analysisBuffers.noise, analysisBuffers.faults);
+
+            updateCorrCell('corr-psi-noise', corrPsiNoise);
+            updateCorrCell('corr-noise-psi', corrPsiNoise);
+            updateCorrCell('corr-psi-fault', corrPsiFault);
+            updateCorrCell('corr-fault-psi', corrPsiFault);
+            updateCorrCell('corr-noise-fault', corrNoiseFault);
+            updateCorrCell('corr-fault-noise', corrNoiseFault);
+        }
+
+        // Update session stats
+        document.getElementById('stat-cycles').textContent = sessionStats.totalCycles;
+        document.getElementById('stat-avg-psi').textContent = (sessionStats.coherenceSum / Math.max(1, sessionStats.totalCycles)).toFixed(3);
+        document.getElementById('stat-min-psi').textContent = sessionStats.minCoherence.toFixed(3);
+        document.getElementById('stat-faults').textContent = sessionStats.totalFaults;
+        document.getElementById('stat-heals').textContent = sessionStats.totalHeals;
+        document.getElementById('stat-phases').textContent = sessionStats.phaseChanges;
+        document.getElementById('stat-cascades').textContent = sessionStats.cascadeEvents;
+    }
+
+    function updateCorrCell(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.textContent = value.toFixed(2);
+        el.className = 'corr-cell ' + (value > 0.3 ? 'pos' : value < -0.3 ? 'neg' : 'neutral');
+    }
+
+    function resetAnalysis() {
+        analysisBuffers = { coherence: [], giant: [], noise: [], faults: [], cascading: [] };
+        sessionStats = { totalCycles: 0, coherenceSum: 0, minCoherence: 1.0, maxCoherence: 0, totalFaults: 0, totalHeals: 0, phaseChanges: 0, cascadeEvents: 0 };
+        detectedEvents = [];
+        currentPhase = 'stable';
+        phaseStartCycle = cycle;
+
+        document.getElementById('event-log').innerHTML = '<div class="event-item"><span class="type info">[' + cycle + ']</span><span>Analysis reset</span></div>';
+    }
+
+    function exportAnalysis() {
+        const analysis = {
+            metadata: {
+                exportTime: new Date().toISOString(),
+                totalCycles: sessionStats.totalCycles,
+                swarmSize: drones.length
+            },
+            sessionStats,
+            correlations: {
+                psiNoise: computeCorrelation(analysisBuffers.coherence, analysisBuffers.noise),
+                psiFault: computeCorrelation(analysisBuffers.coherence, analysisBuffers.faults),
+                noiseFault: computeCorrelation(analysisBuffers.noise, analysisBuffers.faults)
+            },
+            buffers: analysisBuffers,
+            events: detectedEvents.slice(0, 100)
+        };
+
+        downloadFile(JSON.stringify(analysis, null, 2), 'aion_analysis_' + Date.now() + '.json', 'application/json');
+    }
 
     // Data collection
     let experimentData = [];
@@ -1329,6 +2045,105 @@
         });
 
         log(`🗳️ Injected vote ${value > 0 ? '+1' : value < 0 ? '-1' : '0'} into ${count} drones`, 'vote');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    ADAPTIVE NOISE SCALING
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Compute adaptive noise level based on terrain, environment, and local conditions
+    function getAdaptiveNoise(drone) {
+        let noiseMult = 1.0;
+
+        // Terrain-based noise
+        const tx = safeMod(Math.floor(drone.x * 2), terrainSize);
+        const ty = safeMod(Math.floor(drone.y * 2), terrainSize);
+
+        if (terrain[ty] && terrain[ty][tx]) {
+            const cell = terrain[ty][tx];
+
+            // Unexplored territory = higher uncertainty
+            if (!cell.explored) {
+                noiseMult *= SIGMA_UNEXPLORED_MULT;
+            }
+
+            // Near obstacles = turbulent, noisy
+            if (cell.type === TERRAIN.OBSTACLE) {
+                noiseMult *= SIGMA_OBSTACLE_MULT;
+            }
+        }
+
+        // Check adjacent cells for obstacle proximity
+        let nearObstacle = false;
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                const nx = safeMod(tx + dx, terrainSize);
+                const ny = safeMod(ty + dy, terrainSize);
+                if (terrain[ny] && terrain[ny][nx] && terrain[ny][nx].type === TERRAIN.OBSTACLE) {
+                    nearObstacle = true;
+                    break;
+                }
+            }
+            if (nearObstacle) break;
+        }
+        if (nearObstacle) noiseMult *= 1.5;
+
+        // Storm intensity increases noise significantly
+        if (weather.stormIntensity > 0) {
+            noiseMult *= 1 + (weather.stormIntensity * (SIGMA_STORM_MULT - 1));
+        }
+
+        // Neighbor density reduces noise (safety in numbers)
+        const neighborCount = Object.keys(drone.signalStrengths).filter(
+            id => drone.signalStrengths[id] > SIGNAL_LOST_THRESHOLD
+        ).length;
+        const densityFactor = Math.max(0.5, 1 - (neighborCount / 8) * SIGMA_DENSITY_REDUCTION);
+        noiseMult *= densityFactor;
+
+        // Arm coherence affects noise (stressed arms = more noise)
+        if (features.arms && drone.armId !== undefined) {
+            const arm = arms[drone.armId];
+            if (arm && arm.coherence !== undefined) {
+                // Low coherence = high noise
+                const coherenceNoise = 1 + (1 - arm.coherence) * SIGMA_ARM_COHERENCE_MULT;
+                noiseMult *= coherenceNoise;
+            }
+        }
+
+        // Faulty neighbors increase local noise
+        const faultyNearby = drones.filter(d =>
+            d.isFaulty &&
+            Math.abs(d.x - drone.x) < 2 &&
+            Math.abs(d.y - drone.y) < 2
+        ).length;
+        if (faultyNearby > 0) {
+            noiseMult *= 1 + (faultyNearby * 0.15);
+        }
+
+        // Temporal smoothing - blend with previous noise level
+        const targetNoise = SIGMA_BASE * noiseMult;
+        if (drone.adaptiveNoise === undefined) {
+            drone.adaptiveNoise = targetNoise;
+        } else {
+            drone.adaptiveNoise = NOISE_SMOOTHING * drone.adaptiveNoise + (1 - NOISE_SMOOTHING) * targetNoise;
+        }
+
+        return drone.adaptiveNoise;
+    }
+
+    // Get swarm-wide noise statistics
+    function getNoiseStats() {
+        const noiseValues = drones.filter(d => !d.isFaulty && !d.isDetached)
+            .map(d => d.adaptiveNoise || SIGMA_BASE);
+
+        if (noiseValues.length === 0) return { min: 0, max: 0, avg: 0, variance: 0 };
+
+        const min = Math.min(...noiseValues);
+        const max = Math.max(...noiseValues);
+        const avg = noiseValues.reduce((s, v) => s + v, 0) / noiseValues.length;
+        const variance = noiseValues.reduce((s, v) => s + Math.pow(v - avg, 2), 0) / noiseValues.length;
+
+        return { min, max, avg, variance };
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -2161,11 +2976,13 @@
             const neighborAvgTheta = weightedTheta / weightTotal;
             const neighborAvgPhi = weightedPhi / weightTotal;
 
+            // Use adaptive noise for vector state too
+            const adaptiveSigma = drone.adaptiveNoise || SIGMA_BASE;
             const beta = drone.beta;
-            drone.theta = beta * drone.theta + (1 - beta) * neighborAvgTheta + (seededRandom() - 0.5) * SIGMA;
-            drone.phi = beta * drone.phi + (1 - beta) * neighborAvgPhi + (seededRandom() - 0.5) * SIGMA;
+            drone.theta = beta * drone.theta + (1 - beta) * neighborAvgTheta + (seededRandom() - 0.5) * adaptiveSigma;
+            drone.phi = beta * drone.phi + (1 - beta) * neighborAvgPhi + (seededRandom() - 0.5) * adaptiveSigma;
 
-            // Storm affects phi (sensor dimension)
+            // Storm affects phi (sensor dimension) - now integrated in adaptive noise
             drone.phi += weather.stormIntensity * (seededRandom() - 0.5) * 0.02;
         }
 
@@ -2310,6 +3127,7 @@
                 d.beta = BETA_BASE - 0.1;  // Partial recovery
                 d.s = 0;  // Reset state
                 healCount++;
+                sessionStats.totalHeals++;
 
                 log(`💚 Drone ${d.id} self-healed via neighbor support`, 'heal');
 
@@ -2560,7 +3378,10 @@
             const neighborAvg = weightTotal > 0 ? weightedSum / weightTotal : 0;
             const retention = beta * this.s + (1 - beta) * neighborAvg;
             const damped = (1 - ALPHA) * retention;
-            const noise = (seededRandom() - 0.5) * SIGMA * 2;
+
+            // Adaptive noise based on terrain, storm, and local conditions
+            const adaptiveSigma = getAdaptiveNoise(this);
+            const noise = (seededRandom() - 0.5) * adaptiveSigma * 2;
 
             this.s = Math.max(-1.5, Math.min(1.5, damped + noise));
 
@@ -2756,6 +3577,7 @@
         target.faultCycle = cycle;
 
         faults.push({ droneId: target.id, cycle });
+        sessionStats.totalFaults++;
 
         // Trigger red wave from nearby drones
         if (features.skin) {
@@ -3051,6 +3873,9 @@
         updateDisplay();
         render();
         renderChart();
+
+        // Live analysis dashboard
+        updateDashboard();
     }
 
     function toggleFeature(name) {
@@ -3382,6 +4207,32 @@
             });
         }
 
+        // Noise visualization - show noise intensity as subtle halo
+        if (features.noise) {
+            drones.forEach(d => {
+                if (d.isFaulty || d.isDetached) return;
+                const x = d.x * scaleX;
+                const y = d.y * scaleY;
+
+                // Noise level visualization (0.008 base, up to ~0.05 max)
+                const noiseLevel = d.adaptiveNoise || SIGMA_BASE;
+                const normalizedNoise = Math.min(1, (noiseLevel - SIGMA_BASE) / (SIGMA_BASE * 5));
+
+                if (normalizedNoise > 0.1) {
+                    // Color gradient: green (low) -> yellow (medium) -> red (high)
+                    const r = Math.floor(255 * Math.min(1, normalizedNoise * 2));
+                    const g = Math.floor(255 * Math.min(1, 2 - normalizedNoise * 2));
+                    const alpha = 0.15 + normalizedNoise * 0.25;
+
+                    ctx.fillStyle = `rgba(${r}, ${g}, 50, ${alpha})`;
+                    ctx.beginPath();
+                    const radius = 4 + normalizedNoise * 8;
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
         document.getElementById('map-overlay').textContent =
             `CYCLE ${cycle} | ${document.getElementById('beta-mode').value.toUpperCase()}` +
             (bloomActive ? ' | BLOOM' : '') +
@@ -3572,6 +4423,40 @@
                 tritWaveIndicator.classList.add('active');
             } else {
                 tritWaveIndicator.classList.remove('active');
+            }
+        }
+
+        // Adaptive Noise
+        if (features.noise) {
+            const noiseStats = getNoiseStats();
+
+            // Update noise metrics
+            document.getElementById('noise-min').textContent = noiseStats.min.toFixed(4);
+            document.getElementById('noise-avg-val').textContent = noiseStats.avg.toFixed(4);
+            document.getElementById('noise-max').textContent = noiseStats.max.toFixed(4);
+            document.getElementById('noise-variance').textContent = noiseStats.variance.toFixed(6);
+
+            // Update noise bar (0 to 0.05 range)
+            const maxNoise = SIGMA_BASE * 6;  // Max expected noise
+            const fillPct = Math.min(100, (noiseStats.avg / maxNoise) * 100);
+            const markerPct = Math.min(100, (noiseStats.max / maxNoise) * 100);
+
+            document.getElementById('noise-fill').style.width = fillPct + '%';
+            document.getElementById('noise-marker').style.left = markerPct + '%';
+
+            // Noise indicator on map
+            const noiseIndicator = document.getElementById('noise-indicator');
+            noiseIndicator.classList.add('active');
+            document.getElementById('noise-avg').textContent = noiseStats.avg.toFixed(4);
+
+            // Color the indicator based on noise level
+            const avgEl = document.getElementById('noise-avg');
+            if (noiseStats.avg > SIGMA_BASE * 3) {
+                avgEl.style.color = '#ef4444';  // Red - high noise
+            } else if (noiseStats.avg > SIGMA_BASE * 1.5) {
+                avgEl.style.color = '#fbbf24';  // Yellow - medium noise
+            } else {
+                avgEl.style.color = '#4ade80';  // Green - low noise
             }
         }
 
