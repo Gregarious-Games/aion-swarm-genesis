@@ -864,6 +864,290 @@
 
         .stats-row .label { color: #666; }
         .stats-row .val { color: #a78bfa; font-family: monospace; }
+
+        /* Liminal Mode Styles */
+        .liminal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center,
+                rgba(139, 92, 246, 0.1) 0%,
+                rgba(139, 92, 246, 0.05) 50%,
+                rgba(139, 92, 246, 0) 100%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            animation: liminal-pulse 1.5s ease-in-out infinite;
+        }
+
+        .liminal-overlay.active { opacity: 1; }
+
+        @keyframes liminal-pulse {
+            0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+            50% { transform: scale(1.02); filter: hue-rotate(15deg); }
+        }
+
+        .liminal-indicator {
+            position: absolute;
+            top: 125px;
+            right: 4px;
+            background: rgba(139, 92, 246, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.42rem;
+            font-weight: bold;
+            display: none;
+            animation: liminal-glow 1s ease-in-out infinite;
+        }
+
+        .liminal-indicator.active { display: block; }
+
+        @keyframes liminal-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        }
+
+        .log-entry.liminal { color: #a78bfa; }
+
+        /* CEG Governance Mode Styles */
+        .ceg-indicator {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 3px 12px;
+            border-radius: 3px;
+            font-size: 0.5rem;
+            font-weight: bold;
+            color: white;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ceg-indicator .ceg-emoji { font-size: 0.6rem; }
+        .ceg-indicator .ceg-label { letter-spacing: 0.5px; }
+        .ceg-indicator .ceg-cycles {
+            font-size: 0.4rem;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+
+        .ceg-indicator.DEM {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .ceg-indicator.EPI {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+            animation: epi-pulse 2s ease-in-out infinite;
+        }
+
+        .ceg-indicator.SEN {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+            animation: sen-pulse 1.5s ease-in-out infinite;
+        }
+
+        .ceg-indicator.EMG {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+            animation: emg-pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes epi-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.7); }
+        }
+
+        @keyframes sen-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.7); }
+        }
+
+        @keyframes emg-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); transform: translateX(-50%) scale(1); }
+            50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9); transform: translateX(-50%) scale(1.02); }
+        }
+
+        .ceg-pending {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.38rem;
+            color: #9ca3af;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ceg-pending.active {
+            opacity: 1;
+        }
+
+        .log-entry.ceg { color: #60a5fa; }
+        .log-entry.ceg-epi { color: #a78bfa; }
+        .log-entry.ceg-sen { color: #fbbf24; }
+        .log-entry.ceg-emg { color: #f87171; }
+
+        /* Advanced CEG Panel */
+        .advanced-ceg-panel {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #374151;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 0.4rem;
+            z-index: 100;
+            min-width: 140px;
+        }
+
+        .advanced-ceg-panel .panel-title {
+            color: #9ca3af;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .advanced-ceg-panel .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+            color: #d1d5db;
+        }
+
+        .advanced-ceg-panel .metric-label { color: #9ca3af; }
+        .advanced-ceg-panel .metric-val { font-weight: bold; }
+        .advanced-ceg-panel .metric-val.good { color: #4ade80; }
+        .advanced-ceg-panel .metric-val.warn { color: #fbbf24; }
+        .advanced-ceg-panel .metric-val.bad { color: #f87171; }
+
+        .prediction-indicator {
+            margin-top: 4px;
+            padding: 3px 6px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 3px;
+            display: none;
+        }
+
+        .prediction-indicator.active { display: block; }
+
+        .prediction-indicator .pred-icon { color: #a78bfa; }
+        .prediction-indicator .pred-mode { color: #e0e7ff; font-weight: bold; }
+        .prediction-indicator .pred-conf { color: #9ca3af; font-size: 0.35rem; }
+
+        /* Oracle Beacons on Map */
+        .oracle-beacon {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fbbf24 0%, rgba(251, 191, 36, 0) 70%);
+            pointer-events: none;
+            animation: oracle-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes oracle-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 0.3; }
+        }
+
+        .memory-indicator {
+            position: absolute;
+            bottom: 4px;
+            right: 140px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.38rem;
+            color: #9ca3af;
+            display: none;
+        }
+
+        .memory-indicator.active { display: block; }
+        .memory-indicator .mem-count { color: #a78bfa; font-weight: bold; }
+
+        /* Oracle Disagreement Indicator */
+        .oracle-status {
+            position: absolute;
+            bottom: 30px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.38rem;
+            color: #fbbf24;
+        }
+
+        .oracle-status .disagreement-bar {
+            width: 60px;
+            height: 4px;
+            background: #374151;
+            border-radius: 2px;
+            margin-top: 2px;
+            overflow: hidden;
+        }
+
+        .oracle-status .disagreement-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #fbbf24, #ef4444);
+            transition: width 0.3s;
+        }
+
+        .oracle-status .drift-indicator {
+            font-size: 0.35rem;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .shared-memory-indicator {
+            position: absolute;
+            bottom: 65px;
+            left: 4px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.38rem;
+            color: #a78bfa;
+            display: none;
+        }
+
+        .shared-memory-indicator.active { display: block; }
+
+        .conflict-flash {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.45rem;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .conflict-flash.active {
+            opacity: 1;
+            animation: flash-pulse 0.5s ease-out;
+        }
+
+        @keyframes flash-pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -1023,6 +1307,14 @@
                 <div class="dust-overlay" id="dust-overlay"></div>
                 <div class="bloom-overlay" id="bloom-overlay"></div>
                 <div class="bloom-indicator" id="bloom-indicator">🌸 BLOOM MODE</div>
+                <div class="liminal-overlay" id="liminal-overlay"></div>
+                <div class="liminal-indicator" id="liminal-indicator">🌀 LIMINAL COMPRESSION</div>
+                <div class="ceg-indicator DEM" id="ceg-indicator">
+                    <span class="ceg-emoji">🗳️</span>
+                    <span class="ceg-label">DEMOCRATIC</span>
+                    <span class="ceg-cycles">[0]</span>
+                </div>
+                <div class="ceg-pending" id="ceg-pending">→ pending</div>
                 <div class="overlay" id="map-overlay">CYCLE 0</div>
                 <div class="component-indicator">
                     <div class="val" id="giant-big">49</div>
@@ -1042,6 +1334,57 @@
                     <div class="val" id="noise-avg">0.008</div>
                     <div class="label">AVG NOISE σ</div>
                 </div>
+                <div class="advanced-ceg-panel" id="advanced-ceg-panel">
+                    <div class="panel-title">🧠 ADVANCED CEG</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Predictions</span>
+                        <span class="metric-val" id="preemptive-count">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Memory Hits</span>
+                        <span class="metric-val" id="memory-hits">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Memory Success</span>
+                        <span class="metric-val" id="memory-success">50%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Oracle Accuracy</span>
+                        <span class="metric-val" id="oracle-accuracy">50%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Calibrations</span>
+                        <span class="metric-val" id="oracle-calibrations">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Conflicts</span>
+                        <span class="metric-val" id="oracle-conflicts">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Inherited</span>
+                        <span class="metric-val" id="memory-inherited">0</span>
+                    </div>
+                    <div class="prediction-indicator" id="prediction-indicator">
+                        <span class="pred-icon">🔮</span>
+                        <span class="pred-mode" id="pred-mode">--</span>
+                        <span class="pred-conf" id="pred-conf">(0%)</span>
+                    </div>
+                </div>
+                <div class="memory-indicator" id="memory-indicator">
+                    📚 Episodes: <span class="mem-count" id="episode-count">0</span>
+                </div>
+                <div class="shared-memory-indicator" id="shared-memory-indicator">
+                    🌐 Shared: <span id="shared-pool-size">0</span> | Gen: <span id="memory-gen">0</span>
+                </div>
+                <div class="oracle-status" id="oracle-status">
+                    ✨ Oracle Consensus
+                    <div class="disagreement-bar">
+                        <div class="disagreement-fill" id="disagreement-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="drift-indicator" id="drift-indicator">Drift: stable</div>
+                </div>
+                <div class="conflict-flash" id="conflict-flash">⚡ ORACLE CONFLICT</div>
+                <div id="oracle-container"></div>
                 <canvas id="map-canvas"></canvas>
                 <div class="legend">
                     <div class="legend-item"><div class="legend-dot" style="background: #8b5cf6;"></div> Base</div>
@@ -1337,6 +1680,82 @@
     const TRIT_WAVE_SPEED = 0.2;
     const TRIT_WAVE_WIDTH = 0.4;
 
+    // Liminal / Compression Mode
+    const LIMINAL_TRIGGER_ENTROPY = 0.78;   // High entropy triggers liminal
+    const LIMINAL_TRIGGER_FLIPRATE = 0.12;  // High flip rate triggers liminal
+    const LIMINAL_MAX_CYCLES = 12;          // Duration of liminal compression
+    const LIMINAL_BETA_BOOST = 0.02;        // Beta increase per cycle in liminal
+
+    // Contextual Epistemic Governance (CEG)
+    const CEG_MODE = { DEM: 'DEM', EPI: 'EPI', SEN: 'SEN', EMG: 'EMG' };
+    const CEG_LABELS = {
+        DEM: 'DEMOCRATIC',
+        EPI: 'EPISTEMIC',
+        SEN: 'SENTINEL',
+        EMG: 'EMERGENCY'
+    };
+    // Transition thresholds
+    const CEG_ENTROPY_LOW = 0.35;           // Below this = stable (DEM ok)
+    const CEG_ENTROPY_MID = 0.55;           // Above this = consider EPI
+    const CEG_ENTROPY_HIGH = 0.72;          // Above this = SEN territory
+    const CEG_FLIPRATE_LOW = 0.04;          // Below = stable voting
+    const CEG_FLIPRATE_HIGH = 0.10;         // Above = unstable voting
+    const CEG_FAULT_THRESHOLD = 0.25;       // >25% faults = EMG
+    const CEG_FAULT_CRITICAL = 0.40;        // >40% faults = deep EMG
+    const CEG_SIGNAL_COLLAPSE = 0.30;       // Coherence below this = crisis
+    // Hysteresis settings
+    const CEG_HYSTERESIS_CYCLES = 8;        // Min cycles before mode switch
+    const CEG_STABILITY_WINDOW = 5;         // Cycles to confirm stable conditions
+    // Epistemic weighting factors
+    const EPI_GANGLION_WEIGHT = 1.5;        // Ganglions get 50% more influence
+    const EPI_STABILITY_WEIGHT = 0.3;       // Max bonus for stable drones
+    const EPI_TRACK_RECORD_DECAY = 0.95;    // How fast track record fades
+    // Mode-specific parameters
+    const CEG_BETA_MODS = { DEM: 0, EPI: 0.01, SEN: 0.03, EMG: 0.05 };
+    const CEG_COUPLING_MODS = { DEM: 1.0, EPI: 1.1, SEN: 0.8, EMG: 0.6 };
+    const CEG_CONSENSUS_THRESH = { DEM: 0.66, EPI: 0.60, SEN: 0.55, EMG: 0.51 };
+
+    // Predictive Mode Selection
+    const PREDICT_WINDOW = 10;              // Cycles to analyze for trend
+    const PREDICT_ENTROPY_VELOCITY = 0.03;  // Entropy rise per cycle triggers preemption
+    const PREDICT_FLIPRATE_ACCEL = 0.005;   // Flip rate acceleration threshold
+    const PREDICT_LOOKAHEAD = 5;            // Cycles to project forward
+    const PREDICT_CONFIDENCE_THRESH = 0.7;  // Confidence needed to act on prediction
+
+    // Epistemic Memory Consolidation
+    const MEMORY_MAX_EPISODES = 20;         // Max crisis episodes to remember
+    const MEMORY_DECAY = 0.98;              // How fast old memories fade
+    const MEMORY_SIMILARITY_THRESH = 0.15;  // How close conditions must be to match
+    const MEMORY_SUCCESS_BONUS = 0.1;       // Track record boost for successful resolution
+    const MEMORY_FAILURE_PENALTY = 0.05;    // Track record penalty for failed resolution
+
+    // External Oracle System
+    const ORACLE_COUNT = 3;                 // Number of oracle beacons
+    const ORACLE_RANGE = 2.0;               // Range of oracle influence
+    const ORACLE_STRENGTH = 0.8;            // How strongly oracle affects nearby drones
+    const ORACLE_TRUTH_VARIANCE = 0.1;      // How much oracle truth varies
+    const ORACLE_CALIBRATION_RATE = 0.02;   // How fast drones calibrate to oracle
+    const ORACLE_BROADCAST_INTERVAL = 25;   // Cycles between oracle broadcasts
+
+    // Multi-Oracle Consensus
+    const ORACLE_DISAGREEMENT_THRESH = 0.5; // Oracles disagree if diff > this
+    const ORACLE_CONSENSUS_WEIGHT = 0.6;    // Weight given to consensus oracle
+    const ORACLE_MINORITY_WEIGHT = 0.25;    // Weight given to dissenting oracle
+    const ORACLE_CONFLICT_PENALTY = 0.1;    // Track record penalty for conflicting info
+
+    // Temporal Oracle Drift
+    const ORACLE_DRIFT_RATE = 0.005;        // How fast oracle truth drifts per cycle
+    const ORACLE_DRIFT_VARIANCE = 0.02;     // Randomness in drift direction
+    const ORACLE_DRIFT_REVERSAL = 0.01;     // Chance of drift direction reversal
+    const ORACLE_TRUTH_BOUNDS = 1.2;        // Max absolute truth value
+
+    // Cross-Swarm Memory Sharing
+    const MEMORY_SHARE_INTERVAL = 100;      // Cycles between memory broadcasts
+    const MEMORY_SHARE_COUNT = 3;           // Top N episodes to share
+    const MEMORY_INHERITANCE_WEIGHT = 0.7;  // Weight of inherited vs own memory
+    const MEMORY_GENERATION_DECAY = 0.9;    // How much inherited memories fade
+    const SHARED_MEMORY_POOL_SIZE = 10;     // Max shared memories to keep
+
     // Arm colors (for visualization)
     const ARM_COLORS = [
         '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#8b5cf6', '#ec4899', '#f43f5e'
@@ -1419,6 +1838,59 @@
     let tritTransitions = { posToZero: 0, zeroToNeg: 0, negToPos: 0, total: 0 };
     let voteHistory = [];
     let consensusHistory = [];
+
+    // Liminal / Compression Mode State
+    let liminalMode = false;
+    let liminalCycles = 0;
+    let totalLiminalEvents = 0;
+
+    // Contextual Epistemic Governance (CEG) State
+    let cegMode = CEG_MODE.DEM;             // Current governance mode
+    let cegCyclesInMode = 0;                // Cycles spent in current mode
+    let cegPendingMode = null;              // Mode we're transitioning to
+    let cegPendingCycles = 0;               // Cycles confirming pending transition
+    let cegModeHistory = [];                // [{mode, startCycle, endCycle, reason}]
+    let cegEffectiveBeta = 0;               // Current beta modifier from CEG
+    let cegEffectiveCoupling = 1.0;         // Current coupling modifier from CEG
+    let cegEffectiveConsensus = 0.66;       // Current consensus threshold
+    let totalModeTransitions = 0;           // Total mode changes
+
+    // Predictive Mode Selection State
+    let metricHistory = {
+        entropy: [],
+        flipRate: [],
+        coherence: [],
+        faults: []
+    };
+    let predictedMode = null;               // What we predict will be needed
+    let predictionConfidence = 0;           // How confident the prediction is
+    let preemptiveTransitions = 0;          // Count of predictive transitions
+
+    // Epistemic Memory Consolidation State
+    let epistemicMemory = [];               // [{conditions, mode, resolution, cycles, success}]
+    let currentEpisode = null;              // Active crisis episode being tracked
+    let memoryHits = 0;                     // Times memory informed a decision
+    let memorySuccessRate = 0.5;            // Rolling success rate
+
+    // External Oracle System State
+    let oracles = [];                       // [{x, y, truthValue, lastBroadcast, driftDirection}]
+    let oracleCalibrations = 0;             // Total calibration events
+    let oracleAccuracy = 0.5;               // Swarm-wide accuracy vs oracle truth
+
+    // Multi-Oracle Consensus State
+    let oracleConsensusValue = 0;           // Current consensus truth
+    let oracleDisagreement = 0;             // How much oracles disagree (0-1)
+    let oracleConflictEvents = 0;           // Times drones received conflicting info
+
+    // Temporal Oracle Drift State
+    let totalOracleDrift = 0;               // Cumulative drift amount
+    let driftReversals = 0;                 // Number of drift direction changes
+
+    // Cross-Swarm Memory Sharing State
+    let sharedMemoryPool = [];              // [{episode, source, generation, weight}]
+    let lastMemoryShare = 0;                // Cycle of last memory broadcast
+    let memoryInheritanceCount = 0;         // Times we inherited shared memory
+    let memoryGenerations = 0;              // Current memory generation
 
     // ═══════════════════════════════════════════════════════════════════════
     //                    LIVE ANALYSIS DASHBOARD
@@ -2045,6 +2517,1040 @@
         });
 
         log(`🗳️ Injected vote ${value > 0 ? '+1' : value < 0 ? '-1' : '0'} into ${count} drones`, 'vote');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    LIMINAL / COMPRESSION MODE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Decompress trit state back to continuous value
+    function decompressState(compressed) {
+        if (!compressed) return 0;
+        const sign = compressed.trit;
+        const magnitude = compressed.magnitude / 5;  // Reverse the compression
+        return sign * magnitude;
+    }
+
+    // Check if conditions warrant entering liminal mode
+    function shouldEnterLiminal(consensus) {
+        if (!features.trit || liminalMode) return false;
+
+        const n = drones.filter(d => !d.isFaulty && !d.isDetached).length;
+        const flipRate = cycle > 0 ? (tritTransitions.total / cycle / Math.max(1, n)) : 0;
+
+        return (
+            consensus.entropy > LIMINAL_TRIGGER_ENTROPY &&
+            flipRate > LIMINAL_TRIGGER_FLIPRATE
+        );
+    }
+
+    // Enter liminal compression mode
+    function enterLiminalMode() {
+        liminalMode = true;
+        liminalCycles = 0;
+        totalLiminalEvents++;
+        log('🌀 ENTER LIMINAL MODE — Compression gate engaged', 'fault');
+
+        // Add to detected events if dashboard exists
+        if (typeof addDetectedEvent === 'function') {
+            addDetectedEvent('warning', 'Liminal compression engaged');
+        }
+    }
+
+    // Exit liminal mode
+    function exitLiminalMode() {
+        liminalMode = false;
+        log('🧠 EXIT LIMINAL MODE — Reintegration complete', 'trit');
+
+        if (typeof addDetectedEvent === 'function') {
+            addDetectedEvent('success', `Liminal exit after ${liminalCycles} cycles`);
+        }
+    }
+
+    // Process liminal mode effects
+    function processLiminalMode() {
+        if (!liminalMode) return;
+
+        liminalCycles++;
+
+        // Temporarily boost beta (reduce noise influence) and force compression fidelity
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+
+            // Boost beta toward stability
+            d.beta = Math.min(0.97, d.beta + LIMINAL_BETA_BOOST);
+
+            // Force state to match compressed representation (lossy sync)
+            if (d.compressed) {
+                const decompressed = decompressState(d.compressed);
+                d.s = d.s * 0.7 + decompressed * 0.3;  // Blend toward compressed value
+            }
+        });
+
+        // Exit after max cycles
+        if (liminalCycles >= LIMINAL_MAX_CYCLES) {
+            exitLiminalMode();
+        }
+    }
+
+    // Check and potentially enter liminal mode
+    function checkLiminalTrigger() {
+        if (!features.trit) return;
+
+        const consensus = computeTritConsensus();
+
+        if (shouldEnterLiminal(consensus)) {
+            enterLiminalMode();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //              CONTEXTUAL EPISTEMIC GOVERNANCE (CEG)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Gather all metrics used for CEG decisions
+    function getCEGMetrics() {
+        const activeDrones = drones.filter(d => !d.isFaulty && !d.isDetached);
+        const n = activeDrones.length;
+        const faultRatio = faults.length / drones.length;
+        const coherence = computeOrderParameter().coherence;
+
+        // Compute entropy and flip rate from trit system
+        let entropy = 0;
+        let flipRate = 0;
+        if (features.trit) {
+            const consensus = computeTritConsensus();
+            entropy = consensus.entropy;
+            flipRate = cycle > 0 ? (tritTransitions.total / cycle / Math.max(1, n)) : 0;
+        }
+
+        // Cascading pressure
+        const cascading = drones.filter(d => d.isCascading).length / drones.length;
+
+        // Signal stability (variance in states)
+        const avgState = activeDrones.reduce((s, d) => s + d.s, 0) / Math.max(1, n);
+        const stateVariance = activeDrones.reduce((s, d) => s + Math.pow(d.s - avgState, 2), 0) / Math.max(1, n);
+
+        return {
+            entropy,
+            flipRate,
+            faultRatio,
+            coherence,
+            cascading,
+            stateVariance,
+            activeDrones: n,
+            inLiminal: liminalMode
+        };
+    }
+
+    // Determine the recommended governance mode based on metrics
+    function evaluateCEGMode(metrics) {
+        // EMG: Emergency takes priority - severe fault state
+        if (metrics.faultRatio > CEG_FAULT_THRESHOLD) {
+            return { mode: CEG_MODE.EMG, reason: `Faults ${(metrics.faultRatio * 100).toFixed(0)}% > ${CEG_FAULT_THRESHOLD * 100}%` };
+        }
+
+        // EMG: Signal collapse
+        if (metrics.coherence < CEG_SIGNAL_COLLAPSE && metrics.cascading > 0.15) {
+            return { mode: CEG_MODE.EMG, reason: `Coherence collapse ${metrics.coherence.toFixed(2)} + cascade` };
+        }
+
+        // SEN: Sentinel mode for high entropy/instability
+        if (metrics.entropy > CEG_ENTROPY_HIGH || metrics.flipRate > CEG_FLIPRATE_HIGH) {
+            return { mode: CEG_MODE.SEN, reason: `High entropy ${metrics.entropy.toFixed(2)} / flip ${metrics.flipRate.toFixed(3)}` };
+        }
+
+        // EPI: Epistemic mode for moderate complexity (experts help)
+        if (metrics.entropy > CEG_ENTROPY_MID && metrics.entropy <= CEG_ENTROPY_HIGH) {
+            if (metrics.flipRate < CEG_FLIPRATE_HIGH) {
+                return { mode: CEG_MODE.EPI, reason: `Moderate entropy ${metrics.entropy.toFixed(2)}, stable voting` };
+            }
+        }
+
+        // EPI: Also for low coherence but manageable conditions
+        if (metrics.coherence < 0.5 && metrics.faultRatio < 0.15 && !metrics.inLiminal) {
+            return { mode: CEG_MODE.EPI, reason: `Low coherence ${metrics.coherence.toFixed(2)}, need expertise` };
+        }
+
+        // DEM: Default democratic mode for stable conditions
+        if (metrics.entropy < CEG_ENTROPY_LOW && metrics.flipRate < CEG_FLIPRATE_LOW) {
+            return { mode: CEG_MODE.DEM, reason: `Stable: entropy ${metrics.entropy.toFixed(2)}, flip ${metrics.flipRate.toFixed(3)}` };
+        }
+
+        // Stay in current mode if no clear transition
+        return { mode: cegMode, reason: 'No transition criteria met' };
+    }
+
+    // Execute mode transition with logging
+    function transitionCEGMode(newMode, reason) {
+        const oldMode = cegMode;
+
+        // Record history
+        if (cegModeHistory.length > 0) {
+            cegModeHistory[cegModeHistory.length - 1].endCycle = cycle;
+        }
+        cegModeHistory.push({
+            mode: newMode,
+            startCycle: cycle,
+            endCycle: null,
+            reason: reason,
+            fromMode: oldMode
+        });
+
+        // Log transition
+        const modeEmoji = { DEM: '🗳️', EPI: '🎓', SEN: '🛡️', EMG: '🚨' };
+        log(`${modeEmoji[newMode]} CEG → ${CEG_LABELS[newMode]}: ${reason}`,
+            newMode === CEG_MODE.EMG ? 'fault' : newMode === CEG_MODE.SEN ? 'warning' : 'trit');
+
+        // Dashboard event
+        if (typeof addDetectedEvent === 'function') {
+            const eventType = newMode === CEG_MODE.EMG ? 'critical' :
+                              newMode === CEG_MODE.SEN ? 'warning' : 'success';
+            addDetectedEvent(eventType, `CEG: ${oldMode} → ${newMode}`);
+        }
+
+        cegMode = newMode;
+        cegCyclesInMode = 0;
+        cegPendingMode = null;
+        cegPendingCycles = 0;
+        totalModeTransitions++;
+
+        // Apply new mode parameters immediately
+        applyGovernanceMode();
+
+        // SEN mode delegates to liminal if not already active
+        if (newMode === CEG_MODE.SEN && !liminalMode && features.trit) {
+            enterLiminalMode();
+        }
+    }
+
+    // Apply mode-specific parameters to effective values
+    function applyGovernanceMode() {
+        cegEffectiveBeta = CEG_BETA_MODS[cegMode];
+        cegEffectiveCoupling = CEG_COUPLING_MODS[cegMode];
+        cegEffectiveConsensus = CEG_CONSENSUS_THRESH[cegMode];
+    }
+
+    // Compute epistemic weight for a drone (only used in EPI mode)
+    function computeEpistemicWeight(drone) {
+        if (cegMode !== CEG_MODE.EPI) return 1.0;
+
+        let weight = 1.0;
+
+        // Ganglion bonus
+        if (drone.isGanglion) {
+            weight *= EPI_GANGLION_WEIGHT;
+        }
+
+        // Stability bonus (low personal flip rate)
+        const personalFlips = drone.voteFlips || 0;
+        const personalFlipRate = cycle > 10 ? personalFlips / cycle : 0;
+        const stabilityBonus = Math.max(0, EPI_STABILITY_WEIGHT * (1 - personalFlipRate / 0.1));
+        weight += stabilityBonus;
+
+        // Track record (accuracy over time - starts neutral)
+        const trackRecord = drone.epistemicTrackRecord || 0.5;
+        weight *= (0.7 + trackRecord * 0.6);  // Range: 0.7 to 1.3
+
+        // Zooid role bonus
+        if (drone.zooidType === 'gastrozooid') {
+            weight *= 1.1;  // Sensors get slight boost
+        }
+
+        return Math.max(0.3, Math.min(2.5, weight));  // Clamp to reasonable range
+    }
+
+    // Compute weighted consensus (for EPI mode)
+    function computeWeightedConsensus() {
+        if (cegMode !== CEG_MODE.EPI) {
+            return computeTritConsensus();  // Fall back to standard
+        }
+
+        const activeDrones = drones.filter(d => !d.isFaulty && !d.isDetached);
+        let weightedPos = 0, weightedZero = 0, weightedNeg = 0;
+        let totalWeight = 0;
+
+        activeDrones.forEach(d => {
+            const weight = computeEpistemicWeight(d);
+            totalWeight += weight;
+
+            if (d.vote === 1) weightedPos += weight;
+            else if (d.vote === -1) weightedNeg += weight;
+            else weightedZero += weight;
+        });
+
+        if (totalWeight === 0) {
+            return computeTritConsensus();
+        }
+
+        const posRatio = weightedPos / totalWeight;
+        const zeroRatio = weightedZero / totalWeight;
+        const negRatio = weightedNeg / totalWeight;
+
+        // Determine consensus with effective threshold
+        let result = 'none';
+        let winner = TRIT.ZERO;
+        let margin = 0;
+
+        if (posRatio >= cegEffectiveConsensus) {
+            result = 'consensus';
+            winner = TRIT.POS;
+            margin = posRatio - Math.max(zeroRatio, negRatio);
+        } else if (negRatio >= cegEffectiveConsensus) {
+            result = 'consensus';
+            winner = TRIT.NEG;
+            margin = negRatio - Math.max(zeroRatio, posRatio);
+        } else if (Math.abs(posRatio - negRatio) < 0.05 && posRatio > 0.3 && negRatio > 0.3) {
+            result = 'deadlock';
+            margin = 0;
+        }
+
+        // Entropy calculation
+        const probs = [posRatio, zeroRatio, negRatio].filter(p => p > 0);
+        const entropy = -probs.reduce((s, p) => s + p * Math.log2(p), 0) / Math.log2(3);
+
+        return {
+            pos: Math.round(weightedPos),
+            zero: Math.round(weightedZero),
+            neg: Math.round(weightedNeg),
+            total: totalWeight,
+            result,
+            winner,
+            margin,
+            entropy,
+            weighted: true
+        };
+    }
+
+    // Update epistemic track records based on consensus outcomes
+    function updateEpistemicTrackRecords(consensus) {
+        if (!consensus || consensus.result !== 'consensus') return;
+
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+
+            // Initialize track record if needed
+            if (d.epistemicTrackRecord === undefined) {
+                d.epistemicTrackRecord = 0.5;
+            }
+
+            // Did this drone agree with consensus?
+            const agreedWithConsensus = d.vote === consensus.winner;
+
+            // Update track record with decay
+            const adjustment = agreedWithConsensus ? 0.02 : -0.01;
+            d.epistemicTrackRecord = d.epistemicTrackRecord * EPI_TRACK_RECORD_DECAY +
+                                     (1 - EPI_TRACK_RECORD_DECAY) * (agreedWithConsensus ? 1 : 0);
+            d.epistemicTrackRecord = Math.max(0.1, Math.min(0.9, d.epistemicTrackRecord));
+        });
+    }
+
+    // Main CEG update function - called each cycle
+    function updateCEG() {
+        if (!features.trit) return;
+
+        cegCyclesInMode++;
+
+        // Get current metrics
+        const metrics = getCEGMetrics();
+
+        // Evaluate recommended mode
+        const recommendation = evaluateCEGMode(metrics);
+
+        // Handle hysteresis - don't flap between modes
+        if (recommendation.mode !== cegMode) {
+            // Emergency always transitions immediately
+            if (recommendation.mode === CEG_MODE.EMG) {
+                transitionCEGMode(CEG_MODE.EMG, recommendation.reason);
+                return;
+            }
+
+            // Other modes need hysteresis
+            if (cegCyclesInMode < CEG_HYSTERESIS_CYCLES) {
+                // Too soon to switch, ignore recommendation
+                return;
+            }
+
+            // Start or continue pending transition
+            if (cegPendingMode === recommendation.mode) {
+                cegPendingCycles++;
+                if (cegPendingCycles >= CEG_STABILITY_WINDOW) {
+                    // Confirmed - execute transition
+                    transitionCEGMode(recommendation.mode, recommendation.reason);
+                }
+            } else {
+                // New pending mode
+                cegPendingMode = recommendation.mode;
+                cegPendingCycles = 1;
+            }
+        } else {
+            // Staying in current mode - reset pending
+            cegPendingMode = null;
+            cegPendingCycles = 0;
+        }
+
+        // Update track records if we had a consensus this cycle
+        if (cegMode === CEG_MODE.EPI) {
+            const consensus = computeWeightedConsensus();
+            updateEpistemicTrackRecords(consensus);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    PREDICTIVE MODE SELECTION
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Record current metrics for trend analysis
+    function recordMetricHistory(metrics) {
+        metricHistory.entropy.push(metrics.entropy);
+        metricHistory.flipRate.push(metrics.flipRate);
+        metricHistory.coherence.push(metrics.coherence);
+        metricHistory.faults.push(metrics.faultRatio);
+
+        // Keep only PREDICT_WINDOW entries
+        Object.keys(metricHistory).forEach(key => {
+            if (metricHistory[key].length > PREDICT_WINDOW) {
+                metricHistory[key].shift();
+            }
+        });
+    }
+
+    // Compute velocity (rate of change) of a metric
+    function computeMetricVelocity(history) {
+        if (history.length < 3) return 0;
+        const recent = history.slice(-3);
+        return (recent[2] - recent[0]) / 2;
+    }
+
+    // Compute acceleration (rate of velocity change)
+    function computeMetricAcceleration(history) {
+        if (history.length < 5) return 0;
+        const v1 = (history[history.length - 3] - history[history.length - 5]) / 2;
+        const v2 = (history[history.length - 1] - history[history.length - 3]) / 2;
+        return v2 - v1;
+    }
+
+    // Project metric value forward
+    function projectMetric(history, lookahead) {
+        if (history.length < 3) return history[history.length - 1] || 0;
+        const velocity = computeMetricVelocity(history);
+        const current = history[history.length - 1];
+        return current + velocity * lookahead;
+    }
+
+    // Analyze trends and predict future mode needs
+    function predictFutureMode() {
+        if (metricHistory.entropy.length < PREDICT_WINDOW / 2) {
+            return { mode: null, confidence: 0, reason: 'Insufficient history' };
+        }
+
+        const entropyVel = computeMetricVelocity(metricHistory.entropy);
+        const flipRateAccel = computeMetricAcceleration(metricHistory.flipRate);
+        const coherenceVel = computeMetricVelocity(metricHistory.coherence);
+
+        // Project forward
+        const projectedEntropy = projectMetric(metricHistory.entropy, PREDICT_LOOKAHEAD);
+        const projectedFlipRate = projectMetric(metricHistory.flipRate, PREDICT_LOOKAHEAD);
+        const projectedCoherence = projectMetric(metricHistory.coherence, PREDICT_LOOKAHEAD);
+
+        let predictedMode = null;
+        let confidence = 0;
+        let reason = '';
+
+        // Check for impending crisis (entropy rising fast toward SEN threshold)
+        if (entropyVel > PREDICT_ENTROPY_VELOCITY && projectedEntropy > CEG_ENTROPY_HIGH) {
+            predictedMode = CEG_MODE.SEN;
+            confidence = Math.min(1, entropyVel / PREDICT_ENTROPY_VELOCITY * 0.5 + 0.3);
+            reason = `Entropy rising ${entropyVel.toFixed(3)}/cycle → ${projectedEntropy.toFixed(2)}`;
+        }
+        // Check for flip rate acceleration (voting instability building)
+        else if (flipRateAccel > PREDICT_FLIPRATE_ACCEL && projectedFlipRate > CEG_FLIPRATE_HIGH) {
+            predictedMode = CEG_MODE.SEN;
+            confidence = Math.min(1, flipRateAccel / PREDICT_FLIPRATE_ACCEL * 0.4 + 0.3);
+            reason = `Flip rate accelerating → ${projectedFlipRate.toFixed(3)}`;
+        }
+        // Check for coherence decline suggesting EPI would help
+        else if (coherenceVel < -0.02 && projectedCoherence < 0.5 && cegMode === CEG_MODE.DEM) {
+            predictedMode = CEG_MODE.EPI;
+            confidence = Math.min(1, Math.abs(coherenceVel) * 10 + 0.2);
+            reason = `Coherence declining → ${projectedCoherence.toFixed(2)}`;
+        }
+        // Check for stabilization allowing return to DEM
+        else if (entropyVel < -0.01 && projectedEntropy < CEG_ENTROPY_LOW && cegMode !== CEG_MODE.DEM) {
+            predictedMode = CEG_MODE.DEM;
+            confidence = Math.min(1, Math.abs(entropyVel) * 15 + 0.3);
+            reason = `Stabilizing → entropy ${projectedEntropy.toFixed(2)}`;
+        }
+
+        return { mode: predictedMode, confidence, reason };
+    }
+
+    // Execute preemptive mode transition
+    function executePreemptiveTransition(prediction) {
+        if (!prediction.mode || prediction.confidence < PREDICT_CONFIDENCE_THRESH) return false;
+        if (prediction.mode === cegMode) return false;
+        if (cegCyclesInMode < CEG_HYSTERESIS_CYCLES / 2) return false;  // Some hysteresis still applies
+
+        preemptiveTransitions++;
+        log(`🔮 PREDICTIVE: ${prediction.reason}`, 'trit');
+        transitionCEGMode(prediction.mode, `Predicted: ${prediction.reason}`);
+
+        if (typeof addDetectedEvent === 'function') {
+            addDetectedEvent('success', `Predictive → ${prediction.mode}`);
+        }
+
+        return true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    EPISTEMIC MEMORY CONSOLIDATION
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Start tracking a crisis episode
+    function startCrisisEpisode(metrics, mode) {
+        currentEpisode = {
+            startCycle: cycle,
+            startConditions: { ...metrics },
+            mode: mode,
+            peakEntropy: metrics.entropy,
+            peakFaults: metrics.faultRatio,
+            resolved: false
+        };
+    }
+
+    // Check if current conditions match a remembered episode
+    function findSimilarEpisode(metrics) {
+        return epistemicMemory.find(ep => {
+            const entropyDiff = Math.abs(ep.conditions.entropy - metrics.entropy);
+            const faultDiff = Math.abs(ep.conditions.faultRatio - metrics.faultRatio);
+            const coherenceDiff = Math.abs(ep.conditions.coherence - metrics.coherence);
+            return entropyDiff < MEMORY_SIMILARITY_THRESH &&
+                   faultDiff < MEMORY_SIMILARITY_THRESH &&
+                   coherenceDiff < MEMORY_SIMILARITY_THRESH;
+        });
+    }
+
+    // Record episode resolution
+    function resolveCurrentEpisode(success) {
+        if (!currentEpisode) return;
+
+        const duration = cycle - currentEpisode.startCycle;
+
+        epistemicMemory.push({
+            conditions: currentEpisode.startConditions,
+            mode: currentEpisode.mode,
+            resolution: cegMode,
+            cycles: duration,
+            success: success,
+            peakEntropy: currentEpisode.peakEntropy,
+            timestamp: cycle,
+            weight: 1.0
+        });
+
+        // Trim old memories
+        while (epistemicMemory.length > MEMORY_MAX_EPISODES) {
+            epistemicMemory.shift();
+        }
+
+        // Update success rate
+        const recentSuccess = epistemicMemory.slice(-10).filter(e => e.success).length;
+        memorySuccessRate = recentSuccess / Math.min(10, epistemicMemory.length);
+
+        // Boost/penalize drone track records based on outcome
+        if (success) {
+            drones.forEach(d => {
+                if (!d.isFaulty && !d.isDetached) {
+                    d.epistemicTrackRecord = Math.min(0.9, d.epistemicTrackRecord + MEMORY_SUCCESS_BONUS);
+                }
+            });
+        } else {
+            drones.forEach(d => {
+                if (!d.isFaulty && !d.isDetached) {
+                    d.epistemicTrackRecord = Math.max(0.1, d.epistemicTrackRecord - MEMORY_FAILURE_PENALTY);
+                }
+            });
+        }
+
+        log(`📚 Episode ${success ? 'resolved' : 'failed'}: ${currentEpisode.mode} → ${cegMode} in ${duration} cycles`,
+            success ? 'trit' : 'warning');
+
+        currentEpisode = null;
+    }
+
+    // Decay old memory weights
+    function decayEpistemicMemory() {
+        epistemicMemory.forEach(ep => {
+            ep.weight *= MEMORY_DECAY;
+        });
+        // Remove very faded memories
+        epistemicMemory = epistemicMemory.filter(ep => ep.weight > 0.1);
+    }
+
+    // Use memory to inform mode selection
+    function consultEpistemicMemory(metrics) {
+        const similar = findSimilarEpisode(metrics);
+        if (!similar) return null;
+
+        memoryHits++;
+
+        // Weight by recency and success
+        const recommendation = {
+            mode: similar.success ? similar.resolution : null,  // Use what worked, avoid what didn't
+            confidence: similar.weight * (similar.success ? 0.8 : 0.3),
+            reason: `Memory: ${similar.mode}→${similar.resolution} ${similar.success ? 'worked' : 'failed'} (${similar.cycles}c)`
+        };
+
+        return recommendation;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    EXTERNAL ORACLE SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Initialize oracle beacons
+    function initOracles() {
+        oracles = [];
+        const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+
+        for (let i = 0; i < ORACLE_COUNT; i++) {
+            // Spread truth values to ensure some disagreement
+            const baseAngle = (i / ORACLE_COUNT) * Math.PI * 2;
+            const truthSpread = Math.sin(baseAngle) + (seededRandom() - 0.5) * 0.5;
+
+            oracles.push({
+                id: i,
+                x: 1 + seededRandom() * (size - 2),
+                y: 1 + seededRandom() * (size - 2),
+                truthValue: Math.max(-1, Math.min(1, truthSpread)),  // Ground truth: -1 to 1
+                lastBroadcast: 0,
+                calibrations: 0,
+                driftDirection: (seededRandom() - 0.5) * 2  // Initial drift direction
+            });
+        }
+    }
+
+    // Oracle broadcasts truth to nearby drones (with multi-oracle conflict handling)
+    function processOracleBroadcasts() {
+        if (oracles.length === 0) return;
+
+        // Check if any oracles are broadcasting this cycle
+        const broadcastingOracles = oracles.filter(o =>
+            cycle - o.lastBroadcast >= ORACLE_BROADCAST_INTERVAL
+        );
+
+        if (broadcastingOracles.length === 0) return;
+
+        // Mark them as having broadcast
+        broadcastingOracles.forEach(o => o.lastBroadcast = cycle);
+
+        // Process each drone
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+
+            // Find all oracles in range of this drone
+            const nearbyOracles = oracles.filter(o => {
+                const dist = Math.sqrt(Math.pow(d.x - o.x, 2) + Math.pow(d.y - o.y, 2));
+                return dist <= ORACLE_RANGE;
+            }).map(o => ({
+                ...o,
+                dist: Math.sqrt(Math.pow(d.x - o.x, 2) + Math.pow(d.y - o.y, 2)),
+                broadcastTruth: o.truthValue + (seededRandom() - 0.5) * ORACLE_TRUTH_VARIANCE * 2
+            }));
+
+            if (nearbyOracles.length === 0) return;
+
+            // Handle potential conflict
+            let effectiveTruth;
+            if (nearbyOracles.length > 1) {
+                effectiveTruth = handleOracleConflict(d, nearbyOracles);
+            } else {
+                effectiveTruth = nearbyOracles[0].broadcastTruth;
+            }
+
+            // Calibrate with weighted influence from all nearby oracles
+            const avgInfluence = nearbyOracles.reduce((s, o) =>
+                s + (1 - o.dist / ORACLE_RANGE) * ORACLE_STRENGTH, 0
+            ) / nearbyOracles.length;
+
+            calibrateDroneToOracle(d, effectiveTruth, avgInfluence);
+
+            nearbyOracles.forEach(o => {
+                const original = oracles.find(oo => oo.id === o.id);
+                if (original) {
+                    original.calibrations++;
+                    oracleCalibrations++;
+                }
+            });
+        });
+    }
+
+    // Calibrate a drone's epistemic track record against oracle truth
+    function calibrateDroneToOracle(drone, oracleTruth, influence) {
+        // How close is drone's state to oracle truth?
+        const error = Math.abs(drone.s - oracleTruth);
+        const accuracy = Math.max(0, 1 - error);
+
+        // Update track record based on accuracy
+        const adjustment = (accuracy - 0.5) * ORACLE_CALIBRATION_RATE * influence;
+        drone.epistemicTrackRecord = Math.max(0.1, Math.min(0.9,
+            drone.epistemicTrackRecord + adjustment
+        ));
+
+        // Also nudge state slightly toward truth (oracle influence on belief)
+        drone.s = drone.s * (1 - influence * 0.1) + oracleTruth * influence * 0.1;
+    }
+
+    // Compute swarm-wide accuracy against oracles
+    function computeOracleAccuracy() {
+        if (oracles.length === 0) return 0.5;
+
+        let totalError = 0;
+        let count = 0;
+
+        drones.forEach(d => {
+            if (d.isFaulty || d.isDetached) return;
+
+            // Find nearest oracle
+            let minDist = Infinity;
+            let nearestOracle = null;
+            oracles.forEach(o => {
+                const dist = Math.sqrt(Math.pow(d.x - o.x, 2) + Math.pow(d.y - o.y, 2));
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestOracle = o;
+                }
+            });
+
+            if (nearestOracle && minDist < ORACLE_RANGE * 2) {
+                const error = Math.abs(d.s - nearestOracle.truthValue);
+                totalError += error;
+                count++;
+            }
+        });
+
+        return count > 0 ? Math.max(0, 1 - totalError / count) : 0.5;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    MULTI-ORACLE CONSENSUS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Compute consensus value among oracles
+    function computeOracleConsensus() {
+        if (oracles.length < 2) {
+            oracleConsensusValue = oracles.length > 0 ? oracles[0].truthValue : 0;
+            oracleDisagreement = 0;
+            return { consensus: oracleConsensusValue, disagreement: 0, conflicting: [] };
+        }
+
+        // Find average and variance
+        const truthValues = oracles.map(o => o.truthValue);
+        const avgTruth = truthValues.reduce((a, b) => a + b, 0) / truthValues.length;
+
+        // Compute disagreement as max difference between any two oracles
+        let maxDiff = 0;
+        for (let i = 0; i < truthValues.length; i++) {
+            for (let j = i + 1; j < truthValues.length; j++) {
+                maxDiff = Math.max(maxDiff, Math.abs(truthValues[i] - truthValues[j]));
+            }
+        }
+
+        oracleDisagreement = maxDiff / 2;  // Normalize to 0-1 range
+        oracleConsensusValue = avgTruth;
+
+        // Identify conflicting oracles (those far from consensus)
+        const conflicting = oracles.filter(o =>
+            Math.abs(o.truthValue - avgTruth) > ORACLE_DISAGREEMENT_THRESH / 2
+        );
+
+        return { consensus: avgTruth, disagreement: oracleDisagreement, conflicting };
+    }
+
+    // Handle drone receiving conflicting oracle information
+    function handleOracleConflict(drone, nearbyOracles) {
+        if (nearbyOracles.length < 2) return nearbyOracles[0]?.truthValue || 0;
+
+        const truthValues = nearbyOracles.map(o => o.truthValue);
+        const maxDiff = Math.max(...truthValues) - Math.min(...truthValues);
+
+        // If significant disagreement, drone must reconcile
+        if (maxDiff > ORACLE_DISAGREEMENT_THRESH) {
+            oracleConflictEvents++;
+
+            // Weight by distance (closer oracles more influential)
+            let weightedTruth = 0;
+            let totalWeight = 0;
+
+            nearbyOracles.forEach(o => {
+                const dist = Math.sqrt(Math.pow(drone.x - o.x, 2) + Math.pow(drone.y - o.y, 2));
+                const weight = 1 / (1 + dist);
+
+                // Consensus oracles get more weight
+                const isConsensus = Math.abs(o.truthValue - oracleConsensusValue) < ORACLE_DISAGREEMENT_THRESH / 2;
+                const adjustedWeight = weight * (isConsensus ? ORACLE_CONSENSUS_WEIGHT : ORACLE_MINORITY_WEIGHT);
+
+                weightedTruth += o.truthValue * adjustedWeight;
+                totalWeight += adjustedWeight;
+            });
+
+            // Conflict causes uncertainty - penalize track record slightly
+            drone.epistemicTrackRecord = Math.max(0.1,
+                drone.epistemicTrackRecord - ORACLE_CONFLICT_PENALTY * 0.1
+            );
+
+            return totalWeight > 0 ? weightedTruth / totalWeight : 0;
+        }
+
+        // No significant conflict - use average
+        return truthValues.reduce((a, b) => a + b, 0) / truthValues.length;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    TEMPORAL ORACLE DRIFT
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Update oracle drift directions and values
+    function updateOracleDrift() {
+        oracles.forEach(oracle => {
+            // Initialize drift direction if needed
+            if (oracle.driftDirection === undefined) {
+                oracle.driftDirection = (seededRandom() - 0.5) * 2;  // -1 to 1
+            }
+
+            // Chance of drift reversal
+            if (seededRandom() < ORACLE_DRIFT_REVERSAL) {
+                oracle.driftDirection *= -1;
+                driftReversals++;
+                log(`⚡ Oracle ${oracle.id} drift reversed`, 'warning');
+            }
+
+            // Apply drift with variance
+            const driftAmount = ORACLE_DRIFT_RATE * oracle.driftDirection +
+                               (seededRandom() - 0.5) * ORACLE_DRIFT_VARIANCE;
+
+            const oldTruth = oracle.truthValue;
+            oracle.truthValue += driftAmount;
+
+            // Bound truth value
+            oracle.truthValue = Math.max(-ORACLE_TRUTH_BOUNDS,
+                               Math.min(ORACLE_TRUTH_BOUNDS, oracle.truthValue));
+
+            // Track total drift
+            totalOracleDrift += Math.abs(oracle.truthValue - oldTruth);
+
+            // If hitting bounds, reverse drift
+            if (Math.abs(oracle.truthValue) >= ORACLE_TRUTH_BOUNDS * 0.95) {
+                oracle.driftDirection *= -0.8;  // Bounce back with some dampening
+            }
+        });
+    }
+
+    // Get drift status for display
+    function getOracleDriftStatus() {
+        if (oracles.length === 0) return { rate: 0, direction: 'stable' };
+
+        const avgDrift = oracles.reduce((s, o) => s + o.driftDirection, 0) / oracles.length;
+        let direction = 'stable';
+        if (avgDrift > 0.3) direction = 'positive';
+        else if (avgDrift < -0.3) direction = 'negative';
+        else if (Math.abs(avgDrift) > 0.1) direction = 'mixed';
+
+        return {
+            rate: totalOracleDrift / Math.max(1, cycle),
+            direction,
+            reversals: driftReversals
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    CROSS-SWARM MEMORY SHARING
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Select top episodes to share
+    function selectEpisodesToShare() {
+        if (epistemicMemory.length === 0) return [];
+
+        // Sort by success and recency
+        const sorted = [...epistemicMemory]
+            .filter(ep => ep.success)  // Only share successes
+            .sort((a, b) => {
+                // Prioritize: recent, successful, fast resolution
+                const scoreA = a.weight * (a.success ? 2 : 0.5) * (1 / Math.max(1, a.cycles / 50));
+                const scoreB = b.weight * (b.success ? 2 : 0.5) * (1 / Math.max(1, b.cycles / 50));
+                return scoreB - scoreA;
+            });
+
+        return sorted.slice(0, MEMORY_SHARE_COUNT);
+    }
+
+    // Broadcast memories to shared pool (simulates cross-swarm communication)
+    function broadcastMemories() {
+        if (cycle - lastMemoryShare < MEMORY_SHARE_INTERVAL) return;
+        lastMemoryShare = cycle;
+
+        const toShare = selectEpisodesToShare();
+        if (toShare.length === 0) return;
+
+        memoryGenerations++;
+
+        toShare.forEach(episode => {
+            // Check if similar episode already in shared pool
+            const exists = sharedMemoryPool.find(sm =>
+                Math.abs(sm.episode.conditions.entropy - episode.conditions.entropy) < MEMORY_SIMILARITY_THRESH &&
+                sm.episode.mode === episode.mode
+            );
+
+            if (!exists) {
+                sharedMemoryPool.push({
+                    episode: { ...episode },
+                    source: 'local',
+                    generation: memoryGenerations,
+                    weight: episode.weight * MEMORY_INHERITANCE_WEIGHT
+                });
+            }
+        });
+
+        // Trim pool
+        while (sharedMemoryPool.length > SHARED_MEMORY_POOL_SIZE) {
+            // Remove oldest/weakest
+            sharedMemoryPool.sort((a, b) => b.weight - a.weight);
+            sharedMemoryPool.pop();
+        }
+
+        if (toShare.length > 0) {
+            log(`📡 Broadcast ${toShare.length} memories to shared pool (gen ${memoryGenerations})`, 'trit');
+        }
+    }
+
+    // Inherit memories from shared pool
+    function inheritSharedMemories() {
+        if (sharedMemoryPool.length === 0) return;
+
+        // Decay shared memories
+        sharedMemoryPool.forEach(sm => {
+            sm.weight *= MEMORY_GENERATION_DECAY;
+        });
+
+        // Remove very faded shared memories
+        sharedMemoryPool = sharedMemoryPool.filter(sm => sm.weight > 0.1);
+
+        // Check if any shared memory is relevant to current conditions
+        const metrics = getCEGMetrics();
+        const relevantShared = sharedMemoryPool.find(sm => {
+            const ep = sm.episode;
+            return Math.abs(ep.conditions.entropy - metrics.entropy) < MEMORY_SIMILARITY_THRESH * 1.5 &&
+                   Math.abs(ep.conditions.faultRatio - metrics.faultRatio) < MEMORY_SIMILARITY_THRESH * 1.5;
+        });
+
+        if (relevantShared && !findSimilarEpisode(metrics)) {
+            // Inherit this memory
+            memoryInheritanceCount++;
+
+            // Add to local memory with reduced weight
+            epistemicMemory.push({
+                ...relevantShared.episode,
+                weight: relevantShared.weight * MEMORY_INHERITANCE_WEIGHT,
+                inherited: true,
+                generation: relevantShared.generation
+            });
+
+            log(`📥 Inherited memory: ${relevantShared.episode.mode}→${relevantShared.episode.resolution} (gen ${relevantShared.generation})`, 'trit');
+
+            // Boost drone track records slightly from inherited wisdom
+            drones.forEach(d => {
+                if (!d.isFaulty && !d.isDetached) {
+                    d.epistemicTrackRecord = Math.min(0.9,
+                        d.epistemicTrackRecord + 0.01
+                    );
+                }
+            });
+        }
+    }
+
+    // Get shared memory stats
+    function getSharedMemoryStats() {
+        return {
+            poolSize: sharedMemoryPool.length,
+            generations: memoryGenerations,
+            inheritances: memoryInheritanceCount,
+            avgWeight: sharedMemoryPool.length > 0 ?
+                sharedMemoryPool.reduce((s, m) => s + m.weight, 0) / sharedMemoryPool.length : 0
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //                    INTEGRATED ADVANCED CEG
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // Main update function integrating all three systems
+    function updateAdvancedCEG() {
+        if (!features.trit) return;
+
+        const metrics = getCEGMetrics();
+
+        // 1. Record history for prediction
+        recordMetricHistory(metrics);
+
+        // 2. Update current episode tracking
+        if (currentEpisode) {
+            currentEpisode.peakEntropy = Math.max(currentEpisode.peakEntropy, metrics.entropy);
+            currentEpisode.peakFaults = Math.max(currentEpisode.peakFaults, metrics.faultRatio);
+
+            // Check for resolution (returned to stable state)
+            if (metrics.entropy < CEG_ENTROPY_LOW && metrics.flipRate < CEG_FLIPRATE_LOW) {
+                resolveCurrentEpisode(true);
+            }
+            // Check for failure (got worse or timed out)
+            else if (cycle - currentEpisode.startCycle > 100) {
+                resolveCurrentEpisode(false);
+            }
+        }
+
+        // 3. Start new episode if entering crisis
+        if (!currentEpisode && (cegMode === CEG_MODE.SEN || cegMode === CEG_MODE.EMG)) {
+            startCrisisEpisode(metrics, cegMode);
+        }
+
+        // 4. Try predictive mode selection
+        const prediction = predictFutureMode();
+        predictedMode = prediction.mode;
+        predictionConfidence = prediction.confidence;
+
+        if (executePreemptiveTransition(prediction)) {
+            return;  // Preemptive transition took priority
+        }
+
+        // 5. Consult epistemic memory for guidance
+        const memoryAdvice = consultEpistemicMemory(metrics);
+        if (memoryAdvice && memoryAdvice.mode && memoryAdvice.confidence > 0.6) {
+            // Memory suggests a mode - factor into decision
+            if (memoryAdvice.mode !== cegMode && cegCyclesInMode >= CEG_HYSTERESIS_CYCLES) {
+                log(`📚 Memory recommends: ${memoryAdvice.reason}`, 'trit');
+            }
+        }
+
+        // 6. Process oracle broadcasts
+        processOracleBroadcasts();
+
+        // 7. Update oracle accuracy metric
+        oracleAccuracy = computeOracleAccuracy();
+
+        // 8. Compute oracle consensus (multi-oracle)
+        computeOracleConsensus();
+
+        // 9. Apply temporal oracle drift
+        if (cycle % 5 === 0) {  // Drift every 5 cycles for smoothness
+            updateOracleDrift();
+        }
+
+        // 10. Cross-swarm memory sharing
+        broadcastMemories();
+        inheritSharedMemories();
+
+        // 11. Decay old memories
+        if (cycle % 50 === 0) {
+            decayEpistemicMemory();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -3301,6 +4807,10 @@
             this.tritWaveInfluence = 0;
             this.inTritWaveFront = false;
             this.compressed = compressTritState(this.s);
+
+            // CEG / Epistemic tracking
+            this.voteFlips = 0;
+            this.epistemicTrackRecord = 0.5;  // Starts neutral
         }
 
         update() {
@@ -3313,7 +4823,9 @@
 
             this.beta = computeBeta(this);
 
-            const effectiveBeta = Math.min(BETA_BASE + 0.05, this.beta + this.pulseBoost);
+            // Apply CEG beta modifier
+            const cegBetaMod = typeof cegEffectiveBeta !== 'undefined' ? cegEffectiveBeta : 0;
+            const effectiveBeta = Math.min(BETA_BASE + 0.08, this.beta + this.pulseBoost + cegBetaMod);
             this.pulseBoost *= 0.9;
 
             this.evolve(effectiveBeta);
@@ -3323,6 +4835,12 @@
             if (features.trit) {
                 const newVote = computeTritVote(this);
                 trackTritTransition(this.prevVote, newVote);
+
+                // Track per-drone vote flips for epistemic weighting
+                if (newVote !== this.prevVote && this.prevVote !== undefined) {
+                    this.voteFlips = (this.voteFlips || 0) + 1;
+                }
+
                 this.vote = newVote;
                 this.tritFaultStatus = computeTernaryFaultStatus(this);
                 this.compressed = compressTritState(this.s);
@@ -3365,9 +4883,11 @@
             if (neighbors.length === 0) return;
 
             // Same-arm neighbors get extra weight in octopus mode
+            // CEG coupling modifier affects neighbor influence strength
+            const cegCouplingMod = typeof cegEffectiveCoupling !== 'undefined' ? cegEffectiveCoupling : 1.0;
             let weightedSum = 0, weightTotal = 0;
             neighbors.forEach(n => {
-                let w = this.signalStrengths[n.id];
+                let w = this.signalStrengths[n.id] * cegCouplingMod;
                 if (features.arms && n.armId === this.armId) {
                     w *= 1.3;  // Intra-arm boost
                 }
@@ -3800,7 +5320,58 @@
         voteHistory = [];
         consensusHistory = [];
 
+        // Reset liminal mode
+        liminalMode = false;
+        liminalCycles = 0;
+        totalLiminalEvents = 0;
+
+        // Reset CEG state
+        cegMode = CEG_MODE.DEM;
+        cegCyclesInMode = 0;
+        cegPendingMode = null;
+        cegPendingCycles = 0;
+        cegModeHistory = [];
+        cegEffectiveBeta = 0;
+        cegEffectiveCoupling = 1.0;
+        cegEffectiveConsensus = 0.66;
+        totalModeTransitions = 0;
+        applyGovernanceMode();
+
+        // Reset predictive mode selection
+        metricHistory = { entropy: [], flipRate: [], coherence: [], faults: [] };
+        predictedMode = null;
+        predictionConfidence = 0;
+        preemptiveTransitions = 0;
+
+        // Reset epistemic memory
+        epistemicMemory = [];
+        currentEpisode = null;
+        memoryHits = 0;
+        memorySuccessRate = 0.5;
+
+        // Reset oracle system
+        oracleCalibrations = 0;
+        oracleAccuracy = 0.5;
+
+        // Reset multi-oracle consensus
+        oracleConsensusValue = 0;
+        oracleDisagreement = 0;
+        oracleConflictEvents = 0;
+
+        // Reset temporal oracle drift
+        totalOracleDrift = 0;
+        driftReversals = 0;
+
+        // Reset cross-swarm memory sharing
+        sharedMemoryPool = [];
+        lastMemoryShare = 0;
+        memoryInheritanceCount = 0;
+        memoryGenerations = 0;
+
         generateTerrain();
+
+        // Initialize oracles after terrain
+        initOracles();
 
         base = new MobileBase(sqrtSize / 2, sqrtSize / 2);
 
@@ -3855,6 +5426,14 @@
         updateTritWave();
         checkEudoxidRelease();
         updateEudoxids();
+
+        // Liminal / Compression mode
+        checkLiminalTrigger();
+        processLiminalMode();
+
+        // Contextual Epistemic Governance
+        updateCEG();
+        updateAdvancedCEG();  // Predictive + Memory + Oracle
 
         // Update drones
         drones.forEach(d => d.update());
@@ -4233,11 +5812,48 @@
             });
         }
 
+        // Draw oracle beacons
+        if (oracles && oracles.length > 0) {
+            const size = Math.sqrt(parseInt(document.getElementById('swarm-size').value));
+            oracles.forEach(oracle => {
+                const x = oracle.x * scaleX;
+                const y = oracle.y * scaleY;
+                const radius = ORACLE_RANGE * scaleX;
+
+                // Oracle range circle
+                ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Oracle beacon center
+                const pulsePhase = (cycle % 25) / 25;
+                const pulseScale = 1 + Math.sin(pulsePhase * Math.PI * 2) * 0.3;
+
+                ctx.fillStyle = `rgba(251, 191, 36, ${0.4 + pulseScale * 0.3})`;
+                ctx.beginPath();
+                ctx.arc(x, y, 4 * pulseScale, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Oracle truth indicator (small line showing direction)
+                const truthAngle = oracle.truthValue * Math.PI / 2;
+                ctx.strokeStyle = oracle.truthValue > 0 ? '#4ade80' : '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + Math.cos(truthAngle) * 8, y + Math.sin(truthAngle) * 8);
+                ctx.stroke();
+            });
+        }
+
         document.getElementById('map-overlay').textContent =
             `CYCLE ${cycle} | ${document.getElementById('beta-mode').value.toUpperCase()}` +
             (bloomActive ? ' | BLOOM' : '') +
             (weather.stormIntensity > 0.3 ? ' | STORM' : '') +
-            (features.trit ? ' | TRIT' : '');
+            (liminalMode ? ' | 🌀 LIMINAL' : (features.trit ? ' | TRIT' : ''));
     }
 
     function renderChart() {
@@ -4458,6 +6074,100 @@
             } else {
                 avgEl.style.color = '#4ade80';  // Green - low noise
             }
+        }
+
+        // Liminal Mode Indicator
+        const liminalOverlay = document.getElementById('liminal-overlay');
+        const liminalIndicator = document.getElementById('liminal-indicator');
+        if (liminalMode) {
+            liminalOverlay.classList.add('active');
+            liminalIndicator.classList.add('active');
+            liminalIndicator.textContent = `🌀 LIMINAL [${liminalCycles}/${LIMINAL_MAX_CYCLES}]`;
+        } else {
+            liminalOverlay.classList.remove('active');
+            liminalIndicator.classList.remove('active');
+        }
+
+        // CEG Governance Mode Indicator
+        const cegIndicator = document.getElementById('ceg-indicator');
+        const cegPending = document.getElementById('ceg-pending');
+        const modeEmojis = { DEM: '🗳️', EPI: '🎓', SEN: '🛡️', EMG: '🚨' };
+
+        // Update indicator class and content
+        cegIndicator.className = 'ceg-indicator ' + cegMode;
+        cegIndicator.innerHTML = `
+            <span class="ceg-emoji">${modeEmojis[cegMode]}</span>
+            <span class="ceg-label">${CEG_LABELS[cegMode]}</span>
+            <span class="ceg-cycles">[${cegCyclesInMode}]</span>
+        `;
+
+        // Show pending transition if any
+        if (cegPendingMode && cegPendingCycles > 0) {
+            cegPending.classList.add('active');
+            cegPending.textContent = `→ ${CEG_LABELS[cegPendingMode]} (${cegPendingCycles}/${CEG_STABILITY_WINDOW})`;
+        } else {
+            cegPending.classList.remove('active');
+        }
+
+        // Advanced CEG Panel
+        document.getElementById('preemptive-count').textContent = preemptiveTransitions;
+        document.getElementById('memory-hits').textContent = memoryHits;
+
+        const memSuccessEl = document.getElementById('memory-success');
+        memSuccessEl.textContent = (memorySuccessRate * 100).toFixed(0) + '%';
+        memSuccessEl.className = 'metric-val ' + (memorySuccessRate > 0.7 ? 'good' : memorySuccessRate > 0.4 ? '' : 'bad');
+
+        const oracleAccEl = document.getElementById('oracle-accuracy');
+        oracleAccEl.textContent = (oracleAccuracy * 100).toFixed(0) + '%';
+        oracleAccEl.className = 'metric-val ' + (oracleAccuracy > 0.7 ? 'good' : oracleAccuracy > 0.4 ? 'warn' : 'bad');
+
+        document.getElementById('oracle-calibrations').textContent = oracleCalibrations;
+        document.getElementById('oracle-conflicts').textContent = oracleConflictEvents;
+        document.getElementById('memory-inherited').textContent = memoryInheritanceCount;
+
+        // Prediction indicator
+        const predIndicator = document.getElementById('prediction-indicator');
+        if (predictedMode && predictionConfidence > 0.3) {
+            predIndicator.classList.add('active');
+            document.getElementById('pred-mode').textContent = CEG_LABELS[predictedMode];
+            document.getElementById('pred-conf').textContent = `(${(predictionConfidence * 100).toFixed(0)}%)`;
+        } else {
+            predIndicator.classList.remove('active');
+        }
+
+        // Memory indicator
+        const memIndicator = document.getElementById('memory-indicator');
+        if (epistemicMemory.length > 0) {
+            memIndicator.classList.add('active');
+            document.getElementById('episode-count').textContent = epistemicMemory.length;
+        } else {
+            memIndicator.classList.remove('active');
+        }
+
+        // Shared memory indicator
+        const sharedMemIndicator = document.getElementById('shared-memory-indicator');
+        if (sharedMemoryPool.length > 0 || memoryGenerations > 0) {
+            sharedMemIndicator.classList.add('active');
+            document.getElementById('shared-pool-size').textContent = sharedMemoryPool.length;
+            document.getElementById('memory-gen').textContent = memoryGenerations;
+        } else {
+            sharedMemIndicator.classList.remove('active');
+        }
+
+        // Oracle status (disagreement and drift)
+        document.getElementById('disagreement-fill').style.width = (oracleDisagreement * 100) + '%';
+
+        const driftStatus = getOracleDriftStatus();
+        const driftEl = document.getElementById('drift-indicator');
+        driftEl.textContent = `Drift: ${driftStatus.direction} (${driftStatus.reversals} rev)`;
+        driftEl.style.color = driftStatus.direction === 'stable' ? '#4ade80' :
+                              driftStatus.direction === 'mixed' ? '#fbbf24' : '#ef4444';
+
+        // Flash conflict indicator when conflicts happen
+        const conflictFlash = document.getElementById('conflict-flash');
+        if (oracleConflictEvents > 0 && cycle % 30 < 2) {
+            conflictFlash.classList.add('active');
+            setTimeout(() => conflictFlash.classList.remove('active'), 500);
         }
 
         // Sliders
