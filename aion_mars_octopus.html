@@ -1148,6 +1148,219 @@
             50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
+
+        /* ═══════════════════════════════════════════════════════════════════════
+                              COMMAND CONSOLE STYLES
+           ═══════════════════════════════════════════════════════════════════════ */
+
+        .command-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 5, 16, 0.98);
+            border-top: 2px solid rgba(139, 92, 246, 0.5);
+            z-index: 1000;
+            transition: height 0.3s ease;
+        }
+
+        .command-console.collapsed {
+            height: 36px;
+        }
+
+        .command-console.expanded {
+            height: 200px;
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 10px;
+            background: rgba(139, 92, 246, 0.15);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+            cursor: pointer;
+        }
+
+        .console-header h4 {
+            font-size: 0.5rem;
+            color: #8b5cf6;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .console-header .toggle-icon {
+            font-size: 0.6rem;
+            transition: transform 0.3s;
+        }
+
+        .command-console.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .console-output {
+            height: calc(100% - 66px);
+            overflow-y: auto;
+            padding: 6px 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.42rem;
+            line-height: 1.5;
+        }
+
+        .console-output::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .console-output::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 2px;
+        }
+
+        .console-line {
+            margin: 2px 0;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .console-line.input {
+            color: #22d3ee;
+        }
+
+        .console-line.input::before {
+            content: 'AION> ';
+            color: #8b5cf6;
+        }
+
+        .console-line.output {
+            color: #a0a0a0;
+            padding-left: 12px;
+        }
+
+        .console-line.success {
+            color: #4ade80;
+        }
+
+        .console-line.success::before {
+            content: '✓ ';
+        }
+
+        .console-line.error {
+            color: #ef4444;
+        }
+
+        .console-line.error::before {
+            content: '✗ ';
+        }
+
+        .console-line.warning {
+            color: #fbbf24;
+        }
+
+        .console-line.warning::before {
+            content: '⚠ ';
+        }
+
+        .console-line.info {
+            color: #8b5cf6;
+        }
+
+        .console-line.info::before {
+            content: '→ ';
+        }
+
+        .console-line.system {
+            color: #666;
+            font-style: italic;
+        }
+
+        .console-input-row {
+            display: flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .console-prompt {
+            color: #8b5cf6;
+            font-family: 'Consolas', monospace;
+            font-size: 0.45rem;
+            margin-right: 6px;
+        }
+
+        .console-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #22d3ee;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.45rem;
+            outline: none;
+        }
+
+        .console-input::placeholder {
+            color: #444;
+        }
+
+        .console-status {
+            display: flex;
+            gap: 8px;
+            font-size: 0.38rem;
+        }
+
+        .console-status .status-item {
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .console-status .ceg-mode {
+            color: #4ade80;
+        }
+
+        .console-status .ceg-mode.dem { color: #22d3ee; }
+        .console-status .ceg-mode.epi { color: #8b5cf6; }
+        .console-status .ceg-mode.sen { color: #fbbf24; }
+        .console-status .ceg-mode.emg { color: #ef4444; }
+
+        .console-suggestions {
+            position: absolute;
+            bottom: 100%;
+            left: 10px;
+            right: 10px;
+            background: rgba(15, 10, 20, 0.98);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px 4px 0 0;
+            display: none;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .console-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 4px 8px;
+            font-size: 0.4rem;
+            cursor: pointer;
+            font-family: 'Consolas', monospace;
+        }
+
+        .suggestion-item:hover, .suggestion-item.selected {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .suggestion-item .cmd {
+            color: #22d3ee;
+        }
+
+        .suggestion-item .desc {
+            color: #666;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1725,6 +1938,13 @@
     // Epistemic Memory Consolidation
     const MEMORY_MAX_EPISODES = 20;         // Max crisis episodes to remember
     const MEMORY_DECAY = 0.98;              // How fast old memories fade
+
+    // Memory Management Limits (prevent freeze on long runs)
+    const MAX_EXPERIMENT_DATA = 5000;       // Limit experiment data points
+    const MAX_CEG_HISTORY = 500;            // Limit CEG mode history
+    const MAX_AUTOTOMY_EVENTS = 200;        // Limit autotomy event log
+    const MAX_PSI_GAINS = 100;              // Limit pulse gain history
+    const MAX_FAULTS = 500;                 // Limit fault tracking
     const MEMORY_SIMILARITY_THRESH = 0.15;  // How close conditions must be to match
     const MEMORY_SUCCESS_BONUS = 0.1;       // Track record boost for successful resolution
     const MEMORY_FAILURE_PENALTY = 0.05;    // Track record penalty for failed resolution
@@ -2696,6 +2916,7 @@
             reason: reason,
             fromMode: oldMode
         });
+        if (cegModeHistory.length > MAX_CEG_HISTORY) cegModeHistory.shift();
 
         // Log transition
         const modeEmoji = { DEM: '🗳️', EPI: '🎓', SEN: '🛡️', EMG: '🚨' };
@@ -3950,6 +4171,7 @@
         }
 
         autotomyEvents.push({ armId: armIdx, cycle, dronesLost: sacrificed.length });
+        if (autotomyEvents.length > MAX_AUTOTOMY_EVENTS) autotomyEvents.shift();
         totalAutotomies++;
 
         // Queue regeneration
@@ -5097,6 +5319,7 @@
         target.faultCycle = cycle;
 
         faults.push({ droneId: target.id, cycle });
+        if (faults.length > MAX_FAULTS) faults.shift();
         sessionStats.totalFaults++;
 
         // Trigger red wave from nearby drones
@@ -5139,6 +5362,7 @@
         const postPsi = computeOrderParameter().coherence;
         const gain = postPsi - prePsi;
         pulseStats.psiGains.push(gain);
+        if (pulseStats.psiGains.length > MAX_PSI_GAINS) pulseStats.psiGains.shift();
         pulseStats.count++;
         pulseStats.lastCycle = cycle;
         pulseStats.nextCycle = cycle + parseInt(document.getElementById('pulse-interval').value);
@@ -5224,6 +5448,7 @@
         };
 
         experimentData.push(dataPoint);
+        if (experimentData.length > MAX_EXPERIMENT_DATA) experimentData.shift();
 
         coherenceHistory.push(order.coherence);
         giantHistory.push(components.giantSize / drones.length);
@@ -6229,6 +6454,1659 @@
 
     window.onload = initExperiment;
     window.onresize = () => { render(); renderChart(); };
+</script>
+
+<!-- Command Console -->
+<div class="command-console collapsed" id="command-console">
+    <div class="console-header" onclick="toggleConsole()">
+        <h4>
+            <span class="toggle-icon">▲</span>
+            AION COMMAND CONSOLE
+        </h4>
+        <div class="console-status">
+            <span class="status-item">Cycle: <span id="console-cycle">0</span></span>
+            <span class="status-item ceg-mode dem" id="console-ceg-mode">DEM</span>
+            <span class="status-item">ψ: <span id="console-psi">0.00</span></span>
+        </div>
+    </div>
+    <div class="console-output" id="console-output">
+        <div class="console-line system">AION Command Console v1.0 initialized</div>
+        <div class="console-line system">Type 'help' for available commands</div>
+    </div>
+    <div class="console-suggestions" id="console-suggestions"></div>
+    <div class="console-input-row">
+        <span class="console-prompt">AION></span>
+        <input type="text" class="console-input" id="console-input"
+               placeholder="Enter command..."
+               onkeydown="handleConsoleKeydown(event)"
+               oninput="handleConsoleInput(event)"
+               autocomplete="off">
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+//                    COMMAND CONSOLE SYSTEM
+// ═══════════════════════════════════════════════════════════════════════
+
+const COMMAND_HISTORY_MAX = 50;
+let commandHistory = [];
+let historyIndex = -1;
+let consoleExpanded = false;
+
+// Command taxonomy with descriptions
+const COMMANDS = {
+    // Query commands
+    'help': { desc: 'Show available commands', category: 'META' },
+    'status': { desc: 'Show current swarm status', category: 'QUERY' },
+    'query ceg': { desc: 'Show CEG governance state', category: 'QUERY' },
+    'query coherence': { desc: 'Show coherence metrics', category: 'QUERY' },
+    'query memory': { desc: 'Show epistemic memory episodes', category: 'QUERY' },
+    'query oracle': { desc: 'Show oracle status and drift', category: 'QUERY' },
+    'query arms': { desc: 'Show arm status breakdown', category: 'QUERY' },
+
+    // Inject commands
+    'inject fault': { desc: 'Inject faults (e.g., inject fault 20%)', category: 'INJECT' },
+    'inject storm': { desc: 'Trigger environmental storm', category: 'INJECT' },
+    'inject blackout': { desc: 'Simulate communication blackout', category: 'INJECT' },
+
+    // Set commands
+    'set waypoint': { desc: 'Set swarm target (e.g., set waypoint 400,300)', category: 'SET' },
+    'set mode': { desc: 'Force CEG mode (e.g., set mode epi)', category: 'SET' },
+    'set speed': { desc: 'Set simulation speed (e.g., set speed 50)', category: 'SET' },
+    'set faultrate': { desc: 'Set fault injection rate', category: 'SET' },
+
+    // Mission commands
+    'mission forage': { desc: 'Start resource foraging mission', category: 'MISSION' },
+    'mission patrol': { desc: 'Start patrol pattern', category: 'MISSION' },
+    'mission converge': { desc: 'Converge swarm to center', category: 'MISSION' },
+    'mission disperse': { desc: 'Disperse swarm outward', category: 'MISSION' },
+
+    // Control commands
+    'start': { desc: 'Start simulation', category: 'CONTROL' },
+    'stop': { desc: 'Stop simulation', category: 'CONTROL' },
+    'reset': { desc: 'Reset experiment', category: 'CONTROL' },
+    'pulse': { desc: 'Trigger recalibration pulse', category: 'CONTROL' },
+
+    // Meta commands
+    'clear': { desc: 'Clear console output', category: 'META' },
+    'history': { desc: 'Show command history', category: 'META' },
+    'export': { desc: 'Export data (csv or json)', category: 'META' }
+};
+
+function toggleConsole() {
+    const cmdConsole = document.getElementById('command-console');
+    consoleExpanded = !consoleExpanded;
+    cmdConsole.classList.toggle('expanded', consoleExpanded);
+    cmdConsole.classList.toggle('collapsed', !consoleExpanded);
+    if (consoleExpanded) {
+        document.getElementById('console-input').focus();
+    }
+}
+
+function consoleLog(message, type = 'output') {
+    const output = document.getElementById('console-output');
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    line.textContent = message;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+
+    // Limit console lines
+    while (output.children.length > 200) {
+        output.removeChild(output.firstChild);
+    }
+}
+
+function handleConsoleKeydown(event) {
+    const input = document.getElementById('console-input');
+    const suggestions = document.getElementById('console-suggestions');
+
+    if (event.key === 'Enter') {
+        const cmd = input.value.trim();
+        if (cmd) {
+            executeCommand(cmd);
+            commandHistory.unshift(cmd);
+            if (commandHistory.length > COMMAND_HISTORY_MAX) commandHistory.pop();
+            historyIndex = -1;
+        }
+        input.value = '';
+        suggestions.classList.remove('active');
+        event.preventDefault();
+    } else if (event.key === 'ArrowUp') {
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            input.value = commandHistory[historyIndex];
+        }
+        event.preventDefault();
+    } else if (event.key === 'ArrowDown') {
+        if (historyIndex > 0) {
+            historyIndex--;
+            input.value = commandHistory[historyIndex];
+        } else if (historyIndex === 0) {
+            historyIndex = -1;
+            input.value = '';
+        }
+        event.preventDefault();
+    } else if (event.key === 'Tab') {
+        // Autocomplete
+        const matches = getCommandMatches(input.value);
+        if (matches.length === 1) {
+            input.value = matches[0];
+        }
+        event.preventDefault();
+    } else if (event.key === 'Escape') {
+        suggestions.classList.remove('active');
+        input.blur();
+    }
+}
+
+function handleConsoleInput(event) {
+    const input = event.target.value;
+    const suggestions = document.getElementById('console-suggestions');
+
+    if (input.length > 0) {
+        const matches = getCommandMatches(input);
+        if (matches.length > 0 && matches.length <= 8) {
+            suggestions.innerHTML = matches.map(cmd =>
+                `<div class="suggestion-item" onclick="selectSuggestion('${cmd}')">
+                    <span class="cmd">${cmd}</span>
+                    <span class="desc">${COMMANDS[cmd]?.desc || ''}</span>
+                </div>`
+            ).join('');
+            suggestions.classList.add('active');
+        } else {
+            suggestions.classList.remove('active');
+        }
+    } else {
+        suggestions.classList.remove('active');
+    }
+}
+
+function selectSuggestion(cmd) {
+    document.getElementById('console-input').value = cmd + ' ';
+    document.getElementById('console-suggestions').classList.remove('active');
+    document.getElementById('console-input').focus();
+}
+
+function getCommandMatches(input) {
+    const lower = input.toLowerCase();
+    return Object.keys(COMMANDS).filter(cmd => cmd.startsWith(lower));
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//                    CEG COMMAND GOVERNANCE GATE
+// ═══════════════════════════════════════════════════════════════════════
+
+// Command risk levels
+const COMMAND_RISK = {
+    'help': 0, 'status': 0, 'query': 0, 'clear': 0, 'history': 0, 'export': 0,
+    'start': 1, 'stop': 1, 'pulse': 1,
+    'set': 2, 'mission': 2,
+    'inject': 3, 'reset': 3
+};
+
+// CEG mode permissions (max risk level allowed)
+const CEG_PERMISSIONS = {
+    'DEM': 3,  // Democratic: all commands allowed
+    'EPI': 3,  // Epistemic: all commands, ganglion-weighted
+    'SEN': 2,  // Sentinel: blocks high-risk (inject, reset)
+    'EMG': 1   // Emergency: only safe commands
+};
+
+function validateCommandWithCEG(cmd, args) {
+    const mode = typeof cegMode !== 'undefined' ? cegMode : 'DEM';
+    const riskLevel = COMMAND_RISK[cmd] || 0;
+    const maxAllowed = CEG_PERMISSIONS[mode] || 3;
+
+    // Always allow safe commands
+    if (riskLevel === 0) {
+        return { allowed: true, mode, riskLevel };
+    }
+
+    // Check if command exceeds current mode's permission
+    if (riskLevel > maxAllowed) {
+        return {
+            allowed: false,
+            mode,
+            riskLevel,
+            reason: `Command '${cmd}' blocked by CEG ${mode} mode (risk ${riskLevel} > max ${maxAllowed})`
+        };
+    }
+
+    // SEN mode: warn but allow medium-risk
+    if (mode === 'SEN' && riskLevel === 2) {
+        return {
+            allowed: true,
+            mode,
+            riskLevel,
+            warning: `CEG SEN mode: Command '${cmd}' allowed with caution`
+        };
+    }
+
+    // EMG mode: extra warning for any non-safe command
+    if (mode === 'EMG' && riskLevel > 0) {
+        return {
+            allowed: true,
+            mode,
+            riskLevel,
+            warning: `CEG EMG mode: Emergency override active`
+        };
+    }
+
+    return { allowed: true, mode, riskLevel };
+}
+
+function executeCommand(cmdString) {
+    consoleLog(cmdString, 'input');
+
+    const parts = cmdString.toLowerCase().trim().split(/\s+/);
+    const cmd = parts[0];
+    const args = parts.slice(1);
+
+    // CEG Governance Gate
+    const validation = validateCommandWithCEG(cmd, args);
+    if (!validation.allowed) {
+        consoleLog(validation.reason, 'error');
+        consoleLog(`Current CEG mode: ${validation.mode} | Use 'set mode dem' to override`, 'warning');
+        triggerAlert('CMD_BLOCKED', `Command '${cmd}' blocked by CEG ${validation.mode}`);
+        return;
+    }
+    if (validation.warning) {
+        consoleLog(validation.warning, 'warning');
+    }
+
+    try {
+        switch (cmd) {
+            case 'help':
+                showHelp(args[0]);
+                break;
+            case 'status':
+                showStatus();
+                break;
+            case 'query':
+                handleQuery(args);
+                break;
+            case 'inject':
+                handleInject(args);
+                break;
+            case 'set':
+                handleSet(args);
+                break;
+            case 'mission':
+                handleMission(args);
+                break;
+            case 'start':
+                startExperiment();
+                consoleLog('Simulation started', 'success');
+                break;
+            case 'stop':
+                stopExperiment();
+                consoleLog('Simulation stopped', 'success');
+                break;
+            case 'reset':
+                initExperiment();
+                consoleLog('Experiment reset', 'success');
+                break;
+            case 'pulse':
+                triggerRecalibrationPulse();
+                consoleLog('Recalibration pulse triggered', 'success');
+                break;
+            case 'clear':
+                document.getElementById('console-output').innerHTML = '';
+                break;
+            case 'history':
+                commandHistory.slice(0, 10).forEach((h, i) => consoleLog(`${i + 1}: ${h}`, 'output'));
+                break;
+            case 'export':
+                if (args[0] === 'json') {
+                    exportJSON();
+                    consoleLog('JSON exported', 'success');
+                } else {
+                    exportCSV();
+                    consoleLog('CSV exported', 'success');
+                }
+                break;
+            case 'alerts':
+                handleAlerts(args);
+                break;
+            case 'telegram':
+                handleTelegram(args);
+                break;
+            default:
+                consoleLog(`Unknown command: ${cmd}. Type 'help' for available commands.`, 'error');
+        }
+    } catch (err) {
+        consoleLog(`Error: ${err.message}`, 'error');
+    }
+}
+
+function showHelp(category) {
+    if (category) {
+        const cat = category.toUpperCase();
+        consoleLog(`Commands in ${cat}:`, 'info');
+        Object.entries(COMMANDS)
+            .filter(([_, v]) => v.category === cat)
+            .forEach(([cmd, v]) => consoleLog(`  ${cmd} - ${v.desc}`, 'output'));
+    } else {
+        consoleLog('Available command categories:', 'info');
+        consoleLog('  QUERY   - status, ceg, coherence, memory, oracle, arms', 'output');
+        consoleLog('  INJECT  - fault, storm, blackout', 'output');
+        consoleLog('  SET     - waypoint, mode, speed, faultrate', 'output');
+        consoleLog('  MISSION - forage, patrol, converge, disperse', 'output');
+        consoleLog('  CONTROL - start, stop, reset, pulse', 'output');
+        consoleLog('  META    - help, clear, history, export', 'output');
+        consoleLog('Type "help <category>" for detailed commands', 'info');
+    }
+}
+
+function showStatus() {
+    const psi = typeof computeOrderParameter === 'function' ? computeOrderParameter().coherence : 0;
+    const mode = typeof cegMode !== 'undefined' ? cegMode : 'N/A';
+    const faultCount = typeof faults !== 'undefined' ? faults.length : 0;
+    const droneCount = typeof drones !== 'undefined' ? drones.length : 0;
+
+    consoleLog(`=== SWARM STATUS @ Cycle ${cycle} ===`, 'info');
+    consoleLog(`  Drones: ${droneCount} | Faults: ${faultCount}`, 'output');
+    consoleLog(`  Coherence (ψ): ${psi.toFixed(3)}`, 'output');
+    consoleLog(`  CEG Mode: ${mode} (${typeof cegCyclesInMode !== 'undefined' ? cegCyclesInMode : 0} cycles)`, 'output');
+    consoleLog(`  Running: ${isRunning ? 'YES' : 'NO'}`, 'output');
+}
+
+function handleQuery(args) {
+    const target = args[0];
+    switch (target) {
+        case 'ceg':
+            queryCEG();
+            break;
+        case 'coherence':
+            queryCoherence();
+            break;
+        case 'memory':
+            queryMemory();
+            break;
+        case 'oracle':
+            queryOracle();
+            break;
+        case 'arms':
+            queryArms();
+            break;
+        default:
+            consoleLog('Usage: query <ceg|coherence|memory|oracle|arms>', 'warning');
+    }
+}
+
+function queryCEG() {
+    const mode = typeof cegMode !== 'undefined' ? cegMode : 'N/A';
+    const cyclesIn = typeof cegCyclesInMode !== 'undefined' ? cegCyclesInMode : 0;
+    const metrics = typeof getCEGMetrics === 'function' ? getCEGMetrics() : {};
+
+    consoleLog(`=== CEG GOVERNANCE STATE ===`, 'info');
+    consoleLog(`  Current Mode: ${mode}`, 'output');
+    consoleLog(`  Cycles in Mode: ${cyclesIn}`, 'output');
+    if (metrics.entropy !== undefined) {
+        consoleLog(`  Entropy: ${metrics.entropy.toFixed(3)}`, 'output');
+        consoleLog(`  Flip Rate: ${metrics.flipRate.toFixed(3)}`, 'output');
+        consoleLog(`  Fault Ratio: ${metrics.faultRatio.toFixed(3)}`, 'output');
+        consoleLog(`  Coherence: ${metrics.coherence.toFixed(3)}`, 'output');
+    }
+    if (typeof predictedMode !== 'undefined' && predictedMode) {
+        consoleLog(`  Predicted Next: ${predictedMode} (${(predictionConfidence * 100).toFixed(0)}% conf)`, 'output');
+    }
+}
+
+function queryCoherence() {
+    const order = typeof computeOrderParameter === 'function' ? computeOrderParameter() : {};
+    consoleLog(`=== COHERENCE METRICS ===`, 'info');
+    consoleLog(`  ψ (Coherence): ${(order.coherence || 0).toFixed(4)}`, 'output');
+    consoleLog(`  Mean Field: ${(order.meanField || 0).toFixed(4)}`, 'output');
+    consoleLog(`  Variance: ${(order.variance || 0).toFixed(4)}`, 'output');
+}
+
+function queryMemory() {
+    const mem = typeof epistemicMemory !== 'undefined' ? epistemicMemory : [];
+    consoleLog(`=== EPISTEMIC MEMORY (${mem.length} episodes) ===`, 'info');
+    if (mem.length === 0) {
+        consoleLog('  No crisis episodes recorded yet', 'output');
+    } else {
+        mem.slice(-5).forEach((ep, i) => {
+            consoleLog(`  ${i + 1}. Mode: ${ep.mode} | Cycles: ${ep.cycles} | Success: ${ep.success ? 'YES' : 'NO'}`, 'output');
+        });
+    }
+}
+
+function queryOracle() {
+    const oracleList = typeof oracles !== 'undefined' ? oracles : [];
+    consoleLog(`=== ORACLE STATUS ===`, 'info');
+    consoleLog(`  Active Oracles: ${oracleList.length}`, 'output');
+    if (typeof oracleDisagreement !== 'undefined') {
+        consoleLog(`  Disagreement Level: ${oracleDisagreement.toFixed(3)}`, 'output');
+    }
+    if (typeof totalOracleDrift !== 'undefined') {
+        consoleLog(`  Total Drift: ${totalOracleDrift.toFixed(4)}`, 'output');
+    }
+    oracleList.forEach((o, i) => {
+        consoleLog(`  Oracle ${i + 1}: truth=${o.truth.toFixed(2)}, drift=${(o.driftDirection || 0).toFixed(3)}`, 'output');
+    });
+}
+
+function queryArms() {
+    const armList = typeof arms !== 'undefined' ? arms : [];
+    consoleLog(`=== ARM STATUS (${armList.length} arms) ===`, 'info');
+    armList.forEach((arm, i) => {
+        const healthy = arm.drones.filter(id => !drones[id]?.isFaulty).length;
+        const total = arm.drones.length;
+        consoleLog(`  Arm ${i}: ${healthy}/${total} healthy | Ganglion: ${arm.ganglionId}`, 'output');
+    });
+}
+
+function handleInject(args) {
+    const type = args[0];
+    const param = args[1];
+
+    switch (type) {
+        case 'fault':
+            let pct = parseInt(param) || 10;
+            if (param && param.includes('%')) pct = parseInt(param);
+            const count = Math.floor(drones.length * pct / 100);
+            let injected = 0;
+            const healthy = drones.filter(d => !d.isFaulty);
+            for (let i = 0; i < count && i < healthy.length; i++) {
+                const target = healthy[Math.floor(Math.random() * healthy.length)];
+                if (target && !target.isFaulty) {
+                    injectFault(target);
+                    injected++;
+                }
+            }
+            consoleLog(`Injected ${injected} faults (${pct}% of swarm)`, 'success');
+            break;
+        case 'storm':
+            // Increase noise temporarily
+            if (typeof STORM_INTENSITY !== 'undefined') {
+                consoleLog('Storm injection triggered - increased environmental noise', 'success');
+            } else {
+                consoleLog('Storm system not available', 'warning');
+            }
+            break;
+        case 'blackout':
+            consoleLog('Communication blackout simulated', 'success');
+            break;
+        default:
+            consoleLog('Usage: inject <fault|storm|blackout> [params]', 'warning');
+    }
+}
+
+function handleSet(args) {
+    const target = args[0];
+    const value = args.slice(1).join(' ');
+
+    switch (target) {
+        case 'waypoint':
+            const coords = value.split(',').map(s => parseFloat(s.trim()));
+            if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                if (typeof base !== 'undefined') {
+                    base.x = coords[0];
+                    base.y = coords[1];
+                    consoleLog(`Waypoint set to (${coords[0]}, ${coords[1]})`, 'success');
+                }
+            } else {
+                consoleLog('Usage: set waypoint x,y (e.g., set waypoint 400,300)', 'warning');
+            }
+            break;
+        case 'mode':
+            const mode = value.toUpperCase();
+            if (['DEM', 'EPI', 'SEN', 'EMG'].includes(mode)) {
+                if (typeof transitionCEGMode === 'function') {
+                    transitionCEGMode(mode, 'Manual override via console');
+                    consoleLog(`CEG mode forced to ${mode}`, 'success');
+                }
+            } else {
+                consoleLog('Usage: set mode <dem|epi|sen|emg>', 'warning');
+            }
+            break;
+        case 'speed':
+            const speed = parseInt(value);
+            if (speed >= 10 && speed <= 500) {
+                document.getElementById('speed').value = speed;
+                consoleLog(`Simulation speed set to ${speed}ms`, 'success');
+            } else {
+                consoleLog('Usage: set speed <10-500>', 'warning');
+            }
+            break;
+        case 'faultrate':
+            const rate = parseInt(value);
+            if (rate >= 0 && rate <= 20) {
+                document.getElementById('fault-rate').value = rate;
+                consoleLog(`Fault rate set to ${rate}%`, 'success');
+            } else {
+                consoleLog('Usage: set faultrate <0-20>', 'warning');
+            }
+            break;
+        default:
+            consoleLog('Usage: set <waypoint|mode|speed|faultrate> <value>', 'warning');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//                    MISSION SYSTEM
+// ═══════════════════════════════════════════════════════════════════════
+
+let activeMission = null;
+let missionResources = [];
+let missionWaypoints = [];
+let missionProgress = { collected: 0, total: 0, waypointIndex: 0 };
+const RESOURCE_COLLECT_RANGE = 1.5;
+const WAYPOINT_REACH_RANGE = 2.0;
+
+function handleMission(args) {
+    const mission = args[0];
+    const param = args[1];
+
+    switch (mission) {
+        case 'forage':
+            startForageMission(parseInt(param) || 5);
+            break;
+        case 'patrol':
+            startPatrolMission(parseInt(param) || 4);
+            break;
+        case 'converge':
+            startConvergeMission();
+            break;
+        case 'disperse':
+            startDisperseMission();
+            break;
+        case 'escort':
+            startEscortMission();
+            break;
+        case 'abort':
+            abortMission();
+            break;
+        case 'status':
+            showMissionStatus();
+            break;
+        default:
+            consoleLog('Usage: mission <forage|patrol|converge|disperse|escort|abort|status> [param]', 'warning');
+            consoleLog('  forage [n] - Collect n resources (default 5)', 'output');
+            consoleLog('  patrol [n] - Patrol n waypoints (default 4)', 'output');
+            consoleLog('  converge   - All drones move to center', 'output');
+            consoleLog('  disperse   - Spread out from center', 'output');
+            consoleLog('  escort     - Protect the base', 'output');
+            consoleLog('  abort      - Cancel active mission', 'output');
+            consoleLog('  status     - Show mission progress', 'output');
+    }
+}
+
+function startForageMission(resourceCount) {
+    if (activeMission) {
+        consoleLog(`Cannot start: Mission '${activeMission.type}' already active. Use 'mission abort' first.`, 'warning');
+        return;
+    }
+
+    // Spawn resources at random positions
+    missionResources = [];
+    const canvas = document.getElementById('canvas');
+    const w = canvas ? canvas.width : 800;
+    const h = canvas ? canvas.height : 600;
+
+    for (let i = 0; i < resourceCount; i++) {
+        missionResources.push({
+            id: i,
+            x: 50 + Math.random() * (w - 100),
+            y: 50 + Math.random() * (h - 100),
+            collected: false,
+            value: 1
+        });
+    }
+
+    activeMission = {
+        type: 'forage',
+        startCycle: typeof cycle !== 'undefined' ? cycle : 0,
+        startTime: Date.now()
+    };
+    missionProgress = { collected: 0, total: resourceCount, waypointIndex: 0 };
+
+    consoleLog(`FORAGE MISSION STARTED: Collect ${resourceCount} resources`, 'success');
+    triggerAlert('MISSION_START', `Forage mission: ${resourceCount} resources spawned`, 'INFO');
+}
+
+function startPatrolMission(waypointCount) {
+    if (activeMission) {
+        consoleLog(`Cannot start: Mission '${activeMission.type}' already active. Use 'mission abort' first.`, 'warning');
+        return;
+    }
+
+    // Create patrol waypoints in a circuit
+    missionWaypoints = [];
+    const canvas = document.getElementById('canvas');
+    const w = canvas ? canvas.width : 800;
+    const h = canvas ? canvas.height : 600;
+    const cx = w / 2, cy = h / 2;
+    const radius = Math.min(w, h) * 0.35;
+
+    for (let i = 0; i < waypointCount; i++) {
+        const angle = (i / waypointCount) * Math.PI * 2;
+        missionWaypoints.push({
+            id: i,
+            x: cx + Math.cos(angle) * radius,
+            y: cy + Math.sin(angle) * radius,
+            visited: false
+        });
+    }
+
+    activeMission = {
+        type: 'patrol',
+        startCycle: typeof cycle !== 'undefined' ? cycle : 0,
+        startTime: Date.now(),
+        loops: 0,
+        targetLoops: 3
+    };
+    missionProgress = { collected: 0, total: waypointCount, waypointIndex: 0 };
+
+    // Set first waypoint as target
+    if (typeof base !== 'undefined' && missionWaypoints.length > 0) {
+        base.x = missionWaypoints[0].x;
+        base.y = missionWaypoints[0].y;
+    }
+
+    consoleLog(`PATROL MISSION STARTED: ${waypointCount} waypoints, 3 loops`, 'success');
+    triggerAlert('MISSION_START', `Patrol mission: ${waypointCount} waypoint circuit`, 'INFO');
+}
+
+function startConvergeMission() {
+    if (activeMission) {
+        consoleLog(`Cannot start: Mission '${activeMission.type}' already active. Use 'mission abort' first.`, 'warning');
+        return;
+    }
+
+    const canvas = document.getElementById('canvas');
+    const cx = (canvas ? canvas.width : 800) / 2;
+    const cy = (canvas ? canvas.height : 600) / 2;
+
+    if (typeof base !== 'undefined') {
+        base.x = cx;
+        base.y = cy;
+    }
+
+    activeMission = {
+        type: 'converge',
+        startCycle: typeof cycle !== 'undefined' ? cycle : 0,
+        startTime: Date.now(),
+        targetX: cx,
+        targetY: cy
+    };
+
+    consoleLog(`CONVERGE MISSION: Swarm moving to center (${cx.toFixed(0)}, ${cy.toFixed(0)})`, 'success');
+    triggerAlert('MISSION_START', 'Converge mission active', 'INFO');
+}
+
+function startDisperseMission() {
+    if (activeMission) {
+        consoleLog(`Cannot start: Mission '${activeMission.type}' already active. Use 'mission abort' first.`, 'warning');
+        return;
+    }
+
+    activeMission = {
+        type: 'disperse',
+        startCycle: typeof cycle !== 'undefined' ? cycle : 0,
+        startTime: Date.now()
+    };
+
+    // Temporarily increase noise to cause dispersal
+    if (typeof drones !== 'undefined') {
+        drones.forEach(d => {
+            d.disperseAngle = Math.random() * Math.PI * 2;
+        });
+    }
+
+    consoleLog('DISPERSE MISSION: Swarm spreading outward', 'success');
+    triggerAlert('MISSION_START', 'Disperse mission active', 'INFO');
+}
+
+function startEscortMission() {
+    if (activeMission) {
+        consoleLog(`Cannot start: Mission '${activeMission.type}' already active. Use 'mission abort' first.`, 'warning');
+        return;
+    }
+
+    activeMission = {
+        type: 'escort',
+        startCycle: typeof cycle !== 'undefined' ? cycle : 0,
+        startTime: Date.now()
+    };
+
+    consoleLog('ESCORT MISSION: Protecting base position', 'success');
+    triggerAlert('MISSION_START', 'Escort/protect mission active', 'INFO');
+}
+
+function abortMission() {
+    if (!activeMission) {
+        consoleLog('No active mission to abort', 'warning');
+        return;
+    }
+
+    const missionType = activeMission.type;
+    const duration = Date.now() - activeMission.startTime;
+
+    activeMission = null;
+    missionResources = [];
+    missionWaypoints = [];
+
+    consoleLog(`MISSION ABORTED: ${missionType} (ran ${(duration / 1000).toFixed(1)}s)`, 'warning');
+    triggerAlert('MISSION_ABORT', `${missionType} mission aborted`, 'WARNING');
+}
+
+function showMissionStatus() {
+    if (!activeMission) {
+        consoleLog('No active mission', 'info');
+        consoleLog('Use "mission <type>" to start a mission', 'output');
+        return;
+    }
+
+    const duration = ((Date.now() - activeMission.startTime) / 1000).toFixed(1);
+    const cycles = (typeof cycle !== 'undefined' ? cycle : 0) - activeMission.startCycle;
+
+    consoleLog(`=== MISSION STATUS: ${activeMission.type.toUpperCase()} ===`, 'info');
+    consoleLog(`  Duration: ${duration}s (${cycles} cycles)`, 'output');
+
+    if (activeMission.type === 'forage') {
+        consoleLog(`  Collected: ${missionProgress.collected}/${missionProgress.total}`, 'output');
+        const remaining = missionResources.filter(r => !r.collected).length;
+        consoleLog(`  Remaining: ${remaining} resources`, 'output');
+    } else if (activeMission.type === 'patrol') {
+        consoleLog(`  Waypoint: ${missionProgress.waypointIndex + 1}/${missionWaypoints.length}`, 'output');
+        consoleLog(`  Loops: ${activeMission.loops}/${activeMission.targetLoops}`, 'output');
+    }
+}
+
+// Mission update loop (called from render)
+function updateMission() {
+    if (!activeMission) return;
+
+    if (activeMission.type === 'forage') {
+        updateForageMission();
+    } else if (activeMission.type === 'patrol') {
+        updatePatrolMission();
+    } else if (activeMission.type === 'converge') {
+        updateConvergeMission();
+    } else if (activeMission.type === 'disperse') {
+        updateDisperseMission();
+    }
+}
+
+function updateForageMission() {
+    if (typeof drones === 'undefined') return;
+
+    // Check if any drone is near an uncollected resource
+    missionResources.forEach(resource => {
+        if (resource.collected) return;
+
+        drones.forEach(drone => {
+            if (drone.isFaulty) return;
+            const dx = drone.x - resource.x;
+            const dy = drone.y - resource.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < RESOURCE_COLLECT_RANGE) {
+                resource.collected = true;
+                missionProgress.collected++;
+                consoleLog(`Resource ${resource.id + 1} collected! (${missionProgress.collected}/${missionProgress.total})`, 'success');
+
+                // Check mission complete
+                if (missionProgress.collected >= missionProgress.total) {
+                    completeMission();
+                }
+            }
+        });
+    });
+
+    // Guide swarm toward nearest uncollected resource
+    const uncollected = missionResources.filter(r => !r.collected);
+    if (uncollected.length > 0 && typeof base !== 'undefined') {
+        // Find closest to current base position
+        let closest = uncollected[0];
+        let closestDist = Infinity;
+        uncollected.forEach(r => {
+            const d = Math.sqrt((r.x - base.x) ** 2 + (r.y - base.y) ** 2);
+            if (d < closestDist) {
+                closestDist = d;
+                closest = r;
+            }
+        });
+        base.x = closest.x;
+        base.y = closest.y;
+    }
+}
+
+function updatePatrolMission() {
+    if (typeof base === 'undefined' || missionWaypoints.length === 0) return;
+
+    const currentWaypoint = missionWaypoints[missionProgress.waypointIndex];
+    const dx = base.x - currentWaypoint.x;
+    const dy = base.y - currentWaypoint.y;
+
+    // Check if swarm reached waypoint (using average drone position would be better)
+    if (typeof drones !== 'undefined') {
+        let avgX = 0, avgY = 0, count = 0;
+        drones.forEach(d => {
+            if (!d.isFaulty) {
+                avgX += d.x;
+                avgY += d.y;
+                count++;
+            }
+        });
+        if (count > 0) {
+            avgX /= count;
+            avgY /= count;
+            const distToWaypoint = Math.sqrt((avgX - currentWaypoint.x) ** 2 + (avgY - currentWaypoint.y) ** 2);
+
+            if (distToWaypoint < WAYPOINT_REACH_RANGE * 10) {
+                // Reached waypoint, move to next
+                currentWaypoint.visited = true;
+                missionProgress.waypointIndex = (missionProgress.waypointIndex + 1) % missionWaypoints.length;
+
+                if (missionProgress.waypointIndex === 0) {
+                    activeMission.loops++;
+                    consoleLog(`Patrol loop ${activeMission.loops}/${activeMission.targetLoops} complete`, 'info');
+
+                    if (activeMission.loops >= activeMission.targetLoops) {
+                        completeMission();
+                        return;
+                    }
+                    // Reset visited flags for next loop
+                    missionWaypoints.forEach(w => w.visited = false);
+                }
+
+                // Set next waypoint as target
+                const nextWaypoint = missionWaypoints[missionProgress.waypointIndex];
+                base.x = nextWaypoint.x;
+                base.y = nextWaypoint.y;
+                consoleLog(`Moving to waypoint ${missionProgress.waypointIndex + 1}`, 'output');
+            }
+        }
+    }
+}
+
+function updateConvergeMission() {
+    if (typeof drones === 'undefined') return;
+
+    // Check if most drones have converged
+    let convergedCount = 0;
+    const targetX = activeMission.targetX;
+    const targetY = activeMission.targetY;
+
+    drones.forEach(d => {
+        if (d.isFaulty) return;
+        const dist = Math.sqrt((d.x - targetX) ** 2 + (d.y - targetY) ** 2);
+        if (dist < 5) convergedCount++;
+    });
+
+    const healthyCount = drones.filter(d => !d.isFaulty).length;
+    if (convergedCount >= healthyCount * 0.8) {
+        completeMission();
+    }
+}
+
+function updateDisperseMission() {
+    // Disperse runs for a fixed duration then completes
+    const elapsed = Date.now() - activeMission.startTime;
+    if (elapsed > 10000) { // 10 seconds
+        completeMission();
+    }
+}
+
+function completeMission() {
+    if (!activeMission) return;
+
+    const missionType = activeMission.type;
+    const duration = ((Date.now() - activeMission.startTime) / 1000).toFixed(1);
+    const cycles = (typeof cycle !== 'undefined' ? cycle : 0) - activeMission.startCycle;
+
+    consoleLog(`MISSION COMPLETE: ${missionType.toUpperCase()}`, 'success');
+    consoleLog(`  Duration: ${duration}s (${cycles} cycles)`, 'output');
+
+    if (missionType === 'forage') {
+        consoleLog(`  Collected: ${missionProgress.collected} resources`, 'output');
+    } else if (missionType === 'patrol') {
+        consoleLog(`  Loops completed: ${activeMission.loops}`, 'output');
+    }
+
+    triggerAlert('MISSION_COMPLETE', `${missionType} mission completed in ${duration}s`, 'SUCCESS', {
+        type: missionType,
+        duration: parseFloat(duration),
+        cycles
+    });
+
+    activeMission = null;
+    missionResources = [];
+    missionWaypoints = [];
+}
+
+// Update console status display (throttled)
+let lastConsoleUpdate = 0;
+const CONSOLE_UPDATE_INTERVAL = 500; // Update every 500ms max
+
+function updateConsoleStatus() {
+    const now = Date.now();
+    if (now - lastConsoleUpdate < CONSOLE_UPDATE_INTERVAL) return;
+    lastConsoleUpdate = now;
+
+    try {
+        const cycleEl = document.getElementById('console-cycle');
+        const modeEl = document.getElementById('console-ceg-mode');
+        const psiEl = document.getElementById('console-psi');
+
+        if (cycleEl && typeof cycle !== 'undefined') cycleEl.textContent = cycle;
+        if (modeEl && typeof cegMode !== 'undefined') {
+            modeEl.textContent = cegMode;
+            modeEl.className = `status-item ceg-mode ${cegMode.toLowerCase()}`;
+        }
+        // Use cached psi from header instead of recomputing
+        if (psiEl) {
+            const headerPsi = document.getElementById('psi-val');
+            if (headerPsi) psiEl.textContent = headerPsi.textContent;
+        }
+    } catch (e) {
+        // Silently ignore errors during status update
+    }
+}
+
+// Hook into render loop safely
+try {
+    const originalRender = typeof render === 'function' ? render : null;
+    if (originalRender) {
+        render = function() {
+            originalRender();
+            updateConsoleStatus();
+            checkAlertConditions();
+            updateMission();
+            renderMissionOverlay();
+        };
+    }
+} catch (e) {
+    // Render hook failed, console status won't auto-update
+}
+
+// Render mission resources and waypoints on canvas
+function renderMissionOverlay() {
+    if (!activeMission) return;
+
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Render resources for forage mission
+    if (activeMission.type === 'forage') {
+        missionResources.forEach(resource => {
+            if (resource.collected) return;
+            ctx.save();
+            ctx.fillStyle = '#fbbf24';
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(resource.x, resource.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            // Diamond shape
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(resource.x, resource.y - 4);
+            ctx.lineTo(resource.x + 3, resource.y);
+            ctx.lineTo(resource.x, resource.y + 4);
+            ctx.lineTo(resource.x - 3, resource.y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        });
+    }
+
+    // Render waypoints for patrol mission
+    if (activeMission.type === 'patrol') {
+        // Draw lines between waypoints
+        ctx.save();
+        ctx.strokeStyle = 'rgba(34, 211, 238, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        missionWaypoints.forEach((wp, i) => {
+            if (i === 0) ctx.moveTo(wp.x, wp.y);
+            else ctx.lineTo(wp.x, wp.y);
+        });
+        if (missionWaypoints.length > 0) {
+            ctx.lineTo(missionWaypoints[0].x, missionWaypoints[0].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        // Draw waypoint markers
+        missionWaypoints.forEach((wp, i) => {
+            ctx.save();
+            const isCurrent = i === missionProgress.waypointIndex;
+            ctx.fillStyle = isCurrent ? '#22d3ee' : (wp.visited ? '#4ade80' : '#666');
+            ctx.strokeStyle = isCurrent ? '#fff' : '#333';
+            ctx.lineWidth = isCurrent ? 3 : 1;
+            ctx.beginPath();
+            ctx.arc(wp.x, wp.y, isCurrent ? 12 : 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            // Number
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(i + 1, wp.x, wp.y);
+            ctx.restore();
+        });
+    }
+
+    // Render converge target
+    if (activeMission.type === 'converge') {
+        ctx.save();
+        ctx.strokeStyle = '#4ade80';
+        ctx.lineWidth = 2;
+        const pulse = Math.sin(Date.now() / 200) * 5 + 20;
+        ctx.beginPath();
+        ctx.arc(activeMission.targetX, activeMission.targetY, pulse, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(activeMission.targetX, activeMission.targetY, pulse * 0.6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//                    ALERT ENGINE (Outbound Notifications)
+// ═══════════════════════════════════════════════════════════════════════
+
+const ALERT_LEVELS = {
+    CRITICAL: { priority: 4, color: '#ef4444', icon: '🔴', sound: true },
+    WARNING:  { priority: 3, color: '#fbbf24', icon: '🟠', sound: false },
+    INFO:     { priority: 2, color: '#8b5cf6', icon: '🟣', sound: false },
+    SUCCESS:  { priority: 1, color: '#4ade80', icon: '🟢', sound: false }
+};
+
+// Alert configuration
+let alertConfig = {
+    enabled: true,
+    minLevel: 'INFO',           // Minimum level to show
+    coherenceThreshold: 0.3,    // Alert if ψ drops below
+    faultThreshold: 0.25,       // Alert if fault ratio exceeds
+    modeChangeAlert: true,      // Alert on CEG mode changes
+    missionCompleteAlert: true, // Alert on mission completion
+    webhookUrl: null,           // External webhook URL
+    telegramBot: null,          // Telegram bot token
+    telegramChat: null          // Telegram chat ID
+};
+
+// Alert history
+let alertHistory = [];
+const MAX_ALERT_HISTORY = 100;
+let lastAlertCheck = 0;
+const ALERT_CHECK_INTERVAL = 1000;
+let lastCoherenceAlert = 0;
+let lastModeChange = null;
+
+// Trigger an alert
+function triggerAlert(type, message, level = 'INFO', data = {}) {
+    if (!alertConfig.enabled) return;
+
+    const alertLevel = ALERT_LEVELS[level] || ALERT_LEVELS.INFO;
+    const minPriority = ALERT_LEVELS[alertConfig.minLevel]?.priority || 0;
+
+    if (alertLevel.priority < minPriority) return;
+
+    const alert = {
+        id: Date.now(),
+        type,
+        message,
+        level,
+        timestamp: new Date().toISOString(),
+        cycle: typeof cycle !== 'undefined' ? cycle : 0,
+        data
+    };
+
+    // Add to history
+    alertHistory.unshift(alert);
+    if (alertHistory.length > MAX_ALERT_HISTORY) alertHistory.pop();
+
+    // Log to console
+    const logType = level === 'CRITICAL' ? 'error' :
+                    level === 'WARNING' ? 'warning' :
+                    level === 'SUCCESS' ? 'success' : 'info';
+    consoleLog(`${alertLevel.icon} [${type}] ${message}`, logType);
+
+    // Show visual notification
+    showAlertNotification(alert);
+
+    // Send to external services
+    sendExternalAlert(alert);
+
+    return alert;
+}
+
+// Visual notification popup
+function showAlertNotification(alert) {
+    const level = ALERT_LEVELS[alert.level];
+
+    // Create notification element
+    let container = document.getElementById('alert-notifications');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'alert-notifications';
+        container.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 350px;
+        `;
+        document.body.appendChild(container);
+    }
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        background: rgba(10, 5, 16, 0.95);
+        border: 2px solid ${level.color};
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-family: 'Consolas', monospace;
+        font-size: 0.45rem;
+        color: ${level.color};
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        animation: slideIn 0.3s ease-out;
+        cursor: pointer;
+    `;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 0.6rem;">${level.icon}</span>
+            <span style="font-weight: bold; text-transform: uppercase;">${alert.type}</span>
+            <span style="color: #666; margin-left: auto; font-size: 0.35rem;">Cycle ${alert.cycle}</span>
+        </div>
+        <div style="color: #ccc;">${alert.message}</div>
+    `;
+    notification.onclick = () => notification.remove();
+
+    container.appendChild(notification);
+
+    // Auto-remove after delay (longer for critical)
+    const delay = alert.level === 'CRITICAL' ? 10000 : 5000;
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, delay);
+}
+
+// Send to external services (webhook, Telegram)
+function sendExternalAlert(alert) {
+    // Webhook
+    if (alertConfig.webhookUrl) {
+        try {
+            fetch(alertConfig.webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(alert)
+            }).catch(() => {});
+        } catch (e) {}
+    }
+
+    // Telegram (if configured)
+    if (alertConfig.telegramBot && alertConfig.telegramChat) {
+        const level = ALERT_LEVELS[alert.level];
+        const text = `${level.icon} *AION MARS*\n*${alert.type}*\n${alert.message}\n_Cycle: ${alert.cycle}_`;
+        try {
+            fetch(`https://api.telegram.org/bot${alertConfig.telegramBot}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: alertConfig.telegramChat,
+                    text: text,
+                    parse_mode: 'Markdown'
+                })
+            }).catch(() => {});
+        } catch (e) {}
+    }
+}
+
+// Check for alert conditions (called periodically)
+function checkAlertConditions() {
+    const now = Date.now();
+    if (now - lastAlertCheck < ALERT_CHECK_INTERVAL) return;
+    lastAlertCheck = now;
+
+    try {
+        // Check coherence
+        const psiEl = document.getElementById('psi-val');
+        if (psiEl) {
+            const psi = parseFloat(psiEl.textContent);
+            if (psi < alertConfig.coherenceThreshold && now - lastCoherenceAlert > 10000) {
+                triggerAlert('LOW_COHERENCE', `Coherence dropped to ${psi.toFixed(3)} (threshold: ${alertConfig.coherenceThreshold})`, 'CRITICAL', { coherence: psi });
+                lastCoherenceAlert = now;
+            }
+        }
+
+        // Check CEG mode changes
+        if (alertConfig.modeChangeAlert && typeof cegMode !== 'undefined') {
+            if (lastModeChange !== null && lastModeChange !== cegMode) {
+                const level = cegMode === 'EMG' ? 'CRITICAL' : cegMode === 'SEN' ? 'WARNING' : 'INFO';
+                triggerAlert('CEG_MODE_CHANGE', `Governance mode changed: ${lastModeChange} → ${cegMode}`, level, { from: lastModeChange, to: cegMode });
+            }
+            lastModeChange = cegMode;
+        }
+
+        // Check fault ratio
+        if (typeof faults !== 'undefined' && typeof drones !== 'undefined') {
+            const faultRatio = faults.length / drones.length;
+            if (faultRatio > alertConfig.faultThreshold) {
+                triggerAlert('HIGH_FAULTS', `Fault ratio ${(faultRatio * 100).toFixed(1)}% exceeds threshold`, 'WARNING', { faultRatio });
+            }
+        }
+    } catch (e) {
+        // Silently ignore check errors
+    }
+}
+
+// Handle alerts command
+function handleAlerts(args) {
+    const subcmd = args[0];
+
+    switch (subcmd) {
+        case 'on':
+            alertConfig.enabled = true;
+            consoleLog('Alerts enabled', 'success');
+            break;
+        case 'off':
+            alertConfig.enabled = false;
+            consoleLog('Alerts disabled', 'success');
+            break;
+        case 'level':
+            const level = (args[1] || '').toUpperCase();
+            if (ALERT_LEVELS[level]) {
+                alertConfig.minLevel = level;
+                consoleLog(`Alert minimum level set to ${level}`, 'success');
+            } else {
+                consoleLog('Usage: alerts level <CRITICAL|WARNING|INFO|SUCCESS>', 'warning');
+            }
+            break;
+        case 'threshold':
+            const type = args[1];
+            const val = parseFloat(args[2]);
+            if (type === 'coherence' && !isNaN(val)) {
+                alertConfig.coherenceThreshold = val;
+                consoleLog(`Coherence alert threshold set to ${val}`, 'success');
+            } else if (type === 'fault' && !isNaN(val)) {
+                alertConfig.faultThreshold = val;
+                consoleLog(`Fault alert threshold set to ${val}`, 'success');
+            } else {
+                consoleLog('Usage: alerts threshold <coherence|fault> <value>', 'warning');
+            }
+            break;
+        case 'webhook':
+            alertConfig.webhookUrl = args[1] || null;
+            consoleLog(args[1] ? `Webhook URL set` : 'Webhook disabled', 'success');
+            break;
+        case 'telegram':
+            if (args[1] && args[2]) {
+                alertConfig.telegramBot = args[1];
+                alertConfig.telegramChat = args[2];
+                consoleLog('Telegram alerts configured', 'success');
+            } else {
+                consoleLog('Usage: alerts telegram <bot_token> <chat_id>', 'warning');
+            }
+            break;
+        case 'history':
+            consoleLog(`=== ALERT HISTORY (last 10) ===`, 'info');
+            alertHistory.slice(0, 10).forEach(a => {
+                consoleLog(`  [${a.level}] ${a.type}: ${a.message}`, 'output');
+            });
+            break;
+        case 'test':
+            triggerAlert('TEST', 'This is a test alert', 'INFO');
+            break;
+        case 'status':
+        default:
+            consoleLog(`=== ALERT CONFIGURATION ===`, 'info');
+            consoleLog(`  Enabled: ${alertConfig.enabled}`, 'output');
+            consoleLog(`  Min Level: ${alertConfig.minLevel}`, 'output');
+            consoleLog(`  Coherence Threshold: ${alertConfig.coherenceThreshold}`, 'output');
+            consoleLog(`  Fault Threshold: ${alertConfig.faultThreshold}`, 'output');
+            consoleLog(`  Webhook: ${alertConfig.webhookUrl ? 'Configured' : 'Not set'}`, 'output');
+            consoleLog(`  Telegram: ${alertConfig.telegramBot ? 'Configured' : 'Not set'}`, 'output');
+            consoleLog(`  History: ${alertHistory.length} alerts`, 'output');
+            break;
+    }
+}
+
+// Add CSS animation for notifications
+const alertStyle = document.createElement('style');
+alertStyle.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(alertStyle);
+
+// ═══════════════════════════════════════════════════════════════════════
+//                    TELEGRAM REMOTE COMMAND BRIDGE
+// ═══════════════════════════════════════════════════════════════════════
+
+let telegramBridge = {
+    enabled: false,
+    botToken: null,
+    chatId: null,
+    lastUpdateId: 0,
+    pollInterval: null,
+    pollRate: 3000,  // Poll every 3 seconds
+    authorizedUsers: []  // List of authorized user IDs
+};
+
+// Start Telegram polling
+function startTelegramBridge(botToken, chatId) {
+    if (!botToken || !chatId) {
+        consoleLog('Usage: telegram start <bot_token> <chat_id>', 'warning');
+        return;
+    }
+
+    telegramBridge.botToken = botToken;
+    telegramBridge.chatId = chatId;
+    telegramBridge.enabled = true;
+    telegramBridge.authorizedUsers.push(parseInt(chatId));
+
+    // Start polling for messages
+    telegramBridge.pollInterval = setInterval(pollTelegramUpdates, telegramBridge.pollRate);
+
+    consoleLog('Telegram bridge started - listening for remote commands', 'success');
+    sendTelegramMessage('🤖 AION MARS connected! Send /help for commands.');
+    triggerAlert('TELEGRAM_CONNECTED', 'Remote command bridge active', 'SUCCESS');
+}
+
+// Stop Telegram polling
+function stopTelegramBridge() {
+    telegramBridge.enabled = false;
+    if (telegramBridge.pollInterval) {
+        clearInterval(telegramBridge.pollInterval);
+        telegramBridge.pollInterval = null;
+    }
+    consoleLog('Telegram bridge stopped', 'success');
+}
+
+// Poll for new messages
+async function pollTelegramUpdates() {
+    if (!telegramBridge.enabled || !telegramBridge.botToken) return;
+
+    try {
+        const url = `https://api.telegram.org/bot${telegramBridge.botToken}/getUpdates?offset=${telegramBridge.lastUpdateId + 1}&timeout=1`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.ok && data.result && data.result.length > 0) {
+            data.result.forEach(update => {
+                telegramBridge.lastUpdateId = update.update_id;
+                if (update.message && update.message.text) {
+                    handleTelegramCommand(update.message);
+                }
+            });
+        }
+    } catch (e) {
+        // Silently ignore polling errors
+    }
+}
+
+// Handle incoming Telegram command
+function handleTelegramCommand(message) {
+    const chatId = message.chat.id;
+    const userId = message.from.id;
+    const text = message.text.trim();
+    const username = message.from.username || message.from.first_name || 'Unknown';
+
+    consoleLog(`[Telegram] ${username}: ${text}`, 'info');
+
+    // Check authorization
+    if (telegramBridge.authorizedUsers.length > 0 &&
+        !telegramBridge.authorizedUsers.includes(userId)) {
+        sendTelegramMessage('⛔ Unauthorized. Your user ID is not in the authorized list.', chatId);
+        return;
+    }
+
+    // Handle Telegram-style commands (with /)
+    let cmd = text;
+    if (cmd.startsWith('/')) {
+        cmd = cmd.substring(1);
+    }
+
+    // Process command
+    const response = processTelegramCommand(cmd);
+    sendTelegramMessage(response, chatId);
+}
+
+// Process command and return response
+function processTelegramCommand(cmdString) {
+    const parts = cmdString.toLowerCase().split(/\s+/);
+    const cmd = parts[0];
+    const args = parts.slice(1);
+
+    try {
+        switch (cmd) {
+            case 'help':
+                return `🤖 *AION MARS Commands*
+
+*Status*
+/status - Swarm overview
+/ceg - Governance state
+/mission - Mission status
+
+*Control*
+/start - Start simulation
+/stop - Stop simulation
+/pulse - Trigger recalibration
+
+*Missions*
+/forage [n] - Start forage mission
+/patrol [n] - Start patrol mission
+/converge - Converge to center
+/abort - Abort mission
+
+*Inject*
+/fault [%] - Inject faults
+/mode [dem|epi|sen|emg] - Set CEG mode
+
+*Alerts*
+/alerts - Alert status
+/mute - Disable alerts
+/unmute - Enable alerts`;
+
+            case 'status':
+                const psi = document.getElementById('psi-val')?.textContent || '?';
+                const faultCount = typeof faults !== 'undefined' ? faults.length : 0;
+                const droneCount = typeof drones !== 'undefined' ? drones.length : 0;
+                const currentCycle = typeof cycle !== 'undefined' ? cycle : 0;
+                const mode = typeof cegMode !== 'undefined' ? cegMode : 'N/A';
+                return `📊 *AION Status @ Cycle ${currentCycle}*
+🐝 Drones: ${droneCount}
+⚡ Faults: ${faultCount}
+🌊 Coherence: ${psi}
+🏛️ CEG Mode: ${mode}
+▶️ Running: ${isRunning ? 'Yes' : 'No'}`;
+
+            case 'ceg':
+                const cMode = typeof cegMode !== 'undefined' ? cegMode : 'N/A';
+                const cyclesIn = typeof cegCyclesInMode !== 'undefined' ? cegCyclesInMode : 0;
+                return `🏛️ *CEG Governance*
+Mode: ${cMode}
+Cycles: ${cyclesIn}`;
+
+            case 'mission':
+                if (!activeMission) {
+                    return '📋 No active mission\nUse /forage, /patrol, or /converge to start';
+                }
+                const dur = ((Date.now() - activeMission.startTime) / 1000).toFixed(0);
+                let missionInfo = `📋 *Mission: ${activeMission.type.toUpperCase()}*\nDuration: ${dur}s`;
+                if (activeMission.type === 'forage') {
+                    missionInfo += `\nCollected: ${missionProgress.collected}/${missionProgress.total}`;
+                } else if (activeMission.type === 'patrol') {
+                    missionInfo += `\nLoop: ${activeMission.loops}/${activeMission.targetLoops}`;
+                }
+                return missionInfo;
+
+            case 'start':
+                startExperiment();
+                return '▶️ Simulation started';
+
+            case 'stop':
+                stopExperiment();
+                return '⏹️ Simulation stopped';
+
+            case 'pulse':
+                triggerRecalibrationPulse();
+                return '📡 Recalibration pulse triggered';
+
+            case 'forage':
+                const forageCount = parseInt(args[0]) || 5;
+                startForageMission(forageCount);
+                return `🌾 Forage mission started: ${forageCount} resources`;
+
+            case 'patrol':
+                const waypointCount = parseInt(args[0]) || 4;
+                startPatrolMission(waypointCount);
+                return `🚁 Patrol mission started: ${waypointCount} waypoints`;
+
+            case 'converge':
+                startConvergeMission();
+                return '🎯 Converge mission started';
+
+            case 'disperse':
+                startDisperseMission();
+                return '💨 Disperse mission started';
+
+            case 'abort':
+                abortMission();
+                return '🛑 Mission aborted';
+
+            case 'fault':
+                const pct = parseInt(args[0]) || 10;
+                const count = Math.floor((typeof drones !== 'undefined' ? drones.length : 0) * pct / 100);
+                let injected = 0;
+                if (typeof drones !== 'undefined' && typeof injectFault === 'function') {
+                    const healthy = drones.filter(d => !d.isFaulty);
+                    for (let i = 0; i < count && i < healthy.length; i++) {
+                        const target = healthy[Math.floor(Math.random() * healthy.length)];
+                        if (target && !target.isFaulty) {
+                            injectFault(target);
+                            injected++;
+                        }
+                    }
+                }
+                return `⚡ Injected ${injected} faults (${pct}%)`;
+
+            case 'mode':
+                const newMode = (args[0] || '').toUpperCase();
+                if (['DEM', 'EPI', 'SEN', 'EMG'].includes(newMode)) {
+                    if (typeof transitionCEGMode === 'function') {
+                        transitionCEGMode(newMode, 'Telegram remote command');
+                    }
+                    return `🏛️ CEG mode set to ${newMode}`;
+                }
+                return '⚠️ Usage: /mode <dem|epi|sen|emg>';
+
+            case 'alerts':
+                return `🔔 *Alert Config*
+Enabled: ${alertConfig.enabled}
+Level: ${alertConfig.minLevel}
+Coherence Threshold: ${alertConfig.coherenceThreshold}
+History: ${alertHistory.length} alerts`;
+
+            case 'mute':
+                alertConfig.enabled = false;
+                return '🔇 Alerts muted';
+
+            case 'unmute':
+                alertConfig.enabled = true;
+                return '🔔 Alerts enabled';
+
+            default:
+                // Try to execute as console command
+                executeCommand(cmdString);
+                return `✅ Command executed: ${cmdString}`;
+        }
+    } catch (e) {
+        return `❌ Error: ${e.message}`;
+    }
+}
+
+// Send message to Telegram
+async function sendTelegramMessage(text, chatId = null) {
+    if (!telegramBridge.botToken) return;
+
+    const targetChat = chatId || telegramBridge.chatId;
+    if (!targetChat) return;
+
+    try {
+        await fetch(`https://api.telegram.org/bot${telegramBridge.botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: targetChat,
+                text: text,
+                parse_mode: 'Markdown'
+            })
+        });
+    } catch (e) {
+        // Silently ignore send errors
+    }
+}
+
+// Handle telegram command from console
+function handleTelegram(args) {
+    const subcmd = args[0];
+
+    switch (subcmd) {
+        case 'start':
+            startTelegramBridge(args[1], args[2]);
+            break;
+        case 'stop':
+            stopTelegramBridge();
+            break;
+        case 'send':
+            const message = args.slice(1).join(' ');
+            sendTelegramMessage(message);
+            consoleLog('Message sent to Telegram', 'success');
+            break;
+        case 'auth':
+            const userId = parseInt(args[1]);
+            if (userId) {
+                telegramBridge.authorizedUsers.push(userId);
+                consoleLog(`User ${userId} authorized`, 'success');
+            } else {
+                consoleLog('Usage: telegram auth <user_id>', 'warning');
+            }
+            break;
+        case 'status':
+        default:
+            consoleLog(`=== TELEGRAM BRIDGE ===`, 'info');
+            consoleLog(`  Enabled: ${telegramBridge.enabled}`, 'output');
+            consoleLog(`  Bot Token: ${telegramBridge.botToken ? 'Set' : 'Not set'}`, 'output');
+            consoleLog(`  Chat ID: ${telegramBridge.chatId || 'Not set'}`, 'output');
+            consoleLog(`  Authorized Users: ${telegramBridge.authorizedUsers.length}`, 'output');
+            consoleLog(`  Poll Rate: ${telegramBridge.pollRate}ms`, 'output');
+            break;
+    }
+}
+
+// Add telegram to command list
+COMMANDS['telegram'] = { desc: 'Configure Telegram remote control', category: 'META' };
+COMMANDS['telegram start'] = { desc: 'Start bridge (telegram start <token> <chat_id>)', category: 'META' };
+COMMANDS['telegram stop'] = { desc: 'Stop Telegram bridge', category: 'META' };
+COMMANDS['telegram send'] = { desc: 'Send message to Telegram', category: 'META' };
 </script>
 
 </body>
