@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AION MARS - Octopus Edition (Gateway v1.0)</title>
+    <title>AION MARS - Octopus Edition</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1367,7 +1367,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🐙 AION MARS - Octopus Edition (Gateway v1.0)</h1>
+        <h1>🐙 AION MARS - Octopus Edition</h1>
         <div class="pulse-indicator" id="pulse-indicator">📡 RECALIBRATION PULSE</div>
         <div class="header-stats">
             <div class="stat"><span class="val high" id="psi-val">1.00</span><span class="label">Ψ Coherence</span></div>
@@ -1804,43 +1804,25 @@
 
 <script>
     // ═══════════════════════════════════════════════════════════════════════
-    //                    GATEWAY FRAMEWORK CONSTANTS
-    //                    All derived from Γ = 1/(6φ)
+    //                    CONSTANTS
     // ═══════════════════════════════════════════════════════════════════════
 
-    // TIER 0: IMMUTABLE PRIMITIVES
-    const PHI = (1 + Math.sqrt(5)) / 2;       // 1.6180339887498949 - Golden Ratio
-    const GAMMA = 1 / (6 * PHI);              // 0.103005664791649 - Gate Constant
-
-    // TIER 1: EXACT IDENTITIES
-    const PHI_GAMMA = PHI * GAMMA;            // 1/6 = 0.16666... EXACT
-    const SIX_GAMMA = 6 * GAMMA;              // 1/φ = 0.61803... EXACT
-    const INVERSE_PHI = 1 / PHI;              // 0.61803... = φ-1
-    const KOIDE = 4 * PHI * GAMMA;            // 2/3 = 0.66666... EXACT (Koide Ratio)
-
-    // TIER 2: SAFETY THRESHOLDS
-    const CLAMP_HIGH = 1 - GAMMA;             // 0.896994... (handoff threshold)
-    const CLAMP_LOW = GAMMA;                  // 0.103005... (reset threshold)
-    const HYSTERESIS_BAND = PHI_GAMMA;        // 1/6 = 0.16666...
-    const SIGMOID_K = 6 * PHI;                // 9.708203932499369
-
-    // Gateway-derived core constants
-    const BETA_BASE = CLAMP_HIGH;             // 0.897 (was 0.85)
-    const BETA_MIN = KOIDE - GAMMA;           // 0.564 (was 0.55)
-    const ALPHA = 0.0005;                     // (unchanged - empirical)
-    const SIGMA = 0.008;                      // (unchanged - empirical)
+    const BETA_BASE = 0.85;
+    const BETA_MIN = 0.55;
+    const ALPHA = 0.0005;
+    const SIGMA = 0.008;
 
     // Signal
-    const SIGNAL_RANGE = 3.2;                 // (unchanged - geometric)
-    const SIGNAL_LOST_THRESHOLD = PHI_GAMMA;  // 0.167 (was 0.15)
-    const OPTICAL_RANGE = 1.8;                // Shorter range for skin-based optical signaling
+    const SIGNAL_RANGE = 3.2;
+    const SIGNAL_LOST_THRESHOLD = 0.15;
+    const OPTICAL_RANGE = 1.8;  // Shorter range for skin-based optical signaling
 
     // Cascade
-    const CASCADE_WEIGHT = 0.1;               // (unchanged)
-    const CASCADE_THRESHOLD = KOIDE + GAMMA;  // 0.77 (was 0.75)
+    const CASCADE_WEIGHT = 0.1;
+    const CASCADE_THRESHOLD = 0.75;
 
     // Pulse
-    const PULSE_ATTRACTOR = INVERSE_PHI - GAMMA; // 0.515 (was 0.5507)
+    const PULSE_ATTRACTOR = 0.5507;
 
     // Arm/Octopus
     const ARM_LOCAL_BETA_BOOST = 0.08;  // Higher β retention within arm
@@ -1860,19 +1842,19 @@
     const WAVE_SPEED = 0.15;
     const WAVE_DURATION = 30;
 
-    // Self-healing (Gateway-derived)
-    const HEAL_PROBABILITY = GAMMA / 50;     // 0.00206 (was 0.002)
-    const HEAL_NEIGHBOR_THRESHOLD = 3;       // Need 3+ healthy neighbors
+    // Self-healing
+    const HEAL_PROBABILITY = 0.002;  // Per cycle, per faulty drone
+    const HEAL_NEIGHBOR_THRESHOLD = 3;  // Need 3+ healthy neighbors
 
     // Polarization Channel (ignores dust)
-    const POLARIZATION_RANGE = 2.5;          // Slightly longer than optical
-    const POLARIZATION_STRENGTH = 0.08;      // Arm-to-arm coordination boost
+    const POLARIZATION_RANGE = 2.5;  // Slightly longer than optical
+    const POLARIZATION_STRENGTH = 0.08;  // Arm-to-arm coordination boost
 
-    // Autotomy & Regeneration (Gateway-derived)
-    const AUTOTOMY_STRESS_THRESHOLD = BETA_MIN - GAMMA; // 0.461 (was 0.4)
-    const AUTOTOMY_FAULT_RATIO = 0.5;        // >50% faulty drones in arm triggers autotomy
-    const REGEN_RATE = GAMMA / 20;           // 0.00515 (was 0.005)
-    const MAX_REGEN_QUEUE = 3;               // Max drones queued for regeneration
+    // Autotomy & Regeneration
+    const AUTOTOMY_STRESS_THRESHOLD = 0.4;  // Arm coherence below this triggers autotomy
+    const AUTOTOMY_FAULT_RATIO = 0.5;  // >50% faulty drones in arm triggers autotomy
+    const REGEN_RATE = 0.005;  // Chance per cycle to bud new drone
+    const MAX_REGEN_QUEUE = 3;  // Max drones queued for regeneration
 
     // Giant Axon Panic
     const PANIC_FAULT_THRESHOLD = 0.3;  // >30% faults triggers panic
@@ -1901,23 +1883,23 @@
     const SIGMA_ARM_COHERENCE_MULT = 0.5; // Low arm coherence increases noise
     const NOISE_SMOOTHING = 0.7;        // Temporal smoothing for noise changes
 
-    // Trit System (Hybrid Ternary Layer) - Gateway-derived
+    // Trit System (Hybrid Ternary Layer)
     const TRIT = { NEG: -1, ZERO: 0, POS: 1 };
-    const TRIT_THRESHOLD_POS = PHI_GAMMA + GAMMA / 3;  // 0.201 (was 0.2)
-    const TRIT_THRESHOLD_NEG = -TRIT_THRESHOLD_POS;    // -0.201
-    const VOTE_INERTIA = KOIDE + GAMMA / 3;            // 0.701 (was 0.7)
-    const TRIT_NEIGHBOR_INFLUENCE = KOIDE / 2;         // 0.333 (was 0.3)
-    const CONSENSUS_THRESHOLD_DEFAULT = KOIDE;         // 0.6666... EXACT (was 0.66)
+    const TRIT_THRESHOLD_POS = 0.2;   // s > this → +1
+    const TRIT_THRESHOLD_NEG = -0.2;  // s < this → -1
+    const VOTE_INERTIA = 0.7;         // How sticky votes are
+    const TRIT_NEIGHBOR_INFLUENCE = 0.3;  // How much neighbors affect vote
+    const CONSENSUS_THRESHOLD_DEFAULT = 0.66;  // 66% for consensus
     const TRIT_WAVE_SPEED = 0.2;
     const TRIT_WAVE_WIDTH = 0.4;
 
-    // Liminal / Compression Mode - Gateway-derived
-    const LIMINAL_TRIGGER_ENTROPY = CLAMP_HIGH - GAMMA;   // 0.794 (was 0.78)
-    const LIMINAL_TRIGGER_FLIPRATE = GAMMA + GAMMA / 10;  // 0.113 (was 0.12)
-    const LIMINAL_MAX_CYCLES = Math.round(72 / 6);        // 12 cycles (exact)
-    const LIMINAL_BETA_BOOST = GAMMA / 5;                 // 0.0206 (was 0.02)
+    // Liminal / Compression Mode
+    const LIMINAL_TRIGGER_ENTROPY = 0.78;   // High entropy triggers liminal
+    const LIMINAL_TRIGGER_FLIPRATE = 0.12;  // High flip rate triggers liminal
+    const LIMINAL_MAX_CYCLES = 12;          // Duration of liminal compression
+    const LIMINAL_BETA_BOOST = 0.02;        // Beta increase per cycle in liminal
 
-    // Contextual Epistemic Governance (CEG) - Gateway-derived
+    // Contextual Epistemic Governance (CEG)
     const CEG_MODE = { DEM: 'DEM', EPI: 'EPI', SEN: 'SEN', EMG: 'EMG' };
     const CEG_LABELS = {
         DEM: 'DEMOCRATIC',
@@ -1925,41 +1907,26 @@
         SEN: 'SENTINEL',
         EMG: 'EMERGENCY'
     };
-    // Transition thresholds (Gateway-derived)
-    const CEG_ENTROPY_LOW = KOIDE / 2;              // 0.333 (was 0.35)
-    const CEG_ENTROPY_MID = KOIDE - GAMMA;          // 0.564 (was 0.55)
-    const CEG_ENTROPY_HIGH = CLAMP_HIGH - PHI_GAMMA; // 0.730 (was 0.72)
-    const CEG_FLIPRATE_LOW = 0.04;                  // (unchanged)
-    const CEG_FLIPRATE_HIGH = GAMMA;                // 0.103 (was 0.10)
-    const CEG_FAULT_THRESHOLD = KOIDE - 0.4;        // 0.267 (was 0.25)
-    const CEG_FAULT_CRITICAL = AUTOTOMY_STRESS_THRESHOLD; // 0.461 (was 0.40)
-    const CEG_SIGNAL_COLLAPSE = KOIDE / 2;          // 0.333 (was 0.30)
+    // Transition thresholds
+    const CEG_ENTROPY_LOW = 0.35;           // Below this = stable (DEM ok)
+    const CEG_ENTROPY_MID = 0.55;           // Above this = consider EPI
+    const CEG_ENTROPY_HIGH = 0.72;          // Above this = SEN territory
+    const CEG_FLIPRATE_LOW = 0.04;          // Below = stable voting
+    const CEG_FLIPRATE_HIGH = 0.10;         // Above = unstable voting
+    const CEG_FAULT_THRESHOLD = 0.25;       // >25% faults = EMG
+    const CEG_FAULT_CRITICAL = 0.40;        // >40% faults = deep EMG
+    const CEG_SIGNAL_COLLAPSE = 0.30;       // Coherence below this = crisis
     // Hysteresis settings
-    const CEG_HYSTERESIS_CYCLES = Math.round(72 / 9); // 8 cycles (exact)
-    const CEG_STABILITY_WINDOW = 5;                 // (unchanged)
-    // Epistemic weighting factors (Gateway-derived)
-    const EPI_GANGLION_WEIGHT = PHI - GAMMA;        // 1.515 (was 1.5)
-    const EPI_STABILITY_WEIGHT = KOIDE / 2;         // 0.333 (was 0.3)
-    const EPI_TRACK_RECORD_DECAY = 1 - GAMMA / 2;   // 0.948 (was 0.95)
-    // Mode-specific parameters (Gateway-derived)
-    const CEG_BETA_MODS = {
-        DEM: 0,
-        EPI: GAMMA / 10,         // 0.0103 (was 0.01)
-        SEN: GAMMA / 3,          // 0.0343 (was 0.03)
-        EMG: GAMMA / 2           // 0.0515 (was 0.05)
-    };
-    const CEG_COUPLING_MODS = {
-        DEM: 1.0,
-        EPI: 1 + GAMMA,          // 1.103 (was 1.1)
-        SEN: CLAMP_HIGH - GAMMA, // 0.794 (was 0.8)
-        EMG: KOIDE - GAMMA       // 0.564 (was 0.6)
-    };
-    const CEG_CONSENSUS_THRESH = {
-        DEM: KOIDE,              // 0.6666... (was 0.66)
-        EPI: KOIDE - GAMMA / 10, // 0.656 (was 0.60)
-        SEN: KOIDE - GAMMA,      // 0.564 (was 0.55)
-        EMG: 0.5 + GAMMA / 10    // 0.510 (was 0.51)
-    };
+    const CEG_HYSTERESIS_CYCLES = 8;        // Min cycles before mode switch
+    const CEG_STABILITY_WINDOW = 5;         // Cycles to confirm stable conditions
+    // Epistemic weighting factors
+    const EPI_GANGLION_WEIGHT = 1.5;        // Ganglions get 50% more influence
+    const EPI_STABILITY_WEIGHT = 0.3;       // Max bonus for stable drones
+    const EPI_TRACK_RECORD_DECAY = 0.95;    // How fast track record fades
+    // Mode-specific parameters
+    const CEG_BETA_MODS = { DEM: 0, EPI: 0.01, SEN: 0.03, EMG: 0.05 };
+    const CEG_COUPLING_MODS = { DEM: 1.0, EPI: 1.1, SEN: 0.8, EMG: 0.6 };
+    const CEG_CONSENSUS_THRESH = { DEM: 0.66, EPI: 0.60, SEN: 0.55, EMG: 0.51 };
 
     // Predictive Mode Selection
     const PREDICT_WINDOW = 10;              // Cycles to analyze for trend
@@ -8175,16 +8142,16 @@ let stressTest = {
     active: false,
     startCycle: 0,
     startTime: 0,
-    currentLevel: 0,           // 0-100 stress level
-    rampRate: 0.01,            // Stress increase per cycle (default: reaches 100 in 10k cycles)
-    faultRateMultiplier: 1,    // Multiplier for fault injection
-    stormMultiplier: 1,        // Multiplier for storm intensity
-    noiseMultiplier: 1,        // Multiplier for noise
-    coherenceFloor: 0.3,       // Coherence below this = system "broken"
-    faultCeiling: 0.6,         // Fault ratio above this = system "broken"
-    breakdownCycle: null,      // Cycle when system broke
-    breakdownReason: null,     // Why it broke
-    log: []                    // Periodic snapshots
+    currentLevel: 0,
+    rampRate: 0.01,
+    faultRateMultiplier: 1,
+    stormMultiplier: 1,
+    noiseMultiplier: 1,
+    coherenceFloor: 0.3,
+    faultCeiling: 0.6,
+    breakdownCycle: null,
+    breakdownReason: null,
+    log: []
 };
 
 function startStressTest(rampRate = 0.01) {
@@ -8247,10 +8214,8 @@ function stopStressTest() {
 function updateStressTest() {
     if (!stressTest.active || stressTest.breakdownCycle) return;
 
-    // Increase stress level
     stressTest.currentLevel = Math.min(1, stressTest.currentLevel + stressTest.rampRate);
 
-    // Apply stress multipliers (exponential scaling for dramatic effect)
     const stressExp = Math.pow(stressTest.currentLevel, 1.5);
     stressTest.faultRateMultiplier = 1 + stressExp * 200;   // Up to 201x fault rate
     stressTest.stormMultiplier = 1 + stressExp * 4;         // Up to 5x storm
@@ -8263,7 +8228,6 @@ function updateStressTest() {
         }
     }
 
-    // Check for breakdown
     if (typeof drones !== 'undefined' && typeof computeOrderParameter === 'function') {
         try {
             const order = computeOrderParameter();
@@ -8279,7 +8243,6 @@ function updateStressTest() {
                 announceBreakdown();
             }
 
-            // Log every 500 cycles
             if ((cycle - stressTest.startCycle) % 500 === 0) {
                 stressTest.log.push({
                     cycle,
@@ -8289,9 +8252,7 @@ function updateStressTest() {
                     cegMode: typeof cegMode !== 'undefined' ? cegMode : 'N/A'
                 });
             }
-        } catch (e) {
-            // Ignore errors during stress check
-        }
+        } catch (e) {}
     }
 }
 
@@ -8313,9 +8274,7 @@ function announceBreakdown() {
 }
 
 function getStressMultipliers() {
-    if (!stressTest.active) {
-        return { fault: 1, storm: 1, noise: 1 };
-    }
+    if (!stressTest.active) return { fault: 1, storm: 1, noise: 1 };
     return {
         fault: stressTest.faultRateMultiplier,
         storm: stressTest.stormMultiplier,
@@ -8323,7 +8282,6 @@ function getStressMultipliers() {
     };
 }
 
-// Hook stress test into render loop
 const originalRenderForStress = typeof render === 'function' ? render : null;
 if (originalRenderForStress) {
     render = function() {
@@ -8332,12 +8290,10 @@ if (originalRenderForStress) {
     };
 }
 
-// Add stress test commands
 COMMANDS['stress'] = { desc: 'Start stress test (stress [ramp_rate])', category: 'CONTROL' };
 COMMANDS['stress stop'] = { desc: 'Stop stress test and show results', category: 'CONTROL' };
 COMMANDS['stress status'] = { desc: 'Show current stress test status', category: 'CONTROL' };
 
-// Handle stress command in executeCommand
 const originalExecuteCommand = executeCommand;
 executeCommand = function(cmdString) {
     const parts = cmdString.trim().toLowerCase().split(/\s+/);
@@ -8354,7 +8310,6 @@ executeCommand = function(cmdString) {
                 consoleLog(`  Level: ${(stressTest.currentLevel * 100).toFixed(1)}%`, 'output');
                 consoleLog(`  Cycles: ${cycle - stressTest.startCycle}`, 'output');
                 consoleLog(`  Fault Mult: ${stressTest.faultRateMultiplier.toFixed(1)}x`, 'output');
-                consoleLog(`  Storm Mult: ${stressTest.stormMultiplier.toFixed(1)}x`, 'output');
             } else {
                 consoleLog('No stress test active', 'info');
             }
@@ -8364,15 +8319,10 @@ executeCommand = function(cmdString) {
         }
         return;
     }
-
     originalExecuteCommand(cmdString);
 };
 
-// Log version info
-console.log('🌀 Gateway Framework Edition');
-console.log(`  Γ = ${GAMMA.toFixed(15)}`);
-console.log(`  φ × Γ = ${(PHI * GAMMA).toFixed(15)} (should be ${(1/6).toFixed(15)})`);
-console.log(`  Identity check: ${Math.abs(PHI * GAMMA - 1/6) < 1e-14 ? '✓ PASS' : '✗ FAIL'}`);
+console.log('🐙 Octopus Edition (Original Constants)');
 </script>
 
 </body>
